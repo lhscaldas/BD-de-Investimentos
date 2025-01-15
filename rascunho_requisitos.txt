@@ -1,0 +1,119 @@
+------------------------------------------------------------------------------------------------------------------------ A considerar
+Gráfico de alocação em pizza por níveis:
+	- inicial classes
+	- se clicar na classe, pizza com as subclasses
+	- se  clicar na subclasse, pizza com cada ativo
+Grafico de rendimento considerando o filtro
+No gráfico de rendimento, comparar com CDI ou IBOVESPA (permitir selecionar)
+Classe: renda fixa, renda variável
+Subclasse: 
+	- renda fixa: reserva de emergência, CDB, tesouro direto, fundo de renda fixa, etc
+	- renda variável: fundo multimercado, moeda estrangeira, criptomoeda, fundos no exterior, ações, etc
+
+Simplificar: nada de atualização online, lançamentos mensais manuais, diretamente valor, sem quantidades.
+
+Inserir campo observações
+
+Autenticação: usuário e senha
+
+Upload em plataforma
+
+Upload de csv
+
+Ganhos mensais
+------------------------------------------------------------------------------------------------------------------------ Requisitos aceitos
+### Banco de Dados:
+1. O banco de dados deverá ser capaz de:
+   - Registrar cotas ou valor inicial de cada ativo.
+   - Registrar transações de compra e venda de ativos.
+   - Atualizar automaticamente a quantidade de cotas ou o valor de cada ativo com base nas transações registradas.
+   - Manter o valor de cada ativo atualizado com base no valor da cota, obtido por meio de uma API confiável ou fonte definida.
+   - Calcular a rentabilidade para os seguintes períodos:
+     - No dia.
+     - No mês.
+     - Nos últimos 30 dias.
+     - No ano.
+     - Nos últimos 12 meses.
+     - Nos últimos 3 anos.
+     - Nos últimos 5 anos.
+   - Calcular projeções baseadas em dados históricos para:
+     - Os próximos 30 dias.
+     - Os próximos 12 meses.
+
+### Funcionalidades para o Usuário:
+2. O sistema deverá permitir que o usuário:
+   - Registre cotas ou o valor inicial de cada ativo manualmente.
+   - Registre transações de compra e venda de ativos.
+   - Edite o valor ou a cota inicial de ativos previamente registrados.
+   - Edite transações realizadas anteriormente.
+
+### Interface:
+3. A interface deverá exibir:
+   - O nome do ativo.
+   - A classe do ativo.
+   - A subclasse do ativo.
+   - O banco em que está registrado.
+   - O valor atual do ativo.
+   - As rentabilidades calculadas para cada ativo.
+   - As projeções de cada ativo.
+   - Filtros que permitam selecionar ativos por classe ou por banco.
+   - O total do patrimônio, considerando os filtros aplicados.
+   - O total das rentabilidades, considerando os filtros aplicados.
+   - O total das projeções, considerando os filtros aplicados.
+   - Um botão para registrar novas transações relacionadas a um ativo específico.
+   - Um botão para registrar novos ativos.
+
+### Exportação de Dados:
+4. O sistema deverá permitir que o usuário exporte os dados para um arquivo CSV, incluindo:
+   - Nome dos ativos.
+   - Classe dos ativos
+   - Banco onde estão registrados.
+   - Valor atual dos ativos.
+   - Rentabilidades calculadas.
+   - Projeções calculadas.
+   - Transações realizadas.
+   - Filtros aplicados no momento da exportação.
+
+------------------------------------------------------------------------------------------------------------------------ Requisitos inseridos depois
+- Um botão para exportar os dados para csv, considerando o filtro
+
+------------------------------------------------------------------------------------------------------------------------ Requisitos iniciais
+No banco de dados o usuário deverá ser capaz de:
+
+- Registrar cotas ou valor inicial de cada ativo
+- Registrar transações de compra e venda de ativos
+- Editar o valor ou cota inicial
+- Editar transações anteriores
+
+O banco de dados deverá ser capaz de:
+
+- Manter atualizado a quantidade de cotas ou o valor de cada ativo com base nas transações
+- Manter o valor de cada ativo atualizado, com base no valor da cota atualizado, o qual buscará na internet
+- Calcular a rentabilidade para os periodos:
+	* no dia
+	* no mês
+	* nos ultimos 30 dias
+	* no ano
+	* nos ultimos 12 meses
+	* nos ultimos 3 anos
+	* nos ultimos 5 anos
+- Calcular a projeção para:
+	* os próximos 30 dias
+	* os próximos 12 meses
+
+A interface deverá exibir:
+
+- O nome do ativo
+- A classe do ativo
+- O banco que está registrado
+- O valor atual do ativo
+- As rentabilidades de cada ativo
+- As projeções de cada ativo
+- Um filtro por classe de ativo
+- Um filtro por banco
+- O total do patrimônio, considerando o filtro
+- O total das rentabilidades, considerando o filtro
+- O total das projeções, considerando o filtro
+- Um botão, por ativo, para registrar novas transações ligadas a ele
+- Um botão para registrar um novo ativo
+------------------------------------------------------------------------------------------------------------------------------

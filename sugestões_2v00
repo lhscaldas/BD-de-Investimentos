@@ -1,0 +1,43 @@
+# Chat GPT
+
+Notificações Automáticas:
+
+Alertas por e-mail ou na interface para lembrar o usuário de realizar as atualizações mensais dos valores dos ativos.
+Histórico de Alterações:
+
+Registro do histórico de alterações para cada ativo e operação, permitindo rastrear mudanças realizadas no sistema.
+Importação de Ativos:
+
+Opção de importar ativos e valores iniciais a partir de arquivos CSV ou integrações com outras plataformas financeiras.
+Integração com APIs Externas:
+
+Integração com APIs de corretoras ou serviços financeiros para sincronização automática de valores de ativos ou atualização de cotações.
+Relatórios Detalhados:
+
+Geração de relatórios PDF que detalhem a performance do portfólio em períodos definidos pelo usuário.
+Dashboard Personalizável:
+
+Permitir que o usuário personalize a interface principal, escolhendo quais informações e gráficos são exibidos.
+Planejamento e Objetivos:
+
+Funcionalidade para definir metas financeiras, como alcançar determinado patrimônio em um período específico, e acompanhar o progresso.
+Segmentação de Ativos por Conta:
+
+Suporte para dividir ativos por contas ou carteiras diferentes (ex.: Poupança, Investimentos de Alto Risco, etc.).
+Análise de Diversificação:
+
+Analisar a diversificação do portfólio e fornecer sugestões para balancear as classes e subclasses de ativos.
+Modo de Demonstração:
+
+Um modo de uso com dados fictícios para novos usuários explorarem o sistema sem comprometer informações reais.
+Controle de Taxas e Custos:
+
+Registro e exibição de taxas e custos relacionados às operações (ex.: corretagem, impostos) e impacto na rentabilidade.
+Versão Mobile:
+
+Suporte otimizado para dispositivos móveis, para facilitar o uso do sistema em smartphones e tablets.
+Sistema Multi-Idioma:
+
+Suporte a múltiplos idiomas para expandir o público-alvo do sistema.
+
+# Usuários Beta
