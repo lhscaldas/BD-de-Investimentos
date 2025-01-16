@@ -1,0 +1,14 @@
+# Django framework
+django
+
+# For managing database URLs in production (e.g., Render)
+dj-database-url
+
+# For handling environment variables securely
+python-decouple
+
+# WSGI server for production (required by Render)
+gunicorn
+
+# Static file handling in production
+whitenoise
