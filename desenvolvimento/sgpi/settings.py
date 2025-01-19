@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -117,9 +118,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MIDDLEWARE += ["whitenoise.middleware.WhiteNoiseMiddleware"]
+# Durante o desenvolvimento: incluir arquivos estáticos no diretório "static"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Adicione arquivos estáticos do projeto aqui
+]
+
+# Configurações de templates
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Diretório para templates personalizados
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+# Produção: Habilite estas configurações apenas ao preparar o ambiente de produção
+# executar o comando "python manage.py collectstatic" para coletar arquivos estáticos
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Diretório para arquivos estáticos coletados
+# MIDDLEWARE += ["whitenoise.middleware.WhiteNoiseMiddleware"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
