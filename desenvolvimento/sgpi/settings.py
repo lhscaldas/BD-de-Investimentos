@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     "investimentos",
+    "core",
 ]
 
 MIDDLEWARE = [
@@ -105,6 +106,9 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+LOGIN_REDIRECT_URL = '/investimentos/listar-ativos'  # Ou outra URL que você deseja redirecionar
+
 
 
 # Internationalization

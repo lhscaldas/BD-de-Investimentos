@@ -23,6 +23,6 @@ def index(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name='index'),  # URL da página inicial
+    path('', include('core.urls')),  # Define o core como responsável pela página inicial
     path('investimentos/', include('investimentos.urls')),  # Adiciona as rotas do app investimentos
 ]

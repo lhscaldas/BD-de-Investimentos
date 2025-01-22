@@ -3,12 +3,11 @@ from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo
 
-
 class AtivoCreateView(LoginRequiredMixin, CreateView):
     model = Ativo
     fields = ['nome', 'classe', 'subclasse', 'banco', 'valor_inicial', 'data_aquisicao', 'observacoes']
-    template_name = 'investimentos/criar_ativo.html'  # Caminho para o template
-    success_url = '/'  # Redireciona após a criação do ativo
+    template_name = 'investimentos/form_ativo.html'
+    success_url = '/investimentos/listar-ativos'
 
     def form_valid(self, form):
         form.instance.usuario = self.request.user  # Define o usuário logado
@@ -16,7 +15,7 @@ class AtivoCreateView(LoginRequiredMixin, CreateView):
 
 class AtivoListView(LoginRequiredMixin, ListView):
     model = Ativo
-    template_name = 'investimentos/listar_ativos.html'  # Caminho para o template
+    template_name = 'investimentos/listar_ativos.html' 
     context_object_name = 'ativos'
 
     def get_queryset(self):
@@ -26,11 +25,11 @@ class AtivoListView(LoginRequiredMixin, ListView):
 class AtivoUpdateView(LoginRequiredMixin, UpdateView):
     model = Ativo
     fields = ['nome', 'classe', 'subclasse', 'banco', 'valor_inicial', 'data_aquisicao', 'observacoes']
-    template_name = 'investimentos/editar_ativo.html'
-    success_url = '/'  # Redireciona após a edição
+    template_name = 'investimentos/form_ativo.html'
+    success_url = '/investimentos/listar-ativos'
 
 class AtivoDeleteView(LoginRequiredMixin, DeleteView):
     model = Ativo
     template_name = 'investimentos/deletar_ativo.html'
-    success_url = '/'  # Redireciona após a exclusão
+    success_url = '/investimentos/listar-ativos'  # Redireciona após a exclusão
 
