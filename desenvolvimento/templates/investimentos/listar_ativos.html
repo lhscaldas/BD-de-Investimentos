@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Ativos</title>
+</head>
+<body>
+    <h1>Meus Ativos</h1>
+    <a href="{% url 'criar_ativo' %}">Criar Novo Ativo</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Classe</th>
+                <th>Subclasse</th>
+                <th>Banco</th>
+                <th>Valor Inicial</th>
+                <th>Data de Aquisição</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ativo in ativos %}
+            <tr>
+                <td>{{ ativo.nome }}</td>
+                <td>{{ ativo.classe }}</td>
+                <td>{{ ativo.subclasse }}</td>
+                <td>{{ ativo.banco }}</td>
+                <td>{{ ativo.valor_inicial }}</td>
+                <td>{{ ativo.data_aquisicao }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Nenhum ativo encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

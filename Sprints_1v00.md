@@ -6,7 +6,7 @@
 3. ~~Configurar a hospedagem na plataforma gratuita. *(Sem tag específica - pré-requisito técnico).*~~
 
 4. ~~Criar a estrutura inicial do projeto (frontend e backend separados). *(Sem tag específica - pré-requisito técnico).*~~
-5. Configurar o banco de dados com conexão básica. *(Sem tag específica - pré-requisito técnico).*
+5. ~~Configurar o banco de dados com conexão básica. *(Sem tag específica - pré-requisito técnico).*~~
 
 ---
 

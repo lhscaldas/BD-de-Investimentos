@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deletar Ativo</title>
+</head>
+<body>
+    <h1>Deletar Ativo</h1>
+    <p>Tem certeza de que deseja deletar o ativo <strong>{{ object.nome }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Sim, deletar</button>
+    </form>
+    <a href="/">Cancelar</a>
+</body>
+</html>
