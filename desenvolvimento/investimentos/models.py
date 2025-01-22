@@ -33,3 +33,19 @@ class Ativo(models.Model):
     def __str__(self):
         return f"{self.nome} ({self.usuario.username})"
 
+class Operacao(models.Model):
+    TIPO_OPERACAO = [
+        ('compra', 'Compra'),
+        ('venda', 'Venda'),
+        ('atualizacao', 'Atualização'),
+    ]
+
+    tipo = models.CharField(max_length=15, choices=TIPO_OPERACAO)
+    valor = models.DecimalField(max_digits=15, decimal_places=2)
+    data = models.DateField()
+    ativo = models.ForeignKey(Ativo, on_delete=models.CASCADE, related_name='operacoes')
+
+    def __str__(self):
+        return f"{self.tipo.capitalize()} - R$ {self.valor} ({self.ativo.nome})"
+
+

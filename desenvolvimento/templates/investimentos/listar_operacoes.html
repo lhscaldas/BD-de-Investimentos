@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Operações</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Minhas Operações</h1>
+        <a href="{% url 'criar_operacao' %}" class="btn btn-success mb-3">Adicionar Operação</a>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th>Data</th>
+                    <th>Ativo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for operacao in operacoes %}
+                <tr>
+                    <td>{{ operacao.tipo }}</td>
+                    <td>R$ {{ operacao.valor }}</td>
+                    <td>{{ operacao.data }}</td>
+                    <td>{{ operacao.ativo.nome }}</td>
+                    <td>
+                        <a href="{% url 'editar_operacao' operacao.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'deletar_operacao' operacao.pk %}" class="btn btn-danger btn-sm">Excluir</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Nenhuma operação encontrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

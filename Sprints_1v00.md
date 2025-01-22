@@ -12,8 +12,8 @@
 
 ## **Sprint 2: Estruturação do Banco de Dados**
 **Objetivo:** Implementar a estrutura do banco de dados para ativos e operações.
-1. Criar a tabela **Ativos** com as colunas: Nome, classe, subclasse, banco, valor inicial, data de aquisição, observações. *(BD_01)*  
-2. Criar a tabela **Operações** com as colunas: Tipo (compra, venda ou atualização), valor, data, referência ao ativo. *(BD_02)*  
+1. ~~Criar a tabela **Ativos** com as colunas: Nome, classe, subclasse, banco, valor inicial, data de aquisição, observações. *(BD_01)*~~
+2. ~~Criar a tabela **Operações** com as colunas: Tipo (compra, venda ou atualização), valor, data, referência ao ativo. *(BD_02)*~~
 3. Configurar criptografia no banco de dados. *(BD_03)*  
 4. Testar o banco de dados com registros fictícios. *(Sem tag específica - teste técnico).*
 

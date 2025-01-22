@@ -1,14 +1,14 @@
 # Requisitos do Sistema de Gerenciamento de Portfólio de Investimentos
 
 ## Banco de Dados
-1. **[BD_01]** O banco de dados deverá ser capaz de registrar informações detalhadas de cada ativo, incluindo:
+1. ~~**[BD_01]** O banco de dados deverá ser capaz de registrar informações detalhadas de cada ativo, incluindo:~~
    - Nome do ativo.
    - Classe e subclasse.
    - Banco em que está registrado.
    - Valor inicial.
    - Data de aquisição inicial.
    - Observações opcionais.
-2. **[BD_02]** O banco de dados deverá ser capaz de armazenar operações realizadas para cada ativo, incluindo:
+2. ~~**[BD_02]** O banco de dados deverá ser capaz de armazenar operações realizadas para cada ativo, incluindo:~~
    - Tipo de operação (compra, venda ou atualização).
    - Valor da operação.
    - Data da operação.
