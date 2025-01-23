@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     "investimentos",
-    "core",
+    "sgpi"
 ]
 
 MIDDLEWARE = [
@@ -62,7 +62,7 @@ ROOT_URLCONF = "sgpi.urls"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Diretório para templates personalizados
+        'DIRS': [os.path.join(BASE_DIR, 'sgpi/templates')],  # Diretório para templates personalizados
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -88,7 +88,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -107,20 +106,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_REDIRECT_URL = '/investimentos/listar-ativos'  # Ou outra URL que você deseja redirecionar
-
+LOGIN_URL = '/login/'  # URL para a página de login
+LOGIN_REDIRECT_URL = '/'  # Redirecionamento após o login bem-sucedido
+LOGOUT_REDIRECT_URL = '/login/'  # Redirecionamento após logout
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = "pt-br"  # Define o idioma como Português do Brasil
 
-USE_I18N = True
+TIME_ZONE = "America/Sao_Paulo"  # Define o fuso horário para São Paulo (UTC-3)
 
-USE_TZ = True
+USE_I18N = True  # Habilita a tradução de strings no Django
+
+USE_L10N = True  # Habilita a formatação local de números, datas e horas
+
+USE_TZ = True  # Habilita o suporte a timezones
 
 
 # Static files (CSS, JavaScript, Images)

@@ -16,13 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import render
-
-def index(request):
-    return render(request, 'index.html')  # Renderiza o template
+from django.contrib.auth.views import LoginView, LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),  # Define o core como responsável pela página inicial
-    path('investimentos/', include('investimentos.urls')),  # Adiciona as rotas do app investimentos
+    path('', include('investimentos.urls')),  # Adiciona as rotas do app investimentos
+    path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(next_page='/login/'), name='logout'),
 ]

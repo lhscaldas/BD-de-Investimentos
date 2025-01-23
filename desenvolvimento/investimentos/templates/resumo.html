@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center">
+    <h1>Bem-vindo ao SGPI</h1>
+    {% if user.is_authenticated %}
+    <p class="lead">
+        {% if user.first_name %}
+            Olá, {{ user.first_name }}!
+        {% else %}
+            Olá, {{ user.username }}!
+        {% endif %}
+    </p>    
+    {% else %}
+        <p class="lead">Faça login para acessar suas informações.</p>
+    {% endif %}
+</div>
+{% endblock %}

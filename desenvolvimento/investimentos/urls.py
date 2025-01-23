@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AtivoCreateView, AtivoListView, AtivoUpdateView, AtivoDeleteView, OperacaoCreateView, OperacaoListView, OperacaoUpdateView, OperacaoDeleteView
+from .views import AtivoCreateView, AtivoListView, AtivoUpdateView, AtivoDeleteView, OperacaoCreateView, OperacaoListView, OperacaoUpdateView, OperacaoDeleteView, ResumoView
 
 urlpatterns = [
     path('criar-ativo/', AtivoCreateView.as_view(), name='criar_ativo'),
@@ -11,4 +11,6 @@ urlpatterns = [
     path('listar-operacoes/', OperacaoListView.as_view(), name='listar_operacoes'),
     path('editar-operacao/<int:pk>/', OperacaoUpdateView.as_view(), name='editar_operacao'),
     path('deletar-operacao/<int:pk>/', OperacaoDeleteView.as_view(), name='deletar_operacao'),
+
+    path('', ResumoView.as_view(), name='resumo'),
 ]

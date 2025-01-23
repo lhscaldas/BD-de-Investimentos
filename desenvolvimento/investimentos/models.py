@@ -7,19 +7,17 @@ class Ativo(models.Model):
         ('Renda Variável', 'Renda Variável'),
     ]
 
-    SUBCLASSES = {
-        'Renda Fixa': [
-            ('CDB', 'CDB'),
-            ('Tesouro Direto', 'Tesouro Direto'),
-            ('Fundo de Renda Fixa', 'Fundo de Renda Fixa'),
-        ],
-        'Renda Variável': [
-            ('Ações', 'Ações'),
-            ('FII', 'FII'),
-            ('Criptomoeda', 'Criptomoeda'),
-            ('Fundos no Exterior', 'Fundos no Exterior'),
-        ],
-    }
+    SUBCLASSES = [
+        #'Renda Fixa'
+        ('CDB', 'CDB'),
+        ('Tesouro Direto', 'Tesouro Direto'),
+        ('Fundo de Renda Fixa', 'Fundo de Renda Fixa'),
+        #'Renda Variável'
+        ('Ações', 'Ações'),
+        ('FII', 'FII'),
+        ('Criptomoeda', 'Criptomoeda'),
+        ('Fundos no Exterior', 'Fundos no Exterior'),
+    ]
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuário")
     nome = models.CharField(max_length=100, verbose_name="Nome do Ativo")
@@ -44,6 +42,11 @@ class Operacao(models.Model):
     valor = models.DecimalField(max_digits=15, decimal_places=2)
     data = models.DateField()
     ativo = models.ForeignKey(Ativo, on_delete=models.CASCADE, related_name='operacoes')
+
+    class Meta:
+        db_table = "operacoes"  # Define explicitamente o nome da tabela
+        verbose_name = "operação"  # Nome singular para o admin
+        verbose_name_plural = "operações"  # Nome plural para o admin
 
     def __str__(self):
         return f"{self.tipo.capitalize()} - R$ {self.valor} ({self.ativo.nome})"

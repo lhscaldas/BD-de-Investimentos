@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deletar Operação</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
     <div class="container mt-5">
         <h1 class="text-center text-danger">Deletar Operação</h1>
         <p class="text-center">Tem certeza de que deseja deletar esta operação?</p>
@@ -17,5 +11,4 @@
             <a href="{% url 'listar_operacoes' %}" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
-</body>
-</html>
+{% endblock %}

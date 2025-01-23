@@ -4,7 +4,6 @@
 1. ~~Configurar o ambiente de desenvolvimento local. *(Sem tag específica - pré-requisito técnico).*~~  
 2. ~~Criar o repositório no GitHub. *(Sem tag específica - pré-requisito técnico).*~~  
 3. ~~Configurar a hospedagem na plataforma gratuita. *(Sem tag específica - pré-requisito técnico).*~~
-
 4. ~~Criar a estrutura inicial do projeto (frontend e backend separados). *(Sem tag específica - pré-requisito técnico).*~~
 5. ~~Configurar o banco de dados com conexão básica. *(Sem tag específica - pré-requisito técnico).*~~
 
@@ -14,15 +13,14 @@
 **Objetivo:** Implementar a estrutura do banco de dados para ativos e operações.
 1. ~~Criar a tabela **Ativos** com as colunas: Nome, classe, subclasse, banco, valor inicial, data de aquisição, observações. *(BD_01)*~~
 2. ~~Criar a tabela **Operações** com as colunas: Tipo (compra, venda ou atualização), valor, data, referência ao ativo. *(BD_02)*~~
-3. Configurar criptografia no banco de dados. *(BD_03)*  
-4. Testar o banco de dados com registros fictícios. *(Sem tag específica - teste técnico).*
+3. ~~Testar o banco de dados com registros fictícios. *(Sem tag específica - teste técnico).*~~
 
 ---
 
 ## **Sprint 3: Backend - Cadastro de Ativos**
 **Objetivo:** Implementar APIs para gerenciar ativos.
 1. Criar endpoint para registrar ativos. *(USER_01)*  
-2. Criar endpoint para editar ativos. *(USER_02)*  
+2. Criar endpoint para editar e remover ativos. *(USER_02)*  
 3. Criar endpoint para listar ativos com filtros básicos (classe e banco). *(UI_11)*  
 
 ---
@@ -45,7 +43,7 @@
 
 ## **Sprint 6: Frontend - Interface Básica**
 **Objetivo:** Criar a interface para cadastro e exibição de ativos.
-1. Criar página para cadastro e edição de ativos. *(UI_01, UI_02, UI_03, UI_05)*  
+1. Criar página para cadastro e edição de ativos. *(UI_01, UI_02, UI_03, UI_05)* 
 2. Criar lista de ativos com filtros básicos (classe, banco). *(UI_11)*  
 3. Exibir informações detalhadas de cada ativo (nome, banco, valor inicial, observações). *(UI_01, UI_02, UI_03, UI_04, UI_05)*  
 
@@ -87,8 +85,21 @@
 
 ---
 
-## **Sprint 11: Refinamento e Ajustes Finais**
-**Objetivo:** Garantir que o sistema está pronto para uso pessoal.
-1. Testar todas as funcionalidades de ponta a ponta. *(Sem tag específica - validação geral).*  
-2. Corrigir bugs e ajustar melhorias na interface. *(Sem tag específica - refinamento técnico).*  
-3. Configurar deploy final na plataforma escolhida. *(Sem tag específica - etapa técnica).*  
+## **Sprint 11: Refinamento, Criptografia e Deploy Final**
+**Objetivo:** Garantir que o sistema está seguro, utilizando criptografia e PostgreSQL, e que está pronto para uso pessoal.
+
+1. Implementar a criptografia nos campos sensíveis:  
+   - **Tabela `Ativo`:** `nome`, `banco`, `valor_inicial`. *(BD_03)*  
+   - **Tabela `Operacao`:** `valor` e `tipo` (se necessário). *(BD_03)*
+2. Ajustar o Django Admin para exibir corretamente os campos criptografados. *(BD_03)*  
+3. Migrar o banco de dados de SQLite para PostgreSQL:  
+   - Configurar PostgreSQL localmente e no Render.  
+   - Atualizar o `settings.py` para uso de PostgreSQL com variáveis de ambiente. *(Sem tag específica - etapa técnica).* 
+   - Usar o pgcrypto. *(BD_03)*
+4. Testar todas as funcionalidades do sistema de ponta a ponta para validação:  
+   - Inclusão, edição, visualização e exclusão de dados.  
+   - Certificar-se de que os dados criptografados estão sendo manipulados corretamente. *(Sem tag específica - validação geral).*  
+5. Corrigir bugs e ajustar melhorias na interface. *(Sem tag específica - refinamento técnico).*  
+6. Configurar e realizar o deploy final no Render:  
+   - Garantir que o ambiente de produção utilize PostgreSQL.  
+   - Verificar coleta de arquivos estáticos e funcionalidade total após o deploy. *(Sem tag específica - etapa técnica).*  
