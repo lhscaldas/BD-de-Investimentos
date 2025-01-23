@@ -28,11 +28,11 @@ O sistema também implementa mecanismos de segurança, como autenticação por u
 - Hospedagem: Render.com
 
 ## Requisitos do Projeto
-Os requisitos detalhados do sistema estão disponíveis no arquivo [Requisitos_1v00.md](./Requisitos_1v00.md).  
+Os requisitos detalhados do sistema estão disponíveis no arquivo [Requisitos_1v00.md](./desenvolvimento/Requisitos_1v00.md).  
 Este arquivo contém a descrição completa das funcionalidades, interface, banco de dados e segurança do sistema, organizado de forma clara e objetiva.
 
 ## Sprints do Projeto
-O planejamento detalhado dos sprints está disponível no arquivo [Sprints_1v00.md](./Sprints_1v00.md).  
+O planejamento detalhado dos sprints está disponível no arquivo [Sprints_1v00.md](./desenvolvimento/Sprints_1v00.md).  
 Este documento organiza as etapas de desenvolvimento do sistema em sprints, permitindo um acompanhamento estruturado e incremental.
 
 ## Autor
