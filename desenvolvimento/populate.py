@@ -14,6 +14,9 @@ from investimentos.models import Ativo, Operacao
 nome_dummy = "dummy"
 senha_dummy = "du123456"
 
+# Excluir o usuário 'dummy' se ele já existir
+User.objects.filter(username=nome_dummy).delete()
+
 # Criar ou obter usuário 'dummy'
 user, created = User.objects.get_or_create(
     username=nome_dummy,
@@ -42,7 +45,7 @@ for ativo_data in ativos_data:
         subclasse=ativo_data["subclasse"],
         banco=ativo_data["banco"],
         valor_inicial=ativo_data["valor_inicial"],
-        data_aquisicao=datetime.today().date(),
+        data_aquisicao=datetime(2024, 1, random.randint(1, 31)).date(),
     )
     ativos.append(ativo)
 
@@ -51,33 +54,33 @@ for ativo in ativos:
     operacoes = []
 
     # 2 operações de compra
-    for _ in range(2):
+    for _ in range(4):
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,
             tipo="compra",
             valor=random.randint(100, 5000),
-            data=datetime.today().date() - timedelta(days=random.randint(10, 100)),
+            data=ativo.data_aquisicao + timedelta(days=random.randint(1, 100)),
         ))
 
     # 2 operações de venda
-    for _ in range(2):
+    for _ in range(4):
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,
             tipo="venda",
             valor=random.randint(100, 5000),
-            data=datetime.today().date() - timedelta(days=random.randint(5, 90)),
+            data=ativo.data_aquisicao + timedelta(days=random.randint(1, 100)),
         ))
 
     # 6 operações de atualização (uma por mês)
-    for i in range(6):
+    for i in range(13):
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,
             tipo="atualizacao",
             valor=random.randint(100, 5000),
-            data=(datetime.today() - timedelta(days=30 * (i + 1))).date(),
+            data=ativo.data_aquisicao + timedelta(days=30 * (i + 1)),
         ))
 
     # Salvar todas as operações no banco
