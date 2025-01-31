@@ -3,10 +3,11 @@ from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo, Operacao
 from django.views.generic import TemplateView
+from .forms import AtivoForm  # Importa o formulário personalizado
 
 class AtivoCreateView(LoginRequiredMixin, CreateView):
     model = Ativo
-    fields = ['nome', 'classe', 'subclasse', 'banco', 'valor_inicial', 'data_aquisicao', 'observacoes']
+    form_class = AtivoForm  # Usa o formulário estilizado
     template_name = 'form_ativo.html'
     success_url = '/listar-ativos'
 
@@ -25,9 +26,14 @@ class AtivoListView(LoginRequiredMixin, ListView):
     
 class AtivoUpdateView(LoginRequiredMixin, UpdateView):
     model = Ativo
-    fields = ['nome', 'classe', 'subclasse', 'banco', 'valor_inicial', 'data_aquisicao', 'observacoes']
+    # fields = ['nome', 'classe', 'subclasse', 'banco', 'valor_inicial', 'data_aquisicao', 'observacoes']
+    form_class = AtivoForm  # Usa o formulário estilizado
     template_name = 'form_ativo.html'
     success_url = '/listar-ativos'
+
+    def get_queryset(self):
+        """Garante que o usuário só pode editar seus próprios ativos"""
+        return Ativo.objects.filter(usuario=self.request.user)
 
 class AtivoDeleteView(LoginRequiredMixin, DeleteView):
     model = Ativo

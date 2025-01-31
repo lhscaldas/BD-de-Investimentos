@@ -3,13 +3,18 @@
 {% block content %}
     <div class="container mt-5">
         <h1 class="text-center">{% if object %}Editar Ativo{% else %}Criar Ativo{% endif %}</h1>
-        <form method="post" class="mt-4">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary me-2">{% if object %}Salvar Alterações{% else %}Criar{% endif %}</button>
-                <a href="{% url 'listar_ativos' %}" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
+        <div class="bg-light p-4 rounded shadow-sm">  {# Adiciona fundo cinza e bordas arredondadas #}
+            <form method="post" class="mt-3">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        {% if object %}Salvar Alterações{% else %}Criar{% endif %}
+                    </button>
+                    <a href="{% url 'listar_ativos' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}

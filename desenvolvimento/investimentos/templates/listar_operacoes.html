@@ -7,20 +7,20 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Tipo</th>
-                    <th>Valor</th>
-                    <th>Data</th>
                     <th>Ativo</th>
+                    <th>Tipo</th>
+                    <th>Data</th>
+                    <th>Valor</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for operacao in operacoes %}
                 <tr>
-                    <td>{{ operacao.tipo }}</td>
-                    <td>R$ {{ operacao.valor }}</td>
-                    <td>{{ operacao.data }}</td>
                     <td>{{ operacao.ativo.nome }}</td>
+                    <td>{{ operacao.tipo }}</td>
+                    <td>{{ operacao.data }}</td>
+                    <td>R$ {{ operacao.valor }}</td>
                     <td>
                         <a href="{% url 'editar_operacao' operacao.pk %}" class="btn btn-warning btn-sm">Editar</a>
                         <a href="{% url 'deletar_operacao' operacao.pk %}" class="btn btn-danger btn-sm">Excluir</a>

@@ -34,7 +34,7 @@ class Ativo(models.Model):
         verbose_name_plural = "ativos"  # Nome plural para o admin
 
     def __str__(self):
-        return f"{self.nome} ({self.usuario.username})"
+        return f"{self.nome}"
 
 class Operacao(models.Model):
     TIPO_OPERACAO = [
