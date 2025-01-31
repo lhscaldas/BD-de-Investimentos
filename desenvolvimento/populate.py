@@ -2,6 +2,7 @@ import os
 import django
 import random
 from datetime import datetime, timedelta
+from django.contrib.auth.hashers import make_password
 
 # Configurar o Django para rodar fora do manage.py shell
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sgpi.settings")  # Substitua "sgpi" pelo nome do seu projeto
@@ -10,8 +11,18 @@ django.setup()
 from django.contrib.auth.models import User
 from investimentos.models import Ativo, Operacao
 
+nome_dummy = "dummy"
+senha_dummy = "du123456"
+
 # Criar ou obter usuário 'dummy'
-user, created = User.objects.get_or_create(username="dummy", defaults={"first_name": "Dummy", "last_name": "User"})
+user, created = User.objects.get_or_create(
+    username=nome_dummy,
+    defaults={
+        "first_name": "Dummy",
+        "last_name": "User",
+        "password": make_password(senha_dummy)  # Garante que a senha seja criptografada
+    }
+)
 
 # Lista de ativos para criar
 ativos_data = [
