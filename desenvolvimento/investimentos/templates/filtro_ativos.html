@@ -1,22 +1,47 @@
 <form method="GET" class="mb-4">
     <div class="row">
+        <!-- Filtro por Nome-->
         <div class="col-md-3">
             <label for="nome">Nome do Ativo</label>
             <input type="text" name="nome" class="form-control" value="{{ request.GET.nome }}">
         </div>
+        <!-- Filtro por Classe -->
         <div class="col-md-3">
             <label for="classe">Classe do Ativo</label>
-            <input type="text" name="classe" class="form-control" value="{{ request.GET.classe }}">
+            <select name="classe" class="form-select">
+                <option value="">Todas</option>
+                {% for classe in classes_disponiveis %}
+                    <option value="{{ classe }}" {% if request.GET.classe == classe %}selected{% endif %}>
+                        {{ classe }}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
+        <!-- Filtro por Subclasse -->
         <div class="col-md-3">
             <label for="subclasse">Subclasse do Ativo</label>
-            <input type="text" name="subclasse" class="form-control" value="{{ request.GET.subclasse }}">
+            <select name="subclasse" class="form-select">
+                <option value="">Todas</option>
+                {% for subclasse in subclasses_disponiveis %}
+                    <option value="{{ subclasse }}" {% if request.GET.subclasse == subclasse %}selected{% endif %}>
+                        {{ subclasse }}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
+        <!-- Filtro por Banco -->
         <div class="col-md-3">
             <label for="banco">Banco</label>
-            <input type="text" name="banco" class="form-control" value="{{ request.GET.banco }}">
+            <select name="banco" class="form-select">
+                <option value="">Todos</option>
+                {% for banco in bancos_disponiveis %}
+                    <option value="{{ banco }}" {% if request.GET.banco == banco %}selected{% endif %}>
+                        {{ banco }}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
-    </div>
+        </div>
     <div class="d-flex justify-content-end mt-3">
         <button type="submit" class="btn btn-primary me-2">Filtrar</button>
         <a href="{% url 'listar_ativos' %}" class="btn btn-secondary">Limpar Filtros</a>
