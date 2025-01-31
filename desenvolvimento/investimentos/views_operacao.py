@@ -2,6 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo, Operacao
+from .forms import OperacaoForm
 
 class OperacaoListView(LoginRequiredMixin, ListView):
     model = Operacao
@@ -31,9 +32,13 @@ class OperacaoListView(LoginRequiredMixin, ListView):
 
 class OperacaoCreateView(LoginRequiredMixin, CreateView):
     model = Operacao
-    fields = ['tipo', 'valor', 'data', 'ativo']
+    form_class = OperacaoForm
     template_name = 'form_operacao.html'
     success_url = '/listar-operacoes'
+
+    def form_valid(self, form):
+        form.instance.usuario = self.request.user  # Define o usuário logado
+        return super().form_valid(form)
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
@@ -43,9 +48,13 @@ class OperacaoCreateView(LoginRequiredMixin, CreateView):
 
 class OperacaoUpdateView(LoginRequiredMixin, UpdateView):
     model = Operacao
-    fields = ['tipo', 'valor', 'data']
+    form_class = OperacaoForm
     template_name = 'form_operacao.html'
     success_url = '/listar-operacoes'
+
+    def get_queryset(self):
+        """Garante que o usuário só pode editar as operações dele"""
+        return Operacao.objects.filter(usuario=self.request.user)
 
 class OperacaoDeleteView(LoginRequiredMixin, DeleteView):
     model = Operacao

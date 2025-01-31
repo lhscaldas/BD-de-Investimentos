@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ativo
+from .models import Ativo, Operacao
 
 class AtivoForm(forms.ModelForm):
     class Meta:
@@ -28,3 +28,20 @@ class AtivoForm(forms.ModelForm):
         classe_selecionada = self.instance.classe if self.instance.pk else None
         self.fields['subclasse'].choices = self.subclasses_dict.get(classe_selecionada, [])
 
+
+class OperacaoForm(forms.ModelForm):
+    class Meta:
+        model = Operacao
+        exclude = ['usuario']
+        widgets = {
+            'ativo': forms.Select(attrs={'class': 'form-select'}),
+            'tipo': forms.Select(attrs={'class': 'form-select'}),
+            'valor': forms.NumberInput(attrs={'class': 'form-control'}),
+            'data': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'), 
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['ativo'].queryset = Ativo.objects.filter(usuario=self.instance.usuario)
+        # Reorder fields to have 'ativo' at the top
+        self.fields = {k: self.fields[k] for k in ['ativo', 'tipo', 'valor', 'data']}
