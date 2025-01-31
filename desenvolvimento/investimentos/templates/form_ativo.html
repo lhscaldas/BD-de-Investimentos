@@ -21,7 +21,7 @@
             const subclasseField = document.getElementById("id_subclasse");
     
             // Converte o dicionário do Django para um objeto JavaScript
-            const SUBCLASSES = JSON.parse('{{ subclasses_json|escapejs }}');
+            const SUBCLASSES = JSON.parse('{{ form.subclasses_json|escapejs }}');
     
             console.log("DEBUG: Dicionário de subclasses carregado ->", SUBCLASSES);
     
