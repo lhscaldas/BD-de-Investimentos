@@ -28,6 +28,11 @@ class Ativo(models.Model):
     data_aquisicao = models.DateField(verbose_name="Data de Aquisição")
     observacoes = models.TextField(blank=True, null=True, verbose_name="Observações")
 
+    class Meta:
+        db_table = "ativos"  # Define explicitamente o nome da tabela
+        verbose_name = "ativos"  # Nome singular para o admin
+        verbose_name_plural = "ativos"  # Nome plural para o admin
+
     def __str__(self):
         return f"{self.nome} ({self.usuario.username})"
 
@@ -38,6 +43,7 @@ class Operacao(models.Model):
         ('atualizacao', 'Atualização'),
     ]
 
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuário", null=True)
     tipo = models.CharField(max_length=15, choices=TIPO_OPERACAO)
     valor = models.DecimalField(max_digits=15, decimal_places=2)
     data = models.DateField()
