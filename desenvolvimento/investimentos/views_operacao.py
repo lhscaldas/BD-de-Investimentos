@@ -9,7 +9,25 @@ class OperacaoListView(LoginRequiredMixin, ListView):
     context_object_name = 'operacoes'
 
     def get_queryset(self):
-        return Operacao.objects.filter(ativo__usuario=self.request.user)  # Mostra apenas operações do usuário logado
+        # Mostra apenas operações do usuário logado
+        queryset = Operacao.objects.filter(ativo__usuario=self.request.user)
+
+        ativo_id = self.request.GET.get('ativo')
+        tipo = self.request.GET.get('tipo')
+
+        if ativo_id:
+            queryset = queryset.filter(ativo_id=ativo_id)
+        
+        if tipo:
+            queryset = queryset.filter(tipo=tipo)
+
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        """ Adiciona o TIPO_OPERACAO ao contexto do template """
+        context = super().get_context_data(**kwargs)
+        context['TIPO_OPERACAO'] = self.model.TIPO_OPERACAO  # Passa os choices para o template
+        return context
 
 class OperacaoCreateView(LoginRequiredMixin, CreateView):
     model = Operacao

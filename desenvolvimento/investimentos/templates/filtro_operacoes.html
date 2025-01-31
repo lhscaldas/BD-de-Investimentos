@@ -1,0 +1,33 @@
+<form method="GET" class="mb-4">
+    <div class="row">
+        <!-- Filtro por Ativo -->
+        <div class="col-md-6">
+            <label for="ativo">Ativo</label>
+            <select name="ativo" class="form-select">
+                <option value="">Todos</option>
+                {% for ativo in request.user.ativo_set.all %}
+                    <option value="{{ ativo.id }}" {% if request.GET.ativo == ativo.id|stringformat:"s" %}selected{% endif %}>
+                        {{ ativo.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Filtro por Tipo -->
+        <div class="col-md-6">
+            <label for="tipo">Tipo de Operação</label>
+            <select name="tipo" class="form-select">
+                <option value="">Todos</option>
+                {% for key, value in TIPO_OPERACAO %}
+                    <option value="{{ key }}" {% if request.GET.tipo == key %}selected{% endif %}>
+                        {{ value }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+        <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+        <a href="{% url 'listar_operacoes' %}" class="btn btn-secondary">Limpar Filtros</a>
+    </div>
+</form>

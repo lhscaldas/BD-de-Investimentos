@@ -3,6 +3,9 @@
 {% block content %}
     <div class="container mt-5">
         <h1 class="text-center">Minhas Operações</h1>
+
+        {% include 'filtro_operacoes.html' %}
+
         <a href="{% url 'criar_operacao' %}" class="btn btn-success mb-3">Adicionar Operação</a>
         <table class="table table-striped">
             <thead>
