@@ -1,3 +1,4 @@
 outros
-desenvolvimento/.env
+**/.env
 **/__pycache__/
+**/db.sqlite3
