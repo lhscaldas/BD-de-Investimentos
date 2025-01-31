@@ -3,10 +3,6 @@ from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo, Operacao
 
-################################################
-#                Operações                     #
-################################################
-
 class OperacaoListView(LoginRequiredMixin, ListView):
     model = Operacao
     template_name = 'listar_operacoes.html'

@@ -2,12 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo
-from .forms import AtivoForm
-
-
-################################################
-#                  Ativos                      #
-################################################   
+from .forms import AtivoForm  
 
 class AtivoListView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -15,8 +10,16 @@ class AtivoListView(LoginRequiredMixin, ListView):
     context_object_name = 'ativos'
 
     def get_queryset(self):
-        # Filtra os ativos para mostrar apenas os do usuário logado
-        return Ativo.objects.filter(usuario=self.request.user)
+        # Mostra apenas operações do usuário logado
+        queryset = Ativo.objects.filter(usuario=self.request.user)
+        
+        # Lista de campos que podem ser filtrados
+        filtros_validos = ['nome', 'classe', 'subclasse', 'banco']
+        
+        # Aplica os filtros somente se houver valores preenchidos
+        filtros = {f"{k}__icontains": v for k, v in self.request.GET.items() if v and k in filtros_validos}
+        
+        return queryset.filter(**filtros)
 
 class AtivoCreateView(LoginRequiredMixin, CreateView):
     model = Ativo
@@ -30,7 +33,6 @@ class AtivoCreateView(LoginRequiredMixin, CreateView):
     
 class AtivoUpdateView(LoginRequiredMixin, UpdateView):
     model = Ativo
-    # fields = ['nome', 'classe', 'subclasse', 'banco', 'valor_inicial', 'data_aquisicao', 'observacoes']
     form_class = AtivoForm  # Usa o formulário estilizado
     template_name = 'form_ativo.html'
     success_url = '/listar-ativos'
