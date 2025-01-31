@@ -17,8 +17,8 @@
 ---
 
 ## Funcionalidades para o Usuário
-1. **[USER_01]** O sistema deverá permitir o registro manual de um ativo com todos os seus detalhes iniciais (nome, classe, subclasse, banco, valor inicial, data e observações).
-2. **[USER_02]** O sistema deverá permitir a edição ou remoção de um ativo registrado, incluindo alterações no nome, banco, valor inicial, data de aquisição e observações.
+1. ~~**[USER_01]** O sistema deverá permitir o registro manual de um ativo com todos os seus detalhes iniciais (nome, classe, subclasse, banco, valor inicial, data e observações).~~
+2. ~~**[USER_02]** O sistema deverá permitir a edição ou remoção de um ativo registrado, incluindo alterações no nome, banco, valor inicial, data de aquisição e observações.~~
 3. **[USER_03]** O sistema deverá permitir o registro manual de uma operação (compra, venda ou atualização) para ativos já criados.
 4. **[USER_04]** O sistema deverá permitir o upload de um arquivo CSV para registrar múltiplas operações de compra, venda ou atualização de ativos já criados. O arquivo deverá seguir um formato pré-definido pelo sistema, incluindo os seguintes campos:
    - Nome do ativo.
@@ -26,12 +26,12 @@
    - Valor da operação.
    - Data da operação.
 5. **[USER_05]** O sistema deverá validar o formato do arquivo CSV antes de processar as operações.
-6. **[USER_06]** O sistema deverá permitir que o administrador crie, edite e desative contas de usuários.
-7. **[USER_07]** O sistema deverá implementar autenticação por usuário e senha para acesso ao sistema.
+6. ~~**[USER_06]** O sistema deverá permitir que o administrador crie, edite e desative contas de usuários.~~
+7. ~~**[USER_07]** O sistema deverá implementar autenticação por usuário e senha para acesso ao sistema.~~
 
 ---
 
-## Interface
+## Interface (Resumo)
 1. **[UI_01]** A interface deverá exibir o nome do ativo.
 2. **[UI_02]** A interface deverá exibir a classe e subclasse do ativo.
 3. **[UI_03]** A interface deverá exibir o banco em que o ativo está registrado.
@@ -61,7 +61,7 @@
 
 ---
 
-## Exportação de Dados
+## Exportação de Dados (Do resumo)
 1. **[EXP_01]** O sistema deverá permitir que o usuário exporte os dados atuais para um arquivo CSV, incluindo:
    - Nome dos ativos.
    - Classe dos ativos.
