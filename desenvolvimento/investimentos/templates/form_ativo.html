@@ -17,4 +17,41 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const classeField = document.getElementById("id_classe");
+            const subclasseField = document.getElementById("id_subclasse");
+    
+            // Converte o dicionário do Django para um objeto JavaScript
+            const SUBCLASSES = JSON.parse('{{ subclasses_json|escapejs }}');
+    
+            console.log("DEBUG: Dicionário de subclasses carregado ->", SUBCLASSES);
+    
+            function atualizarSubclasse() {
+                const classeSelecionada = classeField.value;
+                subclasseField.innerHTML = ""; // Limpa as opções anteriores
+    
+                if (SUBCLASSES.hasOwnProperty(classeSelecionada)) {
+                    SUBCLASSES[classeSelecionada].forEach(subclasse => {
+                        const option = document.createElement("option");
+                        option.value = subclasse;
+                        option.textContent = subclasse;
+                        subclasseField.appendChild(option);
+                    });
+                } else {
+                    console.warn(`Nenhuma subclasse encontrada para a classe "${classeSelecionada}"`);
+                }
+            }
+    
+            // Atualiza a subclasse ao mudar a classe
+            classeField.addEventListener("change", atualizarSubclasse);
+    
+            // Garante que a subclasse carregue corretamente ao abrir o formulário
+            atualizarSubclasse();
+        });
+    </script>
+    
+    
+    
 {% endblock %}

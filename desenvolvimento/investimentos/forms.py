@@ -4,16 +4,27 @@ from .models import Ativo
 class AtivoForm(forms.ModelForm):
     class Meta:
         model = Ativo
-        exclude = ['usuario']  # Remove o campo usuario do formulário
+        exclude = ['usuario']
         widgets = {
-            'nome_do_ativo': forms.TextInput(attrs={'class': 'form-control'}),
-            'classe_do_ativo': forms.Select(attrs={'class': 'form-select'}),
-            'subclasse_do_ativo': forms.Select(attrs={'class': 'form-select'}),
+            'nome': forms.TextInput(attrs={'class': 'form-control'}),
+            'classe': forms.Select(attrs={'class': 'form-select', 'id': 'id_classe'}),
+            'subclasse': forms.Select(attrs={'class': 'form-select', 'id': 'id_subclasse'}),
             'banco': forms.TextInput(attrs={'class': 'form-control'}),
             'valor_inicial': forms.NumberInput(attrs={'class': 'form-control'}),
             'data_aquisicao': forms.DateInput(
                 attrs={'class': 'form-control', 'type': 'date'},
-                format='%Y-%m-%d'  # Define o formato correto para exibição
+                format='%Y-%m-%d'
             ),
             'observacoes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Criar um dicionário com as subclasses organizadas por classe
+        self.subclasses_dict = {classe: sublist for classe, sublist in Ativo.SUBCLASSES}
+
+        # Se for edição, carregar as subclasses corretas
+        classe_selecionada = self.instance.classe if self.instance.pk else None
+        self.fields['subclasse'].choices = self.subclasses_dict.get(classe_selecionada, [])
+

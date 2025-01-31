@@ -3,6 +3,7 @@ from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo
 from .forms import AtivoForm  
+import json
 
 class AtivoListView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -43,6 +44,14 @@ class AtivoCreateView(LoginRequiredMixin, CreateView):
         form.instance.usuario = self.request.user  # Define o usuário logado
         return super().form_valid(form)
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Converte SUBCLASSES para um dicionário utilizável no JavaScript
+        subclasses_dict = {classe: [sub[0] for sub in sublist] for classe, sublist in Ativo.SUBCLASSES}
+        context['subclasses_json'] = json.dumps(subclasses_dict)  # Convertendo para JSON
+        return context
+    
 class AtivoUpdateView(LoginRequiredMixin, UpdateView):
     model = Ativo
     form_class = AtivoForm  # Usa o formulário estilizado
@@ -52,6 +61,14 @@ class AtivoUpdateView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         """Garante que o usuário só pode editar seus próprios ativos"""
         return Ativo.objects.filter(usuario=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Converte SUBCLASSES para um dicionário utilizável no JavaScript
+        subclasses_dict = {classe: [sub[0] for sub in sublist] for classe, sublist in Ativo.SUBCLASSES}
+        context['subclasses_json'] = json.dumps(subclasses_dict)  # Convertendo para JSON
+        return context
 
 class AtivoDeleteView(LoginRequiredMixin, DeleteView):
     model = Ativo
