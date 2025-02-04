@@ -36,7 +36,7 @@ class AtivoListView(LoginRequiredMixin, ListView):
         context['bancos_disponiveis'] = usuario_ativos.values_list('banco', flat=True).distinct()
 
         return context
-
+    
 class AtivoCreateView(LoginRequiredMixin, CreateView):
     model = Ativo
     form_class = AtivoForm  # Usa o formulário estilizado
@@ -46,6 +46,26 @@ class AtivoCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.usuario = self.request.user  # Define o usuário logado
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        """Redireciona para a página de origem (next) se existir, senão retorna para listar_ativos"""
+        next_url = self.request.POST.get("next") or self.request.GET.get("next")
+        return next_url if next_url else "/listar-ativos/"
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        SUBCLASSES_POR_CLASSE = {
+            'Renda Fixa': ['CDB', 'Tesouro Direto', 'Fundo de Renda Fixa'],
+            'Renda Variável': ['Ações', 'Fundos de Ações', 'Fundos Multimercado', 'FII', 'Criptomoeda', 'Fundos no Exterior']
+        }
+
+        # Se o formulário tiver um campo classe preenchido, filtra as subclasses disponíveis
+        classe_selecionada = self.request.POST.get("classe") or self.request.GET.get("classe")
+        if classe_selecionada in SUBCLASSES_POR_CLASSE:
+            form.fields['subclasse'].choices = [(sub, sub) for sub in SUBCLASSES_POR_CLASSE[classe_selecionada]]
+
+        return form
     
 class AtivoUpdateView(LoginRequiredMixin, UpdateView):
     model = Ativo

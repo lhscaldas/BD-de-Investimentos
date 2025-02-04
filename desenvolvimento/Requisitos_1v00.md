@@ -46,10 +46,10 @@
 
 ## Interface (Resumo)
 1. **(Sprint+1):**
-   - **[UI_01]** A interface deverá exibir o nome do ativo.
-   - **[UI_02]** A interface deverá exibir a classe e subclasse do ativo.
-   - **[UI_03]** A interface deverá exibir o banco em que o ativo está registrado.
-   - **[UI_04]** A interface deverá exibir o valor atual do ativo, calculado com base nas operações registradas.
+   - ~~**[UI_01]** A interface deverá exibir o nome do ativo.~~
+   - ~~**[UI_02]** A interface deverá exibir a classe e subclasse do ativo.~~
+   - ~~**[UI_03]** A interface deverá exibir o banco em que o ativo está registrado.~~
+   - ~~**[UI_04]** A interface deverá exibir o valor atual do ativo, calculado com base nas operações registradas.~~
    - **[UI_05]** A interface deverá exibir as observações relacionadas ao ativo, quando fornecidas.
    - **[UI_06]** A interface deverá incluir botões para:
       - Registrar novos ativos.

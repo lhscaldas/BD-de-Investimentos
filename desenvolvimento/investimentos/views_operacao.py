@@ -61,22 +61,42 @@ class OperacaoListView(LoginRequiredMixin, ListView):
             .distinct()
         )
         return context
+    
+import logging
+logger = logging.getLogger(__name__)
 
 class OperacaoCreateView(LoginRequiredMixin, CreateView):
     model = Operacao
     form_class = OperacaoForm
     template_name = 'form_operacao.html'
-    success_url = '/listar-operacoes'
-
+    
     def form_valid(self, form):
         form.instance.usuario = self.request.user  # Define o usuário logado
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        return response
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
         # Filtrar ativos apenas do usuário logado
         form.fields['ativo'].queryset = Ativo.objects.filter(usuario=self.request.user)
         return form
+    
+    def get_success_url(self):
+        """Redireciona para a página de origem (next) se existir, senão retorna para listar_operacoes"""
+        next_url = self.request.POST.get("next") or self.request.GET.get("next")
+
+        # Depuração: Verificar o que está sendo capturado
+        print(f"DEBUG: Redirecionando para: {next_url}")
+
+        return next_url if next_url else "/listar-operacoes/"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        ativo_id = self.request.GET.get("ativo")  # Obtém o ID do ativo da URL
+        if ativo_id:
+            kwargs['ativo_id'] = ativo_id  # Passa para o form
+        return kwargs
+
 
 class OperacaoUpdateView(LoginRequiredMixin, UpdateView):
     model = Operacao

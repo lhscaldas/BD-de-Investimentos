@@ -9,7 +9,8 @@
                 {{ form.as_p }}
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary me-2">{% if object %}Salvar Alterações{% else %}Criar{% endif %}</button>
-                    <a href="{% url 'listar_ativos' %}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'listar_ativos' %}{% endif %}" 
+   class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>
@@ -20,31 +21,27 @@
             const classeField = document.getElementById("id_classe");
             const subclasseField = document.getElementById("id_subclasse");
     
-            // Converte o dicionário do Django para um objeto JavaScript
-            const SUBCLASSES = JSON.parse('{{ form.subclasses_json|escapejs }}');
-    
-            console.log("DEBUG: Dicionário de subclasses carregado ->", SUBCLASSES);
+            // Mapeia as subclasses para cada classe
+            const SUBCLASSES_POR_CLASSE = {
+                "Renda Fixa": ["CDB", "Tesouro Direto", "Fundo de Renda Fixa"],
+                "Renda Variável": ["Ações", "Fundos de Ações", "Fundos Multimercado", "FII", "Criptomoeda", "Fundos no Exterior"]
+            };
     
             function atualizarSubclasse() {
                 const classeSelecionada = classeField.value;
-                subclasseField.innerHTML = ""; // Limpa as opções anteriores
+                subclasseField.innerHTML = "";  // Limpa opções anteriores
     
-                if (SUBCLASSES.hasOwnProperty(classeSelecionada)) {
-                    SUBCLASSES[classeSelecionada].forEach(subclasse => {
+                if (SUBCLASSES_POR_CLASSE[classeSelecionada]) {
+                    SUBCLASSES_POR_CLASSE[classeSelecionada].forEach(subclasse => {
                         const option = document.createElement("option");
                         option.value = subclasse;
                         option.textContent = subclasse;
                         subclasseField.appendChild(option);
                     });
-                } else {
-                    console.warn(`Nenhuma subclasse encontrada para a classe "${classeSelecionada}"`);
                 }
             }
     
-            // Atualiza a subclasse ao mudar a classe
             classeField.addEventListener("change", atualizarSubclasse);
-    
-            // Garante que a subclasse carregue corretamente ao abrir o formulário
             atualizarSubclasse();
         });
     </script>

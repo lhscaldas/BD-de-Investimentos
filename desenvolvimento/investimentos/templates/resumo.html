@@ -15,46 +15,61 @@
         <!-- Tabela de Ativos com Última Atualização -->
         <div class="container mt-4">
             <h3 class="text-center">Resumo dos Ativos</h3>
+            {% include 'resumo_filtro.html' %}
+
+            <div class="text-start">
+                <a href="{% url 'criar_ativo' %}?next={{ request.get_full_path }}" 
+                    class="btn btn-success mb-3">
+                        Adicionar Ativo
+                </a>
+            </div>
+            
+
             <table class="table table-striped mt-3">
                 <thead>
                     <tr>
                         <th>Nome</th>
+                        <th>Ações</th>
+                        <th>Observações</th>
                         <th>Classe</th>
                         <th>Subclasse</th>
                         <th>Banco</th>
                         <th>Última Atualização</th>
                         <th>Valor Atualizado</th>
+
                     </tr>
                 </thead>
                 <tbody>
                     {% for ativo in ativos %}
                     <tr>
                         <td>{{ ativo.nome }}</td>
+                        <td>
+                            <a href="{% url 'criar_operacao' %}?ativo={{ ativo.id }}&next={{ request.get_full_path }}" 
+                            class="btn btn-primary btn-sm">
+                                Lançar Operação
+                            </a>
+                        </td>
+                        <td>{{ ativo.observacoes }}</td>
                         <td>{{ ativo.classe }}</td>
                         <td>{{ ativo.subclasse }}</td>
                         <td>{{ ativo.banco }}</td>
                         <td>
                             {% if ativo.ultima_atualizacao %}
-                                {{ ativo.ultima_atualizacao.data }}
+                                {{ ativo.ultima_atualizacao }}
                             {% else %}
                                 <span class="text-muted">Sem atualização</span>
                             {% endif %}
                         </td>
-                        <td>
-                            {% if ativo.ultima_atualizacao %}
-                                R$ {{ ativo.ultima_atualizacao.valor }}
-                            {% else %}
-                                <span class="text-muted">N/A</span>
-                            {% endif %}
-                        </td>
+                        <td>R$ {{ ativo.valor_atualizado|floatformat:2 }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">Nenhum ativo encontrado.</td>
+                        <td colspan="7" class="text-center">Nenhum ativo encontrado.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            
         </div>
 
     {% else %}

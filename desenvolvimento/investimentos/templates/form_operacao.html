@@ -3,15 +3,26 @@
 {% block content %}
     <div class="container mt-5">
         <h1 class="text-center">{% if object %}Editar Operação{% else %}Criar Operação{% endif %}</h1>
-        <div class="bg-light p-4 rounded shadow-sm">  {# Adiciona fundo cinza e bordas arredondadas #}
-            <form method="post" class="mt-4">
+        <div class="bg-light p-4 rounded shadow-sm">
+
+            <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
+            
+                <!-- Campo oculto para manter o 'next' -->
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+            
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary me-2">{% if object %}Salvar Alterações{% else %}Criar{% endif %}</button>
-                    <a href="{% url 'listar_operacoes' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary me-2">
+                        {% if object %}Salvar Alterações{% else %}Criar{% endif %}
+                    </button>
+                    <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}{% url 'listar_operacoes' %}{% endif %}" 
+   class="btn btn-secondary">Cancelar</a>
+
+
                 </div>
             </form>
+            
         </div>
     </div>
 {% endblock %}

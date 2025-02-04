@@ -8,20 +8,16 @@ class Ativo(models.Model):
     ]
 
     SUBCLASSES = [
-    ('Renda Fixa', [
-        ('CDB', 'CDB'),
-        ('Tesouro Direto', 'Tesouro Direto'),
-        ('Fundo de Renda Fixa', 'Fundo de Renda Fixa'),
-    ]),
-    ('Renda Variável', [
-        ('Ações', 'Ações'),
-        ('Fundos de Ações', 'Fundos de Ações'),
-        ('Fundos Multimercado', 'Fundos Multimercado'),
-        ('FII', 'FII'),
-        ('Criptomoeda', 'Criptomoeda'),
-        ('Fundos no Exterior', 'Fundos no Exterior'),
-    ])
-]
+    ('CDB', 'CDB'),
+    ('Tesouro Direto', 'Tesouro Direto'),
+    ('Fundo de Renda Fixa', 'Fundo de Renda Fixa'),
+    ('Ações', 'Ações'),
+    ('Fundos de Ações', 'Fundos de Ações'),
+    ('Fundos Multimercado', 'Fundos Multimercado'),
+    ('FII', 'FII'),
+    ('Criptomoeda', 'Criptomoeda'),
+    ('Fundos no Exterior', 'Fundos no Exterior'),
+    ]
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuário")
     nome = models.CharField(max_length=100, verbose_name="Nome do Ativo")
