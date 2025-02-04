@@ -10,6 +10,23 @@
             {% endfor %}
         {% endif %}
 
+        <!-- Instruções para formatação correta do CSV -->
+        <div class="alert alert-info">
+            <h5>Instruções para Importação</h5>
+            <p>O arquivo CSV deve seguir a estrutura abaixo:</p>
+            <pre>
+Nome;Classe;Subclasse;Banco;Valor Inicial;Data de Aquisição;Observações
+Tesouro IPCA+;Renda Fixa;Tesouro Direto;Banco do Brasil;1000.00;2024-01-02;
+Ações Petrobras;Renda Variável;Ações;XP Investimentos;5000.00;2024-01-02;
+            </pre>
+            <ul>
+                <li>Os valores devem ser separados por **ponto e vírgula (`;`)**.</li>
+                <li>A **data de aquisição** deve estar no formato <code>YYYY-MM-DD</code>.</li>
+                <li>O **valor inicial** deve ser numérico, sem o símbolo "R$" e usando '.' para separar as casas decimais.</li>
+                <li>O campo **Observações** é opcional.</li>
+            </ul>
+        </div>
+
         <form method="post" enctype="multipart/form-data" class="mt-4">
             {% csrf_token %}
             {{ form.as_p }}

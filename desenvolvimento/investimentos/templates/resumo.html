@@ -4,13 +4,59 @@
 <div class="text-center">
     <h1>Bem-vindo ao SGPI</h1>
     {% if user.is_authenticated %}
-    <p class="lead">
-        {% if user.first_name %}
-            Olá, {{ user.first_name }}!
-        {% else %}
-            Olá, {{ user.username }}!
-        {% endif %}
-    </p>    
+        <p class="lead">
+            {% if user.first_name %}
+                Olá, {{ user.first_name }}!
+            {% else %}
+                Olá, {{ user.username }}!
+            {% endif %}
+        </p>
+
+        <!-- Tabela de Ativos com Última Atualização -->
+        <div class="container mt-4">
+            <h3 class="text-center">Resumo dos Ativos</h3>
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Classe</th>
+                        <th>Subclasse</th>
+                        <th>Banco</th>
+                        <th>Última Atualização</th>
+                        <th>Valor Atualizado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ativo in ativos %}
+                    <tr>
+                        <td>{{ ativo.nome }}</td>
+                        <td>{{ ativo.classe }}</td>
+                        <td>{{ ativo.subclasse }}</td>
+                        <td>{{ ativo.banco }}</td>
+                        <td>
+                            {% if ativo.ultima_atualizacao %}
+                                {{ ativo.ultima_atualizacao.data }}
+                            {% else %}
+                                <span class="text-muted">Sem atualização</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ativo.ultima_atualizacao %}
+                                R$ {{ ativo.ultima_atualizacao.valor }}
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">Nenhum ativo encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
     {% else %}
         <p class="lead">Faça login para acessar suas informações.</p>
     {% endif %}

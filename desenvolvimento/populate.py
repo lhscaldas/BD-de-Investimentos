@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth.hashers import make_password
 
 # Configurar o Django para rodar fora do manage.py shell
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sgpi.settings")  # Substitua "sgpi" pelo nome do seu projeto
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sgpi.settings")  
 django.setup()
 
 from django.contrib.auth.models import User
@@ -54,9 +54,30 @@ for ativo in ativos:
     operacoes = []
     valor_atual = ativo.valor_inicial
 
-    # 2 operações de compra
+    # Parâmetros de variação por classe
+    if ativo.classe == "Renda Fixa":
+        crescimento_anual = 0.06  # Crescimento médio de 6% ao ano
+        variacao_mensal = (crescimento_anual / 12)  # Crescimento constante por mês
+        volatilidade = 0.01  # Pouca variação
+
+    elif ativo.subclasse in ["Ações", "FII"]:
+        crescimento_anual = 0.10  # Crescimento médio de 10% ao ano
+        variacao_mensal = (crescimento_anual / 12)
+        volatilidade = 0.05  # Oscilação moderada
+
+    elif ativo.subclasse == "Criptomoeda":
+        crescimento_anual = 0.20  # Expectativa de maior crescimento (20% ao ano)
+        variacao_mensal = (crescimento_anual / 12)
+        volatilidade = 0.15  # Alta volatilidade
+
+    else:
+        crescimento_anual = 0.08
+        variacao_mensal = (crescimento_anual / 12)
+        volatilidade = 0.03  # Default para outros ativos
+
+    # 4 operações de compra
     for _ in range(4):
-        valor = valor_atual + random.uniform(-0.1, 0.3) * valor_atual
+        valor = valor_atual * (1 + variacao_mensal + random.uniform(-volatilidade, volatilidade))
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,
@@ -66,9 +87,9 @@ for ativo in ativos:
         ))
         valor_atual = valor
 
-    # 2 operações de venda
+    # 4 operações de venda
     for _ in range(4):
-        valor = valor_atual + random.uniform(-0.3, 0.1) * valor_atual
+        valor = valor_atual * (1 - variacao_mensal + random.uniform(-volatilidade, volatilidade))
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,
@@ -78,9 +99,9 @@ for ativo in ativos:
         ))
         valor_atual = valor
 
-    # 6 operações de atualização (uma por mês)
-    for i in range(13):
-        valor = valor_atual + random.uniform(-0.05, 0.05) * valor_atual
+    # 12 operações de atualização (uma por mês)
+    for i in range(12):
+        valor = valor_atual * (1 + variacao_mensal + random.uniform(-volatilidade, volatilidade))
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,

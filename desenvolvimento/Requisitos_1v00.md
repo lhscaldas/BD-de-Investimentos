@@ -25,21 +25,20 @@
 - ~~**[USER_02]** O sistema deverá permitir a edição ou remoção de um ativo registrado, incluindo alterações no nome, banco, valor inicial, data de aquisição e observações.~~
 - ~~**[USER_03]** O sistema deverá permitir o registro manual de uma operação (compra, venda ou atualização) para ativos já criados.~~
 
-1. **(Sprint+0):**
-   -  **[USER_04]** O sistema deverá permitir o upload de um arquivo CSV para registrar múltiplas operações de compra, venda ou atualização de ativos já criados. O arquivo deverá seguir um formato pré-definido pelo sistema, incluindo os seguintes campos:
-      - Nome do ativo.
-      - Tipo de operação (compra, venda ou atualização).
-      - Valor da operação.
-      - Data da operação.
-   -  **[USER_05]** O sistema deverá permitir o upload de um arquivo CSV para registrar múltiplas criações de ativos. O arquivo deverá seguir um formato pré-definido pelo sistema, incluindo os seguintes campos:
-      - Nome do ativo.
-      - Classe e subclasse.
-      - Banco em que está registrado.
-      - Valor inicial.
-      - Data de aquisição inicial.
-      - Observações opcionais.
+-  ~~**[USER_04]** O sistema deverá permitir o upload de um arquivo CSV para registrar múltiplas operações de compra, venda ou atualização de ativos já criados. O arquivo deverá seguir um formato pré-definido pelo sistema, incluindo os seguintes campos:~~
+   - Nome do ativo.
+   - Tipo de operação (compra, venda ou atualização).
+   - Valor da operação.
+   - Data da operação.
+-  ~~**[USER_05]** O sistema deverá permitir o upload de um arquivo CSV para registrar múltiplas criações de ativos. O arquivo deverá seguir um formato pré-definido pelo sistema, incluindo os seguintes campos:~~
+   - Nome do ativo.
+   - Classe e subclasse.
+   - Banco em que está registrado.
+   - Valor inicial.
+   - Data de aquisição inicial.
+   - Observações opcionais.
 
-   - **[USER_06]** O sistema deverá validar o formato dos arquivos de CSV antes de processar as operações.
+- ~~**[USER_06]** O sistema deverá validar o formato dos arquivos de CSV antes de processar as operações.~~
 - ~~**[USER_07]** O sistema deverá permitir que o administrador crie, edite e desative contas de usuários.~~
 - ~~**[USER_08]** O sistema deverá implementar autenticação por usuário e senha para acesso ao sistema.~~
 

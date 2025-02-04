@@ -10,6 +10,25 @@
             {% endfor %}
         {% endif %}
 
+        <!-- Instruções para formatação correta do CSV -->
+        <div class="alert alert-info">
+            <h5>Instruções para Importação</h5>
+            <p>O arquivo CSV deve seguir a estrutura abaixo:</p>
+            <pre>
+Ativo;Tipo;Data;Valor
+Tesouro IPCA+;compra;2024-03-05;1245.54
+Ações Petrobras;venda;2024-02-14;8972.67
+Criptomoeda Bitcoin;atualizacao;2024-02-24;23547.60
+            </pre>
+            <ul>
+                <li>Os valores devem ser separados por **ponto e vírgula (`;`)**.</li>
+                <li>A **data** deve estar no formato <code>YYYY-MM-DD</code>.</li>
+                <li>O **valor** deve ser numérico, sem o símbolo "R$" e usando '.' para separar as casas decimais.</li>
+                <li>O nome do **ativo** deve corresponder exatamente ao nome cadastrado no sistema.</li>
+                <li>Os tipos de operação permitidos são: <code>compra</code>, <code>venda</code> e <code>atualizacao</code>.</li>
+            </ul>
+        </div>
+
         <form method="post" enctype="multipart/form-data" class="mt-4">
             {% csrf_token %}
             {{ form.as_p }}
