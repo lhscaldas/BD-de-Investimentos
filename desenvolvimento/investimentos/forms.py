@@ -1,23 +1,5 @@
 from django import forms
-from .models import Ativo, Operacao
-
-SUBCLASSES = [
-    ('CDB', 'CDB'),
-    ('Tesouro Direto', 'Tesouro Direto'),
-    ('Fundo de Renda Fixa', 'Fundo de Renda Fixa'),
-    ('Ações', 'Ações'),
-    ('Fundos de Ações', 'Fundos de Ações'),
-    ('Fundos Multimercado', 'Fundos Multimercado'),
-    ('FII', 'FII'),
-    ('Criptomoeda', 'Criptomoeda'),
-    ('Fundos no Exterior', 'Fundos no Exterior'),
-    ]
-
-# Mapeia as subclasses para cada classe
-SUBCLASSES_POR_CLASSE = {
-    'Renda Fixa': ['CDB', 'Tesouro Direto', 'Fundo de Renda Fixa'],
-    'Renda Variável': ['Ações', 'Fundos de Ações', 'Fundos Multimercado', 'FII', 'Criptomoeda', 'Fundos no Exterior']
-}
+from .models import Ativo, Operacao, SUBCLASSES, SUBCLASSES_POR_CLASSE
 
 class AtivoForm(forms.ModelForm):
     class Meta:
@@ -36,13 +18,12 @@ class AtivoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Se a classe foi enviada no formulário, filtra as subclasses disponíveis
         if 'classe' in self.data:
             classe_selecionada = self.data.get('classe')
             subclasses_filtradas = SUBCLASSES_POR_CLASSE.get(classe_selecionada, [])
             self.fields['subclasse'].choices = [(sub, sub) for sub in subclasses_filtradas]
         else:
-            self.fields['subclasse'].choices = SUBCLASSES  # Exibe todas as opções por padrão
+            self.fields['subclasse'].choices = SUBCLASSES
 
 
 class OperacaoForm(forms.ModelForm):

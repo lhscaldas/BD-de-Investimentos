@@ -1,24 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+CLASSES_ATIVO = [
+    ('Renda Fixa', 'Renda Fixa'),
+    ('Renda Variável', 'Renda Variável'),
+]
+
+SUBCLASSES_POR_CLASSE = {
+    'Renda Fixa': ['CDB', 'Tesouro Direto', 'Fundo de Renda Fixa'],
+    'Renda Variável': ['Ações', 'Fundos de Ações', 'Fundos Multimercado', 'FII', 'Criptomoeda', 'Fundos no Exterior'],
+}
+
+# Gerar SUBCLASSES automaticamente a partir de SUBCLASSES_POR_CLASSE
+SUBCLASSES = [(subclasse, subclasse) for _, sub_classes in SUBCLASSES_POR_CLASSE.items() for subclasse in sub_classes]
+
 class Ativo(models.Model):
-    CLASSES_ATIVO = [
-        ('Renda Fixa', 'Renda Fixa'),
-        ('Renda Variável', 'Renda Variável'),
-    ]
-
-    SUBCLASSES = [
-    ('CDB', 'CDB'),
-    ('Tesouro Direto', 'Tesouro Direto'),
-    ('Fundo de Renda Fixa', 'Fundo de Renda Fixa'),
-    ('Ações', 'Ações'),
-    ('Fundos de Ações', 'Fundos de Ações'),
-    ('Fundos Multimercado', 'Fundos Multimercado'),
-    ('FII', 'FII'),
-    ('Criptomoeda', 'Criptomoeda'),
-    ('Fundos no Exterior', 'Fundos no Exterior'),
-    ]
-
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuário")
     nome = models.CharField(max_length=100, verbose_name="Nome do Ativo")
     classe = models.CharField(max_length=20, choices=CLASSES_ATIVO, verbose_name="Classe do Ativo")

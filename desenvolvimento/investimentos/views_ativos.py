@@ -1,12 +1,13 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Ativo
+from .models import Ativo, SUBCLASSES_POR_CLASSE
 from .forms import AtivoForm, UploadCSVForm
 from django.contrib import messages
 from django.shortcuts import redirect
 import csv
 import io
+import json
 
 class AtivoListView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -46,26 +47,31 @@ class AtivoCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.usuario = self.request.user  # Define o usuário logado
         return super().form_valid(form)
-    
+
     def get_success_url(self):
         """Redireciona para a página de origem (next) se existir, senão retorna para listar_ativos"""
         next_url = self.request.POST.get("next") or self.request.GET.get("next")
         return next_url if next_url else "/listar-ativos/"
-    
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
 
-        SUBCLASSES_POR_CLASSE = {
-            'Renda Fixa': ['CDB', 'Tesouro Direto', 'Fundo de Renda Fixa'],
-            'Renda Variável': ['Ações', 'Fundos de Ações', 'Fundos Multimercado', 'FII', 'Criptomoeda', 'Fundos no Exterior']
-        }
-
-        # Se o formulário tiver um campo classe preenchido, filtra as subclasses disponíveis
+        # Obtém a classe selecionada no formulário (POST ou GET)
         classe_selecionada = self.request.POST.get("classe") or self.request.GET.get("classe")
+        
+        # Se houver uma classe selecionada, filtra as subclasses disponíveis
         if classe_selecionada in SUBCLASSES_POR_CLASSE:
             form.fields['subclasse'].choices = [(sub, sub) for sub in SUBCLASSES_POR_CLASSE[classe_selecionada]]
+        else:
+            form.fields['subclasse'].choices = [(sub, sub) for sub_list in SUBCLASSES_POR_CLASSE.values() for sub in sub_list]
 
         return form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Converte o dicionário para JSON e passa para o template
+        context['subclasses_por_classe_json'] = json.dumps(SUBCLASSES_POR_CLASSE)
+        return context
     
 class AtivoUpdateView(LoginRequiredMixin, UpdateView):
     model = Ativo
@@ -76,6 +82,26 @@ class AtivoUpdateView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         """Garante que o usuário só pode editar seus próprios ativos"""
         return Ativo.objects.filter(usuario=self.request.user)
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        # Obtém a classe do ativo que está sendo editado
+        classe_selecionada = self.object.classe
+
+        # Se houver uma classe selecionada, filtra as subclasses disponíveis
+        if classe_selecionada in SUBCLASSES_POR_CLASSE:
+            form.fields['subclasse'].choices = [(sub, sub) for sub in SUBCLASSES_POR_CLASSE[classe_selecionada]]
+        else:
+            form.fields['subclasse'].choices = [(sub, sub) for sub_list in SUBCLASSES_POR_CLASSE.values() for sub in sub_list]
+
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Converte o dicionário para JSON e passa para o template
+        context['subclasses_por_classe_json'] = json.dumps(SUBCLASSES_POR_CLASSE)
+        return context
 
 class AtivoDeleteView(LoginRequiredMixin, DeleteView):
     model = Ativo
