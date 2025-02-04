@@ -53,8 +53,8 @@
    - **[UI_04]** A interface deverá exibir o valor atual do ativo, calculado com base nas operações registradas.
    - **[UI_05]** A interface deverá exibir as observações relacionadas ao ativo, quando fornecidas.
    - **[UI_06]** A interface deverá incluir botões para:
-    - Registrar novos ativos.
-    - Registrar novas operações (compra, venda ou atualização) para ativos existentes.
+      - Registrar novos ativos.
+      - Registrar novas operações (compra, venda ou atualização) para ativos existentes.
 
 2. **(Sprint+2):**
    - **[UI_07]** A interface deverá permitir filtros por:

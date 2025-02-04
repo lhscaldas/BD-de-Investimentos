@@ -30,7 +30,7 @@ class Ativo(models.Model):
     banco = models.CharField(max_length=50, verbose_name="Banco")
     valor_inicial = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Valor Inicial")
     data_aquisicao = models.DateField(verbose_name="Data de Aquisição")
-    observacoes = models.TextField(blank=True, null=True, verbose_name="Observações")
+    observacoes = models.TextField(blank=True, null=True, default="", verbose_name="Observações")
 
     class Meta:
         db_table = "ativos"  # Define explicitamente o nome da tabela

@@ -52,36 +52,43 @@ for ativo_data in ativos_data:
 # Criar operações para cada ativo
 for ativo in ativos:
     operacoes = []
+    valor_atual = ativo.valor_inicial
 
     # 2 operações de compra
     for _ in range(4):
+        valor = valor_atual + random.uniform(-0.1, 0.3) * valor_atual
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,
             tipo="compra",
-            valor=random.randint(100, 5000),
+            valor=valor,
             data=ativo.data_aquisicao + timedelta(days=random.randint(1, 100)),
         ))
+        valor_atual = valor
 
     # 2 operações de venda
     for _ in range(4):
+        valor = valor_atual + random.uniform(-0.3, 0.1) * valor_atual
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,
             tipo="venda",
-            valor=random.randint(100, 5000),
+            valor=valor,
             data=ativo.data_aquisicao + timedelta(days=random.randint(1, 100)),
         ))
+        valor_atual = valor
 
     # 6 operações de atualização (uma por mês)
     for i in range(13):
+        valor = valor_atual + random.uniform(-0.05, 0.05) * valor_atual
         operacoes.append(Operacao(
             usuario=user,
             ativo=ativo,
             tipo="atualizacao",
-            valor=random.randint(100, 5000),
+            valor=valor,
             data=ativo.data_aquisicao + timedelta(days=30 * (i + 1)),
         ))
+        valor_atual = valor
 
     # Salvar todas as operações no banco
     Operacao.objects.bulk_create(operacoes)

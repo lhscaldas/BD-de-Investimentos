@@ -47,3 +47,6 @@ class OperacaoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['ativo'].queryset = Ativo.objects.filter(usuario=self.instance.usuario)
         self.fields = {k: self.fields[k] for k in ['ativo', 'tipo', 'valor', 'data']}
+
+class UploadCSVForm(forms.Form):
+    csv_file = forms.FileField(label="Selecione um arquivo CSV")

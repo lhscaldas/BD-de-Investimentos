@@ -1,8 +1,12 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo, Operacao
-from .forms import OperacaoForm
+from .forms import OperacaoForm, UploadCSVForm
+from django.contrib import messages
+from django.shortcuts import redirect
+import csv
+import io
 
 class OperacaoListView(LoginRequiredMixin, ListView):
     model = Operacao
@@ -60,3 +64,47 @@ class OperacaoDeleteView(LoginRequiredMixin, DeleteView):
     model = Operacao
     template_name = 'deletar_operacao.html'
     success_url = '/listar-operacoes'
+
+class ImportarOperacoesView(LoginRequiredMixin, FormView):
+    template_name = "importar_operacoes.html"
+    form_class = UploadCSVForm
+    success_url = '/listar-operacoes'
+
+    def form_valid(self, form):
+        csv_file = self.request.FILES.get("csv_file")
+
+        if not csv_file.name.endswith(".csv"):
+            messages.error(self.request, "O arquivo deve estar no formato CSV.")
+            return redirect("importar_operacoes")
+
+        try:
+            # Lê e processa o CSV
+            decoded_file = csv_file.read().decode("utf-8")
+            reader = csv.DictReader(io.StringIO(decoded_file), delimiter=";")
+
+            for row in reader:
+                ativo_nome = row["Ativo"]
+                tipo = row["Tipo"]
+                data = row["Data"]
+                valor = float(row["Valor"].replace("R$", "").replace(",", ".").strip())
+
+                # Verifica se o ativo existe
+                ativo = Ativo.objects.filter(nome=ativo_nome, usuario=self.request.user).first()
+                if not ativo:
+                    messages.warning(self.request, f"Ativo '{ativo_nome}' não encontrado. Operação ignorada.")
+                    continue  # Pula esta linha se o ativo não for encontrado
+
+                # Criar a operação no banco de dados
+                Operacao.objects.create(
+                    usuario=self.request.user,
+                    ativo=ativo,
+                    tipo=tipo,
+                    data=data,
+                    valor=valor
+                )
+
+            messages.success(self.request, "Operações importadas com sucesso!")
+        except Exception as e:
+            messages.error(self.request, f"Erro ao processar o CSV: {e}")
+
+        return super().form_valid(form)

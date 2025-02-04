@@ -1,9 +1,12 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo
-from .forms import AtivoForm  
-import json
+from .forms import AtivoForm, UploadCSVForm
+from django.contrib import messages
+from django.shortcuts import redirect
+import csv
+import io
 
 class AtivoListView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -58,3 +61,45 @@ class AtivoDeleteView(LoginRequiredMixin, DeleteView):
     model = Ativo
     template_name = 'deletar_ativo.html'
     success_url = '/listar-ativos'  # Redireciona após a exclusão
+
+class ImportarAtivosView(LoginRequiredMixin, FormView):
+    template_name = "importar_ativos.html"
+    form_class = UploadCSVForm
+    success_url = "/listar-ativos/"
+
+    def form_valid(self, form):
+        csv_file = self.request.FILES.get("csv_file")
+
+        if not csv_file.name.endswith(".csv"):
+            messages.error(self.request, "O arquivo deve estar no formato CSV.")
+            return redirect("importar_ativos")
+
+        try:
+            # Lê e processa o CSV
+            decoded_file = csv_file.read().decode("utf-8")
+            reader = csv.DictReader(io.StringIO(decoded_file), delimiter=";")
+
+            for row in reader:
+                nome = row["Nome"]
+                classe = row["Classe"]
+                subclasse = row["Subclasse"]
+                banco = row["Banco"]
+                valor_inicial = float(row["Valor Inicial"].replace("R$", "").replace(",", ".").strip())
+                data_aquisicao = row["Data de Aquisição"]
+
+                # Criar o ativo no banco de dados
+                Ativo.objects.create(
+                    usuario=self.request.user,
+                    nome=nome,
+                    classe=classe,
+                    subclasse=subclasse,
+                    banco=banco,
+                    valor_inicial=valor_inicial,
+                    data_aquisicao=data_aquisicao
+                )
+
+            messages.success(self.request, "Ativos importados com sucesso!")
+        except Exception as e:
+            messages.error(self.request, f"Erro ao processar o CSV: {e}")
+
+        return super().form_valid(form)
