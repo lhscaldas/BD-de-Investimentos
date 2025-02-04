@@ -19,19 +19,47 @@ class OperacaoListView(LoginRequiredMixin, ListView):
 
         ativo_id = self.request.GET.get('ativo')
         tipo = self.request.GET.get('tipo')
+        classe = self.request.GET.get("classe")
+        subclasse = self.request.GET.get("subclasse")
+        banco = self.request.GET.get("banco")
 
         if ativo_id:
             queryset = queryset.filter(ativo_id=ativo_id)
         
         if tipo:
             queryset = queryset.filter(tipo=tipo)
+    
+        if classe:
+            queryset = queryset.filter(ativo__classe=classe)
+
+        if subclasse:
+            queryset = queryset.filter(ativo__subclasse=subclasse)
+
+        if banco:
+            queryset = queryset.filter(ativo__banco=banco)
+
 
         return queryset
     
     def get_context_data(self, **kwargs):
         """ Adiciona o TIPO_OPERACAO ao contexto do template """
         context = super().get_context_data(**kwargs)
-        context['TIPO_OPERACAO'] = self.model.TIPO_OPERACAO  # Passa os choices para o template
+        context['TIPO_OPERACAO'] = self.model.TIPO_OPERACAO
+        context["classes"] = (
+            Ativo.objects.filter(operacoes__usuario=self.request.user)
+            .values_list("classe", flat=True)
+            .distinct()
+        )
+        context["subclasses"] = (
+            Ativo.objects.filter(operacoes__usuario=self.request.user)
+            .values_list("subclasse", flat=True)
+            .distinct()
+        )
+        context["bancos"] = (
+            Ativo.objects.filter(operacoes__usuario=self.request.user)
+            .values_list("banco", flat=True)
+            .distinct()
+        )
         return context
 
 class OperacaoCreateView(LoginRequiredMixin, CreateView):
