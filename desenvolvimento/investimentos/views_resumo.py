@@ -54,7 +54,7 @@ class ResumoView(LoginRequiredMixin, ListView):
             # Obtém os valores de referência e suas datas
             valor_1m, data_1m = get_valor_referencia(ativo, 1 / 12)  # 1 mês ≈ 1/12 ano
             valor_1a, data_1a = get_valor_referencia(ativo, 1)
-            valor_3a, data_3a = get_valor_referencia(ativo, 3)
+            valor_inicial = ativo.valor_inicial
 
             # Ajustar valores com operações de compra/venda entre a data de referência e a última atualização
             def ajustar_valor_com_operacoes(ativo, valor_base, data_base, ultima_data):
@@ -72,24 +72,22 @@ class ResumoView(LoginRequiredMixin, ListView):
             # Ajustar os valores de referência com compras e vendas
             valor_1m = ajustar_valor_com_operacoes(ativo, valor_1m, data_1m, ultima_data_atualizacao)
             valor_1a = ajustar_valor_com_operacoes(ativo, valor_1a, data_1a, ultima_data_atualizacao)
-            valor_3a = ajustar_valor_com_operacoes(ativo, valor_3a, data_3a, ultima_data_atualizacao)
+            valor_inicial_ajustado = ajustar_valor_com_operacoes(ativo, valor_inicial, ativo.data_aquisicao, ultima_data_atualizacao)
 
             # Calcula rentabilidades (% e valor absoluto)
             ativo.rentabilidade_1m_abs = valor_atualizado - valor_1m
             ativo.rentabilidade_1a_abs = valor_atualizado - valor_1a
-            ativo.rentabilidade_3a_abs = valor_atualizado - valor_3a
+            ativo.rentabilidade_total_abs = valor_atualizado - valor_inicial_ajustado
 
             ativo.rentabilidade_1m_perc = ((ativo.rentabilidade_1m_abs / valor_1m) * 100) if valor_1m else 0
             ativo.rentabilidade_1a_perc = ((ativo.rentabilidade_1a_abs / valor_1a) * 100) if valor_1a else 0
-            ativo.rentabilidade_3a_perc = ((ativo.rentabilidade_3a_abs / valor_3a) * 100) if valor_3a else 0
+            ativo.rentabilidade_total_perc = ((ativo.rentabilidade_total_abs / valor_inicial_ajustado) * 100) if valor_inicial_ajustado else 0
 
             # Adiciona os valores calculados ao objeto ativo
             ativo.ultima_atualizacao = ultima_data_atualizacao
             ativo.valor_atualizado = valor_atualizado  # Agora ajustado com compras e vendas após a última atualização
 
         return queryset
-
-
 
     def get_context_data(self, **kwargs):
         """ Adiciona as opções de filtro ao contexto """
@@ -100,5 +98,80 @@ class ResumoView(LoginRequiredMixin, ListView):
         context['classes_disponiveis'] = usuario_ativos.values_list('classe', flat=True).distinct()
         context['subclasses_disponiveis'] = usuario_ativos.values_list('subclasse', flat=True).distinct()
         context['bancos_disponiveis'] = usuario_ativos.values_list('banco', flat=True).distinct()
+
+        ativos = context["ativos"]
+
+        # Cálculo do patrimônio total
+        patrimonio_total = sum(ativo.valor_atualizado for ativo in ativos)
+
+        # Definição das datas de referência
+        data_atual = max(ativo.ultima_atualizacao for ativo in ativos if ativo.ultima_atualizacao)
+        data_1m = data_atual - timedelta(days=30)
+        data_1a = data_atual - timedelta(days=365)
+
+        # Inicialização das variáveis
+        valor_inicial_ajustado_total = 0
+        valor_1m_ajustado_total = 0
+        valor_1a_ajustado_total = 0
+
+        for ativo in ativos:
+            # Cálculo do valor inicial ajustado (considerando compras e vendas ao longo do tempo)
+            compras_total = (
+                Operacao.objects.filter(ativo=ativo, tipo="compra")
+                .aggregate(total=Sum("valor"))["total"] or 0
+            )
+            vendas_total = (
+                Operacao.objects.filter(ativo=ativo, tipo="venda")
+                .aggregate(total=Sum("valor"))["total"] or 0
+            )
+            valor_inicial_ajustado = ativo.valor_inicial + compras_total - vendas_total
+            valor_inicial_ajustado_total += valor_inicial_ajustado
+
+            # Função para calcular o valor ajustado em uma data específica
+            def get_valor_ajustado(ativo, data_ref):
+                """Busca a última atualização antes da data e ajusta com compras/vendas até a data."""
+                ultima_atualizacao = (
+                    Operacao.objects.filter(ativo=ativo, tipo="atualizacao", data__lte=data_ref)
+                    .order_by("-data")
+                    .first()
+                )
+                valor_base = ultima_atualizacao.valor if ultima_atualizacao else ativo.valor_inicial
+
+                compras_ate_data = (
+                    Operacao.objects.filter(ativo=ativo, tipo="compra", data__gt=ultima_atualizacao.data, data__lte=data_ref)
+                    .aggregate(total=Sum("valor"))["total"] or 0
+                ) if ultima_atualizacao else 0
+
+                vendas_ate_data = (
+                    Operacao.objects.filter(ativo=ativo, tipo="venda", data__gt=ultima_atualizacao.data, data__lte=data_ref)
+                    .aggregate(total=Sum("valor"))["total"] or 0
+                ) if ultima_atualizacao else 0
+
+                return valor_base + compras_ate_data - vendas_ate_data
+
+            # Cálculo dos valores ajustados para os períodos
+            valor_1m_ajustado = get_valor_ajustado(ativo, data_1m)
+            valor_1a_ajustado = get_valor_ajustado(ativo, data_1a)
+
+            valor_1m_ajustado_total += valor_1m_ajustado
+            valor_1a_ajustado_total += valor_1a_ajustado
+
+        # Cálculo da rentabilidade absoluta e percentual da carteira para cada período
+        rentabilidade_abs_1m = patrimonio_total - valor_1m_ajustado_total
+        rentabilidade_abs_1a = patrimonio_total - valor_1a_ajustado_total
+        rentabilidade_abs_total = patrimonio_total - valor_inicial_ajustado_total
+
+        rentabilidade_perc_1m = ((rentabilidade_abs_1m / valor_1m_ajustado_total) * 100) if valor_1m_ajustado_total else 0
+        rentabilidade_perc_1a = ((rentabilidade_abs_1a / valor_1a_ajustado_total) * 100) if valor_1a_ajustado_total else 0
+        rentabilidade_perc_total = ((rentabilidade_abs_total / valor_inicial_ajustado_total) * 100) if valor_inicial_ajustado_total else 0
+
+        # Passa os valores para o contexto do template
+        context["patrimonio_total"] = patrimonio_total
+        context["rentabilidade_abs_1m"] = rentabilidade_abs_1m
+        context["rentabilidade_abs_1a"] = rentabilidade_abs_1a
+        context["rentabilidade_abs_total"] = rentabilidade_abs_total
+        context["rentabilidade_perc_1m"] = rentabilidade_perc_1m
+        context["rentabilidade_perc_1a"] = rentabilidade_perc_1a
+        context["rentabilidade_perc_total"] = rentabilidade_perc_total
 
         return context

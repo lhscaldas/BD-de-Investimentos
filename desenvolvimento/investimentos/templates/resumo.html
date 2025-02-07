@@ -38,7 +38,7 @@
                         <th>Valor Atualizado</th>
                         <th>Rentabilidade 1M</th>
                         <th>Rentabilidade 1A</th>
-                        <th>Rentabilidade 3A</th>
+                        <th>Rentabilidade Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,7 +70,7 @@
                             R$ {{ ativo.rentabilidade_1a_abs|floatformat:2 }} ({{ ativo.rentabilidade_1a_perc|floatformat:2 }}%)
                         </td>
                         <td class="{% if ativo.rentabilidade_3a_abs < 0 %}text-danger{% else %}text-success{% endif %}">
-                            R$ {{ ativo.rentabilidade_3a_abs|floatformat:2 }} ({{ ativo.rentabilidade_3a_perc|floatformat:2 }}%)
+                            R$ {{ ativo.rentabilidade_total_abs|floatformat:2 }} ({{ ativo.rentabilidade_total_perc|floatformat:2 }}%)
                         </td>
                     </tr>
                     {% empty %}
@@ -81,6 +81,19 @@
                 </tbody>
             </table>
             
+        </div>
+
+        <div class="mt-4">
+            <h5 class="text-end"><strong>Patrimônio Total:</strong> R$ {{ patrimonio_total|floatformat:2 }}</h5>
+        
+            <h5 class="text-end"><strong>Rentabilidade - Último Mês:</strong> 
+                R$ {{ rentabilidade_abs_1m|floatformat:2 }} ({{ rentabilidade_perc_1m|floatformat:2 }}%)</h5>
+        
+            <h5 class="text-end"><strong>Rentabilidade - Último Ano:</strong> 
+                R$ {{ rentabilidade_abs_1a|floatformat:2 }} ({{ rentabilidade_perc_1a|floatformat:2 }}%)</h5>
+        
+            <h5 class="text-end"><strong>Rentabilidade - Todo o Período:</strong> 
+                R$ {{ rentabilidade_abs_total|floatformat:2 }} ({{ rentabilidade_perc_total|floatformat:2 }}%)</h5>
         </div>
 
     {% else %}
