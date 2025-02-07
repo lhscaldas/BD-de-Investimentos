@@ -50,18 +50,16 @@
    - ~~**[UI_02]** A interface deverá exibir a classe e subclasse do ativo.~~
    - ~~**[UI_03]** A interface deverá exibir o banco em que o ativo está registrado.~~
    - ~~**[UI_04]** A interface deverá exibir o valor atual do ativo, calculado com base nas operações registradas.~~
-   - **[UI_05]** A interface deverá exibir as observações relacionadas ao ativo, quando fornecidas.
-   - **[UI_06]** A interface deverá incluir botões para:
+   - ~~**[UI_05]** A interface deverá exibir as observações relacionadas ao ativo, quando fornecidas.~~
+   - ~~**[UI_06]** A interface deverá incluir botões para:~~
       - Registrar novos ativos.
       - Registrar novas operações (compra, venda ou atualização) para ativos existentes.
 
 2. **(Sprint+2):**
-   - **[UI_07]** A interface deverá permitir filtros por:
+   - ~~**[UI_07]** A interface deverá permitir filtros por:~~
       - Classe.
       - Subclasse.
       - Banco.
-      - Período (mês, ano, últimos 12 meses, últimos 5 anos).
-         - Caso o período não seja selecionado, o padrão será exibir os dados dos últimos 12 meses.
 
 3. **(Sprint+3):**
    - **[UI_08]** A interface deverá exibir o total do patrimônio, considerando os filtros aplicados.

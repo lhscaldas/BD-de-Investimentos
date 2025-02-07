@@ -36,7 +36,9 @@
                         <th>Banco</th>
                         <th>Última Atualização</th>
                         <th>Valor Atualizado</th>
-
+                        <th>Rentabilidade 1M</th>
+                        <th>Rentabilidade 1A</th>
+                        <th>Rentabilidade 3A</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,6 +63,15 @@
                             {% endif %}
                         </td>
                         <td>R$ {{ ativo.valor_atualizado|floatformat:2 }}</td>
+                        <td class="{% if ativo.rentabilidade_1m_abs < 0 %}text-danger{% else %}text-success{% endif %}">
+                            R$ {{ ativo.rentabilidade_1m_abs|floatformat:2 }} ({{ ativo.rentabilidade_1m_perc|floatformat:2 }}%)
+                        </td>
+                        <td class="{% if ativo.rentabilidade_1a_abs < 0 %}text-danger{% else %}text-success{% endif %}">
+                            R$ {{ ativo.rentabilidade_1a_abs|floatformat:2 }} ({{ ativo.rentabilidade_1a_perc|floatformat:2 }}%)
+                        </td>
+                        <td class="{% if ativo.rentabilidade_3a_abs < 0 %}text-danger{% else %}text-success{% endif %}">
+                            R$ {{ ativo.rentabilidade_3a_abs|floatformat:2 }} ({{ ativo.rentabilidade_3a_perc|floatformat:2 }}%)
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>

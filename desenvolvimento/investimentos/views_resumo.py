@@ -1,7 +1,8 @@
-from django.db.models import Max, Sum
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo, Operacao
+from datetime import timedelta
+from django.db.models import Sum
 
 class ResumoView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -16,68 +17,75 @@ class ResumoView(LoginRequiredMixin, ListView):
         filtros = {f"{k}__icontains": v for k, v in self.request.GET.items() if v and k in filtros_validos}
         queryset = queryset.filter(**filtros)
 
-        # Obtém a data da última operação de atualização para cada ativo
-        ultimas_atualizacoes = (
-            Operacao.objects.filter(ativo__usuario=self.request.user, tipo="atualizacao")
-            .values("ativo")
-            .annotate(ultima_data=Max("data"))
-        )
-
-        # Mapeia a última atualização para cada ativo
-        atualizacoes_dict = {
-            item["ativo"]: item["ultima_data"]
-            for item in ultimas_atualizacoes
-        }
-
         for ativo in queryset:
-            ultima_data_atualizacao = atualizacoes_dict.get(ativo.id)
-
-            # Obtém a última operação de atualização
-            if ultima_data_atualizacao:
-                ultima_atualizacao = (
-                    Operacao.objects.filter(ativo=ativo, tipo="atualizacao", data=ultima_data_atualizacao)
-                    .order_by("-data")
-                    .first()
-                )
-                valor_atualizado = ultima_atualizacao.valor
-            else:
-                ultima_atualizacao = None
-                valor_atualizado = ativo.valor_inicial  # Se não houver atualização, começa com o valor inicial
-
-            # Obtém a soma de compras e vendas após a última atualização (se houver atualização)
-            if ultima_data_atualizacao:
-                compras = (
-                    Operacao.objects.filter(ativo=ativo, tipo="compra", data__gt=ultima_data_atualizacao)
-                    .aggregate(total_compras=Sum("valor"))["total_compras"] or 0
-                )
-                vendas = (
-                    Operacao.objects.filter(ativo=ativo, tipo="venda", data__gt=ultima_data_atualizacao)
-                    .aggregate(total_vendas=Sum("valor"))["total_vendas"] or 0
-                )
-            else:
-                compras = 0
-                vendas = 0
-
-            # Ajusta o valor atualizado com compras e vendas
-            valor_atualizado += compras - vendas
-
-            # Verifica se há uma compra ou venda mais recente que a última atualização
-            ultima_operacao = (
-                Operacao.objects.filter(ativo=ativo, tipo__in=["compra", "venda"])
+            # Obtém a operação de atualização mais recente (valor atualizado atual)
+            ultima_atualizacao = (
+                Operacao.objects.filter(ativo=ativo, tipo="atualizacao")
                 .order_by("-data")
                 .first()
             )
 
-            if ultima_operacao and (not ultima_data_atualizacao or ultima_operacao.data > ultima_data_atualizacao):
-                ultima_data_atualizacao = ultima_operacao.data  # Atualiza a data da última atualização
+            valor_atualizado = ultima_atualizacao.valor if ultima_atualizacao else ativo.valor_inicial
+            ultima_data_atualizacao = ultima_atualizacao.data if ultima_atualizacao else ativo.data_aquisicao
 
-            # Se o ativo não tem nenhuma operação, mantém a data de aquisição como última atualização
-            if not ultima_data_atualizacao:
-                ultima_data_atualizacao = ativo.data_aquisicao
+            # Considerar compras e vendas posteriores à última atualização
+            compras_pos = (
+                Operacao.objects.filter(ativo=ativo, tipo="compra", data__gt=ultima_data_atualizacao)
+                .aggregate(total=Sum("valor"))["total"] or 0
+            )
+            vendas_pos = (
+                Operacao.objects.filter(ativo=ativo, tipo="venda", data__gt=ultima_data_atualizacao)
+                .aggregate(total=Sum("valor"))["total"] or 0
+            )
+
+            valor_atualizado += compras_pos - vendas_pos  # Ajuste no valor atualizado
+
+            # Função para obter o valor da última atualização antes da data-alvo
+            def get_valor_referencia(ativo, anos):
+                """Busca a operação de atualização mais próxima da referência"""
+                data_limite = ultima_data_atualizacao - timedelta(days=anos * 365)
+                operacao_referencia = (
+                    Operacao.objects.filter(ativo=ativo, tipo="atualizacao", data__lte=data_limite)
+                    .order_by("-data")
+                    .first()
+                )
+                return (operacao_referencia.valor, operacao_referencia.data) if operacao_referencia else (ativo.valor_inicial, ativo.data_aquisicao)
+
+            # Obtém os valores de referência e suas datas
+            valor_1m, data_1m = get_valor_referencia(ativo, 1 / 12)  # 1 mês ≈ 1/12 ano
+            valor_1a, data_1a = get_valor_referencia(ativo, 1)
+            valor_3a, data_3a = get_valor_referencia(ativo, 3)
+
+            # Ajustar valores com operações de compra/venda entre a data de referência e a última atualização
+            def ajustar_valor_com_operacoes(ativo, valor_base, data_base, ultima_data):
+                """Soma compras e subtrai vendas ocorridas entre data_base e ultima_data"""
+                compras = (
+                    Operacao.objects.filter(ativo=ativo, tipo="compra", data__gt=data_base, data__lte=ultima_data)
+                    .aggregate(total=Sum("valor"))["total"] or 0
+                )
+                vendas = (
+                    Operacao.objects.filter(ativo=ativo, tipo="venda", data__gt=data_base, data__lte=ultima_data)
+                    .aggregate(total=Sum("valor"))["total"] or 0
+                )
+                return valor_base + compras - vendas
+
+            # Ajustar os valores de referência com compras e vendas
+            valor_1m = ajustar_valor_com_operacoes(ativo, valor_1m, data_1m, ultima_data_atualizacao)
+            valor_1a = ajustar_valor_com_operacoes(ativo, valor_1a, data_1a, ultima_data_atualizacao)
+            valor_3a = ajustar_valor_com_operacoes(ativo, valor_3a, data_3a, ultima_data_atualizacao)
+
+            # Calcula rentabilidades (% e valor absoluto)
+            ativo.rentabilidade_1m_abs = valor_atualizado - valor_1m
+            ativo.rentabilidade_1a_abs = valor_atualizado - valor_1a
+            ativo.rentabilidade_3a_abs = valor_atualizado - valor_3a
+
+            ativo.rentabilidade_1m_perc = ((ativo.rentabilidade_1m_abs / valor_1m) * 100) if valor_1m else 0
+            ativo.rentabilidade_1a_perc = ((ativo.rentabilidade_1a_abs / valor_1a) * 100) if valor_1a else 0
+            ativo.rentabilidade_3a_perc = ((ativo.rentabilidade_3a_abs / valor_3a) * 100) if valor_3a else 0
 
             # Adiciona os valores calculados ao objeto ativo
             ativo.ultima_atualizacao = ultima_data_atualizacao
-            ativo.valor_atualizado = valor_atualizado  # Novo atributo para o template
+            ativo.valor_atualizado = valor_atualizado  # Agora ajustado com compras e vendas após a última atualização
 
         return queryset
 
