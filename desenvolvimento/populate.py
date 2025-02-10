@@ -1,16 +1,18 @@
 import os
 import django
-import random
-from datetime import datetime, timedelta
+import csv
+import io
+from datetime import datetime
 from django.contrib.auth.hashers import make_password
 
 # Configurar o Django para rodar fora do manage.py shell
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sgpi.settings")  
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sgpi.settings")
 django.setup()
 
 from django.contrib.auth.models import User
 from investimentos.models import Ativo, Operacao
 
+# Nome e senha do usuário dummy
 nome_dummy = "dummy"
 senha_dummy = "du123456"
 
@@ -27,91 +29,75 @@ user, created = User.objects.get_or_create(
     }
 )
 
-# Lista de ativos para criar
-ativos_data = [
-    {"nome": "Tesouro IPCA+", "classe": "Renda Fixa", "subclasse": "Tesouro Direto", "banco": "Banco do Brasil", "valor_inicial": 1000},
-    {"nome": "Ações Petrobras", "classe": "Renda Variável", "subclasse": "Ações", "banco": "XP Investimentos", "valor_inicial": 5000},
-    {"nome": "Criptomoeda Bitcoin", "classe": "Renda Variável", "subclasse": "Criptomoeda", "banco": "Binance", "valor_inicial": 30000},
-    {"nome": "Fundo Imobiliário XPML11", "classe": "Renda Variável", "subclasse": "FII", "banco": "Rico", "valor_inicial": 1500},
-]
+# Caminhos dos arquivos CSV
+ativos_csv_path = "ativos.csv"
+operacoes_csv_path = "operacoes.csv"
 
-# Criar os ativos
-ativos = []
-for ativo_data in ativos_data:
-    ativo, created = Ativo.objects.get_or_create(
-        usuario=user,
-        nome=ativo_data["nome"],
-        classe=ativo_data["classe"],
-        subclasse=ativo_data["subclasse"],
-        banco=ativo_data["banco"],
-        valor_inicial=ativo_data["valor_inicial"],
-        data_aquisicao=datetime(2024, 1, random.randint(1, 31)).date(),
-    )
-    ativos.append(ativo)
+# Limpa os dados existentes
+Ativo.objects.filter(usuario=user).delete()
+Operacao.objects.filter(usuario=user).delete()
 
-# Criar operações para cada ativo
-for ativo in ativos:
-    operacoes = []
-    valor_atual = ativo.valor_inicial
+# Importa os ativos do CSV
+try:
+    with open(ativos_csv_path, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file, delimiter=";")
 
-    # Parâmetros de variação por classe
-    if ativo.classe == "Renda Fixa":
-        crescimento_anual = 0.06  # Crescimento médio de 6% ao ano
-        variacao_mensal = (crescimento_anual / 12)  # Crescimento constante por mês
-        volatilidade = 0.01  # Pouca variação
+        for row in reader:
+            nome = row["Nome"]
+            classe = row["Classe"]
+            subclasse = row["Subclasse"]
+            banco = row["Banco"]
+            valor_inicial = float(row["Valor Inicial"])
+            data_aquisicao = datetime.strptime(row["Data de Aquisição"], "%Y-%m-%d").date()
 
-    elif ativo.subclasse in ["Ações", "FII"]:
-        crescimento_anual = 0.10  # Crescimento médio de 10% ao ano
-        variacao_mensal = (crescimento_anual / 12)
-        volatilidade = 0.05  # Oscilação moderada
+            # Criar o ativo no banco de dados
+            Ativo.objects.create(
+                usuario=user,
+                nome=nome,
+                classe=classe,
+                subclasse=subclasse,
+                banco=banco,
+                valor_inicial=valor_inicial,
+                data_aquisicao=data_aquisicao
+            )
 
-    elif ativo.subclasse == "Criptomoeda":
-        crescimento_anual = 0.20  # Expectativa de maior crescimento (20% ao ano)
-        variacao_mensal = (crescimento_anual / 12)
-        volatilidade = 0.15  # Alta volatilidade
+    print("Ativos importados com sucesso!")
+except Exception as e:
+    print(f"Erro ao importar ativos: {e}")
 
-    else:
-        crescimento_anual = 0.08
-        variacao_mensal = (crescimento_anual / 12)
-        volatilidade = 0.03  # Default para outros ativos
+# Importa as operações do CSV
+try:
+    with open(operacoes_csv_path, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file, delimiter=";")
 
-    # 4 operações de compra
-    for _ in range(4):
-        valor = valor_atual * (1 + variacao_mensal + random.uniform(-volatilidade, volatilidade))
-        operacoes.append(Operacao(
-            usuario=user,
-            ativo=ativo,
-            tipo="compra",
-            valor=valor,
-            data=ativo.data_aquisicao + timedelta(days=random.randint(1, 100)),
-        ))
-        valor_atual = valor
+        operacoes = []
+        for row in reader:
+            ativo_nome = row["Ativo"]
+            tipo = row["Tipo"]
+            data = datetime.strptime(row["Data"], "%Y-%m-%d").date()
+            valor = float(row["Valor"])
 
-    # 4 operações de venda
-    for _ in range(4):
-        valor = valor_atual * (1 - variacao_mensal + random.uniform(-volatilidade, volatilidade))
-        operacoes.append(Operacao(
-            usuario=user,
-            ativo=ativo,
-            tipo="venda",
-            valor=valor,
-            data=ativo.data_aquisicao + timedelta(days=random.randint(1, 100)),
-        ))
-        valor_atual = valor
+            # Verifica se o ativo existe
+            ativo = Ativo.objects.filter(nome=ativo_nome, usuario=user).first()
+            if not ativo:
+                print(f"Ativo '{ativo_nome}' não encontrado. Operação ignorada.")
+                continue  # Pula esta linha se o ativo não for encontrado
 
-    # 12 operações de atualização (uma por mês)
-    for i in range(12):
-        valor = valor_atual * (1 + variacao_mensal + random.uniform(-volatilidade, volatilidade))
-        operacoes.append(Operacao(
-            usuario=user,
-            ativo=ativo,
-            tipo="atualizacao",
-            valor=valor,
-            data=ativo.data_aquisicao + timedelta(days=30 * (i + 1)),
-        ))
-        valor_atual = valor
+            # Criar a operação no banco de dados
+            operacoes.append(
+                Operacao(
+                    usuario=user,
+                    ativo=ativo,
+                    tipo=tipo,
+                    data=data,
+                    valor=valor
+                )
+            )
 
-    # Salvar todas as operações no banco
-    Operacao.objects.bulk_create(operacoes)
+        # Salvar todas as operações em batch para otimizar a inserção
+        Operacao.objects.bulk_create(operacoes)
+    print("Operações importadas com sucesso!")
+except Exception as e:
+    print(f"Erro ao importar operações: {e}")
 
 print("População inicial do banco de dados concluída com sucesso!")
