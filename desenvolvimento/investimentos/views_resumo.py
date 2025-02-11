@@ -207,13 +207,6 @@ class ResumoView(LoginRequiredMixin, ListView):
 
         return context
 
-
-
-
-
-
-
-
 class ResumoAtivoView(DetailView):
     model = Ativo
     template_name = "resumo_ativo.html"
