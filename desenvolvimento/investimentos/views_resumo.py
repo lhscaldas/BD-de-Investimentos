@@ -1,9 +1,10 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Ativo, Operacao, RentabilidadeHistorica
-from datetime import timedelta, date
-from dateutil.relativedelta import relativedelta
+from .models import Ativo, Operacao
+from datetime import timedelta
 from django.db.models import Sum
+from django.utils.timezone import now
+from collections import defaultdict
 
 class ResumoView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -72,16 +73,6 @@ class ResumoView(LoginRequiredMixin, ListView):
 
             ativo.ultima_atualizacao = ultima_data_atualizacao
             ativo.valor_atualizado = valor_atualizado  
-
-            # **📌 Agora salvamos na classe RentabilidadeHistorica**
-            RentabilidadeHistorica.objects.update_or_create(
-                ativo=ativo,
-                data_referencia=ultima_data_atualizacao,
-                defaults={
-                    "rentabilidade_abs": rentabilidade_1m_abs,
-                    "rentabilidade_perc": rentabilidade_1m_perc,
-                },
-            )
 
             ativo.rentabilidade_1m_abs = rentabilidade_1m_abs
             ativo.rentabilidade_1m_perc = rentabilidade_1m_perc
@@ -164,5 +155,86 @@ class ResumoView(LoginRequiredMixin, ListView):
         context["rentabilidade_perc_1m"] = rentabilidade_perc_1m
         context["rentabilidade_perc_1a"] = rentabilidade_perc_1a
         context["rentabilidade_perc_total"] = rentabilidade_perc_total
+
+        return context
+
+
+
+class ResumoAtivoView(DetailView):
+    model = Ativo
+    template_name = "resumo_ativo.html"
+    context_object_name = "ativo"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ativo = self.object
+        
+        # Obtém todas as operações do ativo
+        operacoes = Operacao.objects.filter(ativo=ativo).order_by("data")
+
+        if not operacoes.exists():
+            context["rentabilidades"] = []
+            return context
+
+        # Dicionário para armazenar valores por mês
+        historico = defaultdict(lambda: {"valor": None, "rentabilidade_abs": 0, "rentabilidade_perc": 0})
+
+        # Valor inicial do ativo
+        valor_atualizado = ativo.valor_inicial
+        data_aquisicao = ativo.data_aquisicao
+        mes_atual = data_aquisicao.replace(day=1)  # Começa do primeiro mês
+
+        # Processa as operações para calcular os valores por mês
+        for operacao in operacoes:
+            mes_operacao = operacao.data.replace(day=1)
+            
+            while mes_atual < mes_operacao:
+                # Preenche meses sem operação repetindo o último valor conhecido
+                historico[mes_atual]["valor"] = valor_atualizado
+                mes_atual += timedelta(days=32)  # Avança aproximadamente um mês
+                mes_atual = mes_atual.replace(day=1)  # Garante que o dia seja sempre o primeiro
+
+            # Atualiza o valor conforme a operação
+            if operacao.tipo == "compra":
+                valor_atualizado += operacao.valor
+            elif operacao.tipo == "venda":
+                valor_atualizado -= operacao.valor
+            elif operacao.tipo == "atualizacao":
+                valor_atualizado = operacao.valor
+
+            # Armazena o valor atualizado no mês correspondente
+            historico[mes_operacao]["valor"] = valor_atualizado
+
+        # Garantir que o último mês seja registrado
+        mes_final = now().date().replace(day=1)
+        while mes_atual <= mes_final:
+            historico[mes_atual]["valor"] = valor_atualizado
+            mes_atual += timedelta(days=32)
+            mes_atual = mes_atual.replace(day=1)
+
+        # Calcula rentabilidade absoluta e percentual
+        meses_ordenados = sorted(historico.keys())
+
+        for i, mes in enumerate(meses_ordenados):
+            if i == 0:
+                continue  # O primeiro mês não tem base para comparação
+            
+            valor_anterior = historico[meses_ordenados[i - 1]]["valor"]
+            valor_atual = historico[mes]["valor"]
+
+            if valor_anterior is not None and valor_atual is not None:
+                rentabilidade_abs = valor_atual - valor_anterior
+                rentabilidade_perc = (rentabilidade_abs / valor_anterior) * 100 if valor_anterior != 0 else 0
+            else:
+                rentabilidade_abs = 0
+                rentabilidade_perc = 0
+
+            historico[mes]["rentabilidade_abs"] = rentabilidade_abs
+            historico[mes]["rentabilidade_perc"] = rentabilidade_perc
+
+        # Converte o histórico para uma lista ordenada para exibição no template
+        context["rentabilidades"] = [
+            {"data_referencia": mes, **dados} for mes, dados in sorted(historico.items())
+        ]
 
         return context

@@ -44,7 +44,7 @@
                 <tbody>
                     {% for ativo in ativos %}
                     <tr>
-                        <td>{{ ativo.nome }}</td>
+                        <td><a href="{% url 'resumo_ativo' ativo.id %}">{{ ativo.nome }}</a></td>
                         <td>
                             <a href="{% url 'criar_operacao' %}?ativo={{ ativo.id }}&next={{ request.get_full_path }}" 
                             class="btn btn-primary btn-sm">

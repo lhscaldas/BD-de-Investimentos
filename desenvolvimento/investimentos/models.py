@@ -52,20 +52,5 @@ class Operacao(models.Model):
 
     def __str__(self):
         return f"{self.tipo.capitalize()} - R$ {self.valor} ({self.ativo.nome})"
-    
-
-class RentabilidadeHistorica(models.Model):
-    ativo = models.ForeignKey(Ativo, on_delete=models.CASCADE, related_name="historico_rentabilidade")
-    data_referencia = models.DateField()  # Representa o mês da rentabilidade (exemplo: 2024-01-01 para janeiro/2024)
-    
-    rentabilidade_abs = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    rentabilidade_perc = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    class Meta:
-        unique_together = ('ativo', 'data_referencia')  # Garante que um ativo tenha apenas um registro por mês
-        ordering = ['data_referencia']
-
-    def __str__(self):
-        return f"{self.ativo.nome} - {self.data_referencia.strftime('%Y-%m')}: {self.rentabilidade_perc}%"
 
 

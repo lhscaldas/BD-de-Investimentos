@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import AtivoCreateView, AtivoListView, AtivoUpdateView, AtivoDeleteView, OperacaoCreateView, OperacaoListView, OperacaoUpdateView, OperacaoDeleteView, ResumoView, ImportarAtivosView, ImportarOperacoesView
+from .views import AtivoCreateView, AtivoListView, AtivoUpdateView, AtivoDeleteView, ImportarAtivosView
+from .views import OperacaoCreateView, OperacaoListView, OperacaoUpdateView, OperacaoDeleteView, ImportarOperacoesView
+from .views import ResumoView, ResumoAtivoView
 
 urlpatterns = [
     path('criar-ativo/', AtivoCreateView.as_view(), name='criar_ativo'),
@@ -15,5 +17,5 @@ urlpatterns = [
     path("importar-operacoes/", ImportarOperacoesView.as_view(), name="importar_operacoes"),
 
     path('', ResumoView.as_view(), name='resumo'),
-
+    path('ativo/<int:pk>/', ResumoAtivoView.as_view(), name='resumo_ativo'),
 ]
