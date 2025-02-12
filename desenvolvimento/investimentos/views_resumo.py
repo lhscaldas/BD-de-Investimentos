@@ -5,6 +5,7 @@ from datetime import timedelta
 from django.db.models import Sum
 from django.utils.timezone import now
 from collections import defaultdict
+import json
 
 class ResumoView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -221,6 +222,8 @@ class ResumoAtivoView(DetailView):
 
         if not operacoes.exists():
             context["rentabilidades"] = []
+            context["grafico_labels"] = json.dumps([])
+            context["grafico_data"] = json.dumps([])
             return context
 
         # Dicionário para armazenar valores por mês
@@ -283,5 +286,12 @@ class ResumoAtivoView(DetailView):
         context["rentabilidades"] = [
             {"data_referencia": mes, **dados} for mes, dados in sorted(historico.items())
         ]
+
+        # Dados para o gráfico: labels (meses) e rentabilidade percentual
+        labels = [mes.strftime("%Y-%m") for mes in meses_ordenados]
+        data = [float(historico[mes]["rentabilidade_perc"]) for mes in meses_ordenados]  
+
+        context["grafico_labels"] = json.dumps(labels)
+        context["grafico_data"] = json.dumps(data)
 
         return context
