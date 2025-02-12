@@ -190,11 +190,11 @@ class ResumoView(LoginRequiredMixin, ListView):
 
         rentabilidade_abs_1m = patrimonio_total - valor_1m_ajustado_total
         rentabilidade_abs_1a = patrimonio_total - valor_1a_ajustado_total
-        rentabilidade_abs_total = patrimonio_total - valor_inicial_ajustado_total  # 🛠️ Correção aqui!
+        rentabilidade_abs_total = patrimonio_total - valor_inicial_ajustado_total
 
         rentabilidade_perc_1m = ((rentabilidade_abs_1m / valor_1m_ajustado_total) * 100) if valor_1m_ajustado_total else 0
         rentabilidade_perc_1a = ((rentabilidade_abs_1a / valor_1a_ajustado_total) * 100) if valor_1a_ajustado_total else 0
-        rentabilidade_perc_total = ((rentabilidade_abs_total / valor_inicial_ajustado_total) * 100) if valor_inicial_ajustado_total else 0  # 🛠️ Correção aqui!
+        rentabilidade_perc_total = ((rentabilidade_abs_total / valor_inicial_ajustado_total) * 100) if valor_inicial_ajustado_total else 0 
 
         context.update({
             "patrimonio_total": patrimonio_total,
@@ -216,82 +216,96 @@ class ResumoAtivoView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ativo = self.object
-        
-        # Obtém todas as operações do ativo
+
         operacoes = Operacao.objects.filter(ativo=ativo).order_by("data")
 
         if not operacoes.exists():
             context["rentabilidades"] = []
             context["grafico_labels"] = json.dumps([])
-            context["grafico_data"] = json.dumps([])
+            context["grafico_data_perc"] = json.dumps([])
+            context["grafico_data_abs"] = json.dumps([])
             return context
 
-        # Dicionário para armazenar valores por mês
         historico = defaultdict(lambda: {"valor": None, "rentabilidade_abs": 0, "rentabilidade_perc": 0})
 
-        # Valor inicial do ativo
-        valor_atualizado = ativo.valor_inicial
+        valor_atualizado = float(ativo.valor_inicial)
         data_aquisicao = ativo.data_aquisicao
-        mes_atual = data_aquisicao.replace(day=1)  # Começa do primeiro mês
+        mes_atual = data_aquisicao.replace(day=1)
 
-        # Processa as operações para calcular os valores por mês
+        atualizacoes_mensais = {}
+        compras_vendas_mensais = defaultdict(float)
+
         for operacao in operacoes:
             mes_operacao = operacao.data.replace(day=1)
-            
-            while mes_atual < mes_operacao:
-                # Preenche meses sem operação repetindo o último valor conhecido
-                historico[mes_atual]["valor"] = valor_atualizado
-                mes_atual += timedelta(days=32)  # Avança aproximadamente um mês
-                mes_atual = mes_atual.replace(day=1)  # Garante que o dia seja sempre o primeiro
 
-            # Atualiza o valor conforme a operação
-            if operacao.tipo == "compra":
-                valor_atualizado += operacao.valor
+            if operacao.tipo == "atualizacao":
+                atualizacoes_mensais[mes_operacao] = float(operacao.valor)
+            elif operacao.tipo == "compra":
+                compras_vendas_mensais[mes_operacao] += float(operacao.valor)
             elif operacao.tipo == "venda":
-                valor_atualizado -= operacao.valor
-            elif operacao.tipo == "atualizacao":
-                valor_atualizado = operacao.valor
+                compras_vendas_mensais[mes_operacao] -= float(operacao.valor)
 
-            # Armazena o valor atualizado no mês correspondente
-            historico[mes_operacao]["valor"] = valor_atualizado
-
-        # Garantir que o último mês seja registrado
         mes_final = now().date().replace(day=1)
+
         while mes_atual <= mes_final:
+            if mes_atual in atualizacoes_mensais:
+                valor_atualizado = atualizacoes_mensais[mes_atual]
+
             historico[mes_atual]["valor"] = valor_atualizado
             mes_atual += timedelta(days=32)
             mes_atual = mes_atual.replace(day=1)
 
-        # Calcula rentabilidade absoluta e percentual
         meses_ordenados = sorted(historico.keys())
 
-        for i, mes in enumerate(meses_ordenados):
-            if i == 0:
-                continue  # O primeiro mês não tem base para comparação
-            
-            valor_anterior = historico[meses_ordenados[i - 1]]["valor"]
-            valor_atual = historico[mes]["valor"]
+        labels = []
+        data_perc = []
+        data_abs = []
 
-            if valor_anterior is not None and valor_atual is not None:
-                rentabilidade_abs = valor_atual - valor_anterior
-                rentabilidade_perc = (rentabilidade_abs / valor_anterior) * 100 if valor_anterior != 0 else 0
+        for i in range(1, len(meses_ordenados)):
+            mes_anterior = meses_ordenados[i - 1]
+            mes_atual = meses_ordenados[i]
+
+            valor_anterior = float(historico[mes_anterior]["valor"]) if historico[mes_anterior]["valor"] is not None else 0
+            valor_atual = float(historico[mes_atual]["valor"]) if historico[mes_atual]["valor"] is not None else 0
+
+            valor_anterior_ajustado = self.ajustar_valor_com_operacoes(ativo, valor_anterior, mes_anterior, mes_atual)
+
+            if valor_anterior_ajustado != 0:
+                rentabilidade_perc = ((valor_atual - valor_anterior_ajustado) / valor_anterior_ajustado) * 100
+                rentabilidade_abs = valor_atual - valor_anterior_ajustado
             else:
-                rentabilidade_abs = 0
                 rentabilidade_perc = 0
+                rentabilidade_abs = 0
 
-            historico[mes]["rentabilidade_abs"] = rentabilidade_abs
-            historico[mes]["rentabilidade_perc"] = rentabilidade_perc
+            historico[mes_atual]["rentabilidade_perc"] = rentabilidade_perc
+            historico[mes_atual]["rentabilidade_abs"] = rentabilidade_abs
 
-        # Converte o histórico para uma lista ordenada para exibição no template
+            # Armazenando os dados para o gráfico
+            labels.append(mes_atual.strftime("%Y-%m"))
+            data_perc.append(rentabilidade_perc)
+            data_abs.append(rentabilidade_abs)
+
         context["rentabilidades"] = [
             {"data_referencia": mes, **dados} for mes, dados in sorted(historico.items())
         ]
 
-        # Dados para o gráfico: labels (meses) e rentabilidade percentual
-        labels = [mes.strftime("%Y-%m") for mes in meses_ordenados]
-        data = [float(historico[mes]["rentabilidade_perc"]) for mes in meses_ordenados]  
-
         context["grafico_labels"] = json.dumps(labels)
-        context["grafico_data"] = json.dumps(data)
+        context["grafico_data_perc"] = json.dumps(data_perc)
+        context["grafico_data_abs"] = json.dumps(data_abs)
 
         return context
+
+
+    def ajustar_valor_com_operacoes(self, ativo, valor_base, data_base, data_final):
+        """Ajusta o valor do ativo considerando compras e vendas entre dois meses."""
+        compras = float(self.obter_soma_operacoes_periodo(ativo, "compra", data_base, data_final))
+        vendas = float(self.obter_soma_operacoes_periodo(ativo, "venda", data_base, data_final))
+        return valor_base + compras - vendas
+
+    def obter_soma_operacoes_periodo(self, ativo, tipo, data_inicial, data_final):
+        """Retorna a soma das operações do tipo especificado dentro de um intervalo de tempo."""
+        return float(
+            Operacao.objects.filter(ativo=ativo, tipo=tipo, data__gt=data_inicial, data__lte=data_final)
+            .aggregate(total=Sum("valor"))["total"] or 0
+        )
+

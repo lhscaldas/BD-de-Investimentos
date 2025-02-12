@@ -42,24 +42,29 @@
 
         <div class="card p-4 shadow-sm mt-4">
             <h2 class="mb-3">Gráfico de Rentabilidade Percentual</h2>
-            <canvas id="graficoRentabilidade"></canvas>
+            <canvas id="graficoRentabilidadePerc"></canvas>
+        </div>
+        
+        <div class="card p-4 shadow-sm mt-4">
+            <h2 class="mb-3">Gráfico de Rentabilidade Absoluta</h2>
+            <canvas id="graficoRentabilidadeAbs"></canvas>
         </div>
         
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                var ctx = document.getElementById("graficoRentabilidade").getContext("2d");
-        
                 var labels = JSON.parse('{{ grafico_labels|escapejs }}');
-                var data = JSON.parse('{{ grafico_data|escapejs }}');
+                var dataPerc = JSON.parse('{{ grafico_data_perc|escapejs }}');
+                var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}');
         
-                new Chart(ctx, {
+                var ctxPerc = document.getElementById("graficoRentabilidadePerc").getContext("2d");
+                new Chart(ctxPerc, {
                     type: "line",
                     data: {
                         labels: labels,
                         datasets: [{
                             label: "Rentabilidade Percentual (%)",
-                            data: data,
+                            data: dataPerc,
                             borderColor: "green",
                             backgroundColor: "rgba(0, 128, 0, 0.1)",
                             borderWidth: 2,
@@ -71,15 +76,38 @@
                         responsive: true,
                         scales: {
                             x: { title: { display: true, text: "Mês" } },
-                            y: { 
-                                title: { display: true, text: "Rentabilidade (%)" },
-                                beginAtZero: false 
-                            }
+                            y: { title: { display: true, text: "Rentabilidade (%)" }, beginAtZero: false }
+                        }
+                    }
+                });
+        
+                var ctxAbs = document.getElementById("graficoRentabilidadeAbs").getContext("2d");
+                new Chart(ctxAbs, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Rentabilidade Absoluta (R$)",
+                            data: dataAbs,
+                            borderColor: "blue",
+                            backgroundColor: "rgba(0, 0, 255, 0.1)",
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: "Mês" } },
+                            y: { title: { display: true, text: "Rentabilidade (R$)" }, beginAtZero: false }
                         }
                     }
                 });
             });
         </script>
+        
+        
 
         <div class="card p-4 shadow-sm mt-4">
             <h2 class="mb-3">Rentabilidade Histórica</h2>
