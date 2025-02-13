@@ -1,11 +1,11 @@
 Nome;Classe;Subclasse;Banco;Valor Inicial;Data de Aquisição;Observações
 Tesouro IPCA+;Renda Fixa;Tesouro Direto;Banco do Brasil;1000.0;2023-01-13;
-Ações Petrobras;Renda Variável;Ações;XP Investimentos;5000.0;2023-01-13;
-Criptomoeda Bitcoin;Renda Variável;Criptomoeda;Binance;30000.0;2023-01-08;
-Fundo Imobiliário XPML11;Renda Variável;FII;Rico;1500.0;2023-01-23;
-CDB Banco Inter;Renda Fixa;CDB;Banco Inter;5000.0;2023-01-19;
-Ações Vale;Renda Variável;Ações;Clear;7000.0;2023-01-05;
-Criptomoeda Ethereum;Renda Variável;Criptomoeda;Binance;1500.0;2023-01-18;
-Fundo Multimercado XP;Renda Variável;Fundos Multimercado;XP Investimentos;4000.0;2023-01-31;
-Tesouro Selic;Renda Fixa;Tesouro Direto;Banco do Brasil;2000.0;2023-01-18;
-FII HGLG11;Renda Variável;FII;BTG Pactual;2500.0;2023-01-02;
+Ações Petrobras;Renda Variável;Ações;XP Investimentos;5000.0;2023-01-18;
+Criptomoeda Bitcoin;Renda Variável;Criptomoeda;Binance;30000.0;2023-01-22;
+Fundo Imobiliário XPML11;Renda Variável;FII;Rico;1500.0;2023-01-30;
+CDB Banco Inter;Renda Fixa;CDB;Banco Inter;5000.0;2023-01-03;
+Ações Vale;Renda Variável;Ações;Clear;7000.0;2023-01-26;
+Criptomoeda Ethereum;Renda Variável;Criptomoeda;Binance;1500.0;2023-01-10;
+Fundo Multimercado XP;Renda Variável;Fundos Multimercado;XP Investimentos;4000.0;2023-01-03;
+Tesouro Selic;Renda Fixa;Tesouro Direto;Banco do Brasil;2000.0;2023-01-10;
+FII HGLG11;Renda Variável;FII;BTG Pactual;2500.0;2023-01-24;

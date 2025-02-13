@@ -44,6 +44,8 @@ with open("operacoes.csv", mode="w", newline="", encoding="utf-8") as file:
                 valor_atual *= 1 + random.uniform(0.002, 0.005)  # Crescimento estável de 0.2% a 0.5% ao mês
             elif ativo["classe"] == "Renda Variável":
                 valor_atual *= 1 + random.uniform(-0.05, 0.07)  # Oscilação entre -5% e +7%
+            if valor_atual < 0:  # Não permite valores negativos
+                valor_atual = 0
             
             writer.writerow([ativo["nome"], "atualizacao", data_atual.date(), round(valor_atual, 2)])
 
@@ -55,8 +57,9 @@ with open("operacoes.csv", mode="w", newline="", encoding="utf-8") as file:
 
             if random.random() < 0.2:  # 20% de chance de uma venda no mês
                 venda_valor = random.uniform(0.5, 1.2) * ativo["valor_inicial"]
-                writer.writerow([ativo["nome"], "venda", data_atual.date(), round(venda_valor, 2)])
-                valor_atual -= venda_valor
+                if venda_valor < valor_atual:
+                    writer.writerow([ativo["nome"], "venda", data_atual.date(), round(venda_valor, 2)])
+                    valor_atual -= venda_valor
 
             # Avança para o próximo mês
             data_atual += relativedelta(months=1)
