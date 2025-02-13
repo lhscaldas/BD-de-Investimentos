@@ -232,6 +232,7 @@ class ResumoAtivoView(DetailView):
         data_aquisicao = ativo.data_aquisicao
         mes_atual = data_aquisicao.replace(day=1)
 
+        # Mapeamento de atualizações e operações
         atualizacoes_mensais = {}
         compras_vendas_mensais = defaultdict(float)
 
@@ -247,6 +248,7 @@ class ResumoAtivoView(DetailView):
 
         mes_final = now().date().replace(day=1)
 
+        # Preencher o histórico com os valores mensais atualizados
         while mes_atual <= mes_final:
             if mes_atual in atualizacoes_mensais:
                 valor_atualizado = atualizacoes_mensais[mes_atual]
@@ -261,29 +263,34 @@ class ResumoAtivoView(DetailView):
         data_perc = []
         data_abs = []
 
+        # Cálculo da rentabilidade baseado na metodologia anterior
         for i in range(1, len(meses_ordenados)):
             mes_anterior = meses_ordenados[i - 1]
             mes_atual = meses_ordenados[i]
 
-            valor_anterior = float(historico[mes_anterior]["valor"]) if historico[mes_anterior]["valor"] is not None else 0
-            valor_atual = float(historico[mes_atual]["valor"]) if historico[mes_atual]["valor"] is not None else 0
+            valor_anterior = historico[mes_anterior]["valor"]
+            valor_atual = historico[mes_atual]["valor"]
 
-            valor_anterior_ajustado = self.ajustar_valor_com_operacoes(ativo, valor_anterior, mes_anterior, mes_atual)
+            # Ajustando o valor de referência com compras e vendas entre os meses
+            ajuste = sum(
+                compras_vendas_mensais[m] for m in meses_ordenados if mes_anterior <= m < mes_atual
+            )
 
-            if valor_anterior_ajustado != 0:
-                rentabilidade_perc = ((valor_atual - valor_anterior_ajustado) / valor_anterior_ajustado) * 100
-                rentabilidade_abs = valor_atual - valor_anterior_ajustado
+            if valor_anterior is not None and valor_atual is not None:
+                rentabilidade_abs = valor_atual - (valor_anterior + ajuste)
+                rentabilidade_perc = (rentabilidade_abs / (valor_anterior + ajuste)) * 100 if (valor_anterior + ajuste) != 0 else 0
             else:
-                rentabilidade_perc = 0
                 rentabilidade_abs = 0
+                rentabilidade_perc = 0
 
-            historico[mes_atual]["rentabilidade_perc"] = rentabilidade_perc
             historico[mes_atual]["rentabilidade_abs"] = rentabilidade_abs
+            historico[mes_atual]["rentabilidade_perc"] = rentabilidade_perc
 
-            # Armazenando os dados para o gráfico
+            # Adicionando ao gráfico
             labels.append(mes_atual.strftime("%Y-%m"))
-            data_perc.append(rentabilidade_perc)
-            data_abs.append(rentabilidade_abs)
+            data_perc.append(data_perc[-1] + rentabilidade_perc if data_perc else rentabilidade_perc)
+            data_abs.append(valor_atual)
+
 
         context["rentabilidades"] = [
             {"data_referencia": mes, **dados} for mes, dados in sorted(historico.items())
@@ -294,18 +301,4 @@ class ResumoAtivoView(DetailView):
         context["grafico_data_abs"] = json.dumps(data_abs)
 
         return context
-
-
-    def ajustar_valor_com_operacoes(self, ativo, valor_base, data_base, data_final):
-        """Ajusta o valor do ativo considerando compras e vendas entre dois meses."""
-        compras = float(self.obter_soma_operacoes_periodo(ativo, "compra", data_base, data_final))
-        vendas = float(self.obter_soma_operacoes_periodo(ativo, "venda", data_base, data_final))
-        return valor_base + compras - vendas
-
-    def obter_soma_operacoes_periodo(self, ativo, tipo, data_inicial, data_final):
-        """Retorna a soma das operações do tipo especificado dentro de um intervalo de tempo."""
-        return float(
-            Operacao.objects.filter(ativo=ativo, tipo=tipo, data__gt=data_inicial, data__lte=data_final)
-            .aggregate(total=Sum("valor"))["total"] or 0
-        )
 

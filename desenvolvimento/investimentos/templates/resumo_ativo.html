@@ -41,12 +41,12 @@
         </div>
 
         <div class="card p-4 shadow-sm mt-4">
-            <h2 class="mb-3">Gráfico de Rentabilidade Percentual</h2>
+            <h2 class="mb-3">Gráfico de Rentabilidade Percentual Acumulada</h2>
             <canvas id="graficoRentabilidadePerc"></canvas>
         </div>
         
         <div class="card p-4 shadow-sm mt-4">
-            <h2 class="mb-3">Gráfico de Rentabilidade Absoluta</h2>
+            <h2 class="mb-3">Gráfico de Evolução do Valor do Ativo</h2>
             <canvas id="graficoRentabilidadeAbs"></canvas>
         </div>
         
@@ -63,7 +63,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: "Rentabilidade Percentual (%)",
+                            label: "Rentabilidade Percentual Acumulada (%)",
                             data: dataPerc,
                             borderColor: "green",
                             backgroundColor: "rgba(0, 128, 0, 0.1)",
@@ -76,7 +76,7 @@
                         responsive: true,
                         scales: {
                             x: { title: { display: true, text: "Mês" } },
-                            y: { title: { display: true, text: "Rentabilidade (%)" }, beginAtZero: false }
+                            y: { title: { display: true, text: "Rentabilidade Acumulada (%)" }, beginAtZero: false }
                         }
                     }
                 });
@@ -87,7 +87,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: "Rentabilidade Absoluta (R$)",
+                            label: "Evolução do Valor do Ativo (R$)",
                             data: dataAbs,
                             borderColor: "blue",
                             backgroundColor: "rgba(0, 0, 255, 0.1)",
@@ -100,7 +100,7 @@
                         responsive: true,
                         scales: {
                             x: { title: { display: true, text: "Mês" } },
-                            y: { title: { display: true, text: "Rentabilidade (R$)" }, beginAtZero: false }
+                            y: { title: { display: true, text: "Valor do Ativo (R$)" }, beginAtZero: false }
                         }
                     }
                 });
@@ -108,7 +108,6 @@
         </script>
         
         
-
         <div class="card p-4 shadow-sm mt-4">
             <h2 class="mb-3">Rentabilidade Histórica</h2>
             <div class="table-responsive">
