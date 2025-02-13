@@ -1,11 +1,76 @@
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Ativo, Operacao
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db.models import Sum
 from django.utils.timezone import now
 from collections import defaultdict
 import json
+import requests
+import numpy as np
+import yfinance as yf
+
+def obter_cdi_historico(data_inicio, data_fim):
+    url = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial={data_inicio}&dataFinal={data_fim}"
+    
+    resposta = requests.get(url)
+    if resposta.status_code != 200:
+        return None  # API indisponível
+    
+    dados_cdi = resposta.json()
+    cdi_por_mes = defaultdict(list)
+    
+    for entrada in dados_cdi:
+        data = datetime.strptime(entrada["data"], "%d/%m/%Y").date()
+        mes_ano = data.strftime("%Y-%m")
+        cdi_por_mes[mes_ano].append(float(entrada["valor"]) / 100)  # Convertendo para decimal
+    
+    # Calcular o CDI mensal corretamente com capitalização composta
+    cdi_mensal = {mes: (np.prod([1 + taxa for taxa in valores]) - 1) * 100 for mes, valores in cdi_por_mes.items()}
+    
+    return cdi_mensal
+
+def obter_ibovespa_historico(data_inicio, data_fim):
+    try:
+        # Converter datas para o formato YYYY-MM-DD
+        data_inicio = datetime.strptime(data_inicio, "%d/%m/%Y").strftime("%Y-%m-%d")
+        data_fim = datetime.strptime(data_fim, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+        # Baixar os dados do IBOVESPA via Yahoo Finance
+        ibov = yf.Ticker("^BVSP")
+        historico = ibov.history(start=data_inicio, end=data_fim, interval="1mo")  # Dados mensais
+
+        if historico.empty:
+            print("Erro: Nenhum dado encontrado para o IBOVESPA no período especificado.")
+            return {}
+
+        # Organizar os dados por mês
+        ibov_por_mes = defaultdict(list)
+        for data, row in historico.iterrows():
+            mes_ano = data.strftime("%Y-%m")
+            ibov_por_mes[mes_ano].append(row["Close"])
+
+        # Calcular a variação percentual mensal do IBOVESPA
+        ibov_mensal = {}
+        meses_ordenados = sorted(ibov_por_mes.keys())
+
+        for i in range(1, len(meses_ordenados)):
+            mes_atual = meses_ordenados[i]
+            mes_anterior = meses_ordenados[i - 1]
+
+            valor_atual = ibov_por_mes[mes_atual][0]
+            valor_anterior = ibov_por_mes[mes_anterior][0]
+
+            if valor_anterior > 0:
+                ibov_mensal[mes_atual] = ((valor_atual / valor_anterior) - 1) * 100  # Percentual
+
+        return ibov_mensal if ibov_mensal else {}
+
+    except Exception as e:
+        print(f"Erro ao obter IBOVESPA: {e}")
+        return {}
+
+
 
 class ResumoView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -299,6 +364,38 @@ class ResumoAtivoView(DetailView):
         context["grafico_labels"] = json.dumps(labels)
         context["grafico_data_perc"] = json.dumps(data_perc)
         context["grafico_data_abs"] = json.dumps(data_abs)
+
+       # CDI e IBOVESPA
+        data_inicio = meses_ordenados[0].strftime("%d/%m/%Y")
+        data_fim = meses_ordenados[-1].strftime("%d/%m/%Y")
+        cdi_mensal_historico = obter_cdi_historico(data_inicio, data_fim)
+        ibov_mensal_historico = obter_ibovespa_historico(data_inicio, data_fim)
+
+        data_cdi = [1]  # CDI começa em 1 (100% do investimento inicial)
+        data_ibov = [1]  # IBOVESPA começa em 1 (100% do investimento inicial)
+
+        for i in range(1, len(meses_ordenados)):
+            mes_atual = meses_ordenados[i]
+            mes_atual_str = mes_atual.strftime("%Y-%m")
+
+            # Obter CDI e IBOV mensal
+            cdi_mensal = cdi_mensal_historico.get(mes_atual_str, 0)
+            ibov_mensal = ibov_mensal_historico.get(mes_atual_str, 0)
+
+            # Acumular CDI e IBOV
+            cdi_acumulado = data_cdi[-1] * (1 + cdi_mensal / 100)
+            ibov_acumulado = data_ibov[-1] * (1 + ibov_mensal / 100)
+
+            data_cdi.append(cdi_acumulado)
+            data_ibov.append(ibov_acumulado)
+
+        # Converter para percentual antes de exibir no gráfico
+        data_cdi_percentual = [(valor - 1) * 100 for valor in data_cdi]
+        data_ibov_percentual = [(valor - 1) * 100 for valor in data_ibov]
+
+        # Enviar os dados corretos para o gráfico
+        context["grafico_data_cdi"] = json.dumps(data_cdi_percentual)
+        context["grafico_data_ibov"] = json.dumps(data_ibov_percentual)
 
         return context
 
