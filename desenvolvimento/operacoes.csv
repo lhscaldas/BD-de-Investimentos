@@ -1,395 +1,379 @@
 Ativo;Tipo;Data;Valor
-Tesouro IPCA+;atualizacao;2023-01-01;1004.32
-Tesouro IPCA+;venda;2023-01-01;768.77
-Tesouro IPCA+;atualizacao;2023-02-01;1008.9
-Tesouro IPCA+;atualizacao;2023-03-01;1013.71
-Tesouro IPCA+;atualizacao;2023-04-01;1018.2
-Tesouro IPCA+;atualizacao;2023-05-01;1020.66
-Tesouro IPCA+;atualizacao;2023-06-01;1022.87
-Tesouro IPCA+;compra;2023-06-01;1396.51
-Tesouro IPCA+;atualizacao;2023-07-01;1027.24
-Tesouro IPCA+;atualizacao;2023-08-01;1030.25
-Tesouro IPCA+;compra;2023-08-01;515.7
-Tesouro IPCA+;atualizacao;2023-09-01;1035.22
-Tesouro IPCA+;compra;2023-09-01;1402.87
-Tesouro IPCA+;venda;2023-09-01;912.35
-Tesouro IPCA+;atualizacao;2023-10-01;1037.65
-Tesouro IPCA+;atualizacao;2023-11-01;1040.05
-Tesouro IPCA+;compra;2023-11-01;1225.53
-Tesouro IPCA+;venda;2023-11-01;678.45
-Tesouro IPCA+;atualizacao;2023-12-01;1043.51
-Tesouro IPCA+;venda;2023-12-01;555.81
-Tesouro IPCA+;atualizacao;2024-01-01;1045.83
-Tesouro IPCA+;atualizacao;2024-02-01;1048.01
-Tesouro IPCA+;atualizacao;2024-03-01;1052.49
-Tesouro IPCA+;atualizacao;2024-04-01;1055.15
-Tesouro IPCA+;venda;2024-04-01;747.99
-Tesouro IPCA+;atualizacao;2024-05-01;1058.2
-Tesouro IPCA+;atualizacao;2024-06-01;1060.87
-Tesouro IPCA+;atualizacao;2024-07-01;1064.29
-Tesouro IPCA+;atualizacao;2024-08-01;1067.3
-Tesouro IPCA+;atualizacao;2024-09-01;1072.01
-Tesouro IPCA+;atualizacao;2024-10-01;1074.52
-Tesouro IPCA+;atualizacao;2024-11-01;1078.2
-Tesouro IPCA+;atualizacao;2024-12-01;1081.59
-Tesouro IPCA+;venda;2024-12-01;695.38
-Tesouro IPCA+;atualizacao;2025-01-01;1086.34
-Tesouro IPCA+;venda;2025-01-01;993.31
-Tesouro IPCA+;atualizacao;2025-02-01;1089.88
-Tesouro IPCA+;compra;2025-02-01;1085.46
-Tesouro IPCA+;venda;2025-02-01;610.12
-Ações Petrobras;atualizacao;2023-01-01;5250.61
-Ações Petrobras;compra;2023-01-01;4128.33
-Ações Petrobras;venda;2023-01-01;3127.9
-Ações Petrobras;atualizacao;2023-02-01;5116.08
-Ações Petrobras;venda;2023-02-01;4597.51
-Ações Petrobras;atualizacao;2023-03-01;5236.2
-Ações Petrobras;atualizacao;2023-04-01;5191.87
-Ações Petrobras;venda;2023-04-01;5761.61
-Ações Petrobras;atualizacao;2023-05-01;5351.28
-Ações Petrobras;venda;2023-05-01;3759.44
-Ações Petrobras;atualizacao;2023-06-01;5275.59
-Ações Petrobras;atualizacao;2023-07-01;5542.94
-Ações Petrobras;venda;2023-07-01;4163.46
-Ações Petrobras;atualizacao;2023-08-01;5496.89
-Ações Petrobras;compra;2023-08-01;5848.49
-Ações Petrobras;atualizacao;2023-09-01;5787.98
-Ações Petrobras;compra;2023-09-01;3798.27
-Ações Petrobras;atualizacao;2023-10-01;5671.37
-Ações Petrobras;atualizacao;2023-11-01;5598.52
-Ações Petrobras;atualizacao;2023-12-01;5364.61
-Ações Petrobras;compra;2023-12-01;6359.12
-Ações Petrobras;atualizacao;2024-01-01;5711.96
-Ações Petrobras;venda;2024-01-01;5500.97
-Ações Petrobras;atualizacao;2024-02-01;5979.67
-Ações Petrobras;atualizacao;2024-03-01;6114.45
-Ações Petrobras;atualizacao;2024-04-01;6191.06
-Ações Petrobras;compra;2024-04-01;5841.89
-Ações Petrobras;atualizacao;2024-05-01;6252.85
-Ações Petrobras;atualizacao;2024-06-01;6243.35
-Ações Petrobras;compra;2024-06-01;2731.58
-Ações Petrobras;atualizacao;2024-07-01;6226.66
-Ações Petrobras;venda;2024-07-01;2765.77
-Ações Petrobras;atualizacao;2024-08-01;6239.35
-Ações Petrobras;atualizacao;2024-09-01;6654.96
-Ações Petrobras;compra;2024-09-01;5138.21
-Ações Petrobras;venda;2024-09-01;3616.0
-Ações Petrobras;atualizacao;2024-10-01;6781.61
-Ações Petrobras;atualizacao;2024-11-01;6920.87
-Ações Petrobras;atualizacao;2024-12-01;7035.39
-Ações Petrobras;atualizacao;2025-01-01;7410.33
-Ações Petrobras;atualizacao;2025-02-01;7226.24
-Ações Petrobras;compra;2025-02-01;6226.28
-Criptomoeda Bitcoin;atualizacao;2023-01-01;29736.78
-Criptomoeda Bitcoin;atualizacao;2023-02-01;29450.31
-Criptomoeda Bitcoin;atualizacao;2023-03-01;28544.04
-Criptomoeda Bitcoin;venda;2023-03-01;15037.03
-Criptomoeda Bitcoin;atualizacao;2023-04-01;29527.69
-Criptomoeda Bitcoin;venda;2023-04-01;33967.96
-Criptomoeda Bitcoin;atualizacao;2023-05-01;29533.07
-Criptomoeda Bitcoin;venda;2023-05-01;26833.55
-Criptomoeda Bitcoin;atualizacao;2023-06-01;28688.76
-Criptomoeda Bitcoin;compra;2023-06-01;26553.47
-Criptomoeda Bitcoin;atualizacao;2023-07-01;29557.41
-Criptomoeda Bitcoin;atualizacao;2023-08-01;30926.64
-Criptomoeda Bitcoin;atualizacao;2023-09-01;31115.25
-Criptomoeda Bitcoin;venda;2023-09-01;17127.36
-Criptomoeda Bitcoin;atualizacao;2023-10-01;32344.28
-Criptomoeda Bitcoin;atualizacao;2023-11-01;33898.14
-Criptomoeda Bitcoin;atualizacao;2023-12-01;33108.33
-Criptomoeda Bitcoin;atualizacao;2024-01-01;34473.28
-Criptomoeda Bitcoin;atualizacao;2024-02-01;35413.55
-Criptomoeda Bitcoin;atualizacao;2024-03-01;37099.75
-Criptomoeda Bitcoin;venda;2024-03-01;17040.56
-Criptomoeda Bitcoin;atualizacao;2024-04-01;36366.17
-Criptomoeda Bitcoin;compra;2024-04-01;20921.32
-Criptomoeda Bitcoin;atualizacao;2024-05-01;38155.67
-Criptomoeda Bitcoin;venda;2024-05-01;26043.64
-Criptomoeda Bitcoin;atualizacao;2024-06-01;36333.4
-Criptomoeda Bitcoin;atualizacao;2024-07-01;35428.95
-Criptomoeda Bitcoin;atualizacao;2024-08-01;37439.08
-Criptomoeda Bitcoin;atualizacao;2024-09-01;37463.71
-Criptomoeda Bitcoin;atualizacao;2024-10-01;37311.11
-Criptomoeda Bitcoin;venda;2024-10-01;24384.33
-Criptomoeda Bitcoin;atualizacao;2024-11-01;38685.1
-Criptomoeda Bitcoin;atualizacao;2024-12-01;37857.0
-Criptomoeda Bitcoin;atualizacao;2025-01-01;37194.19
-Criptomoeda Bitcoin;venda;2025-01-01;18642.77
-Criptomoeda Bitcoin;atualizacao;2025-02-01;39014.97
-Fundo Imobiliário XPML11;atualizacao;2023-01-01;1469.13
-Fundo Imobiliário XPML11;atualizacao;2023-02-01;1568.7
-Fundo Imobiliário XPML11;compra;2023-02-01;1872.09
-Fundo Imobiliário XPML11;atualizacao;2023-03-01;1557.38
-Fundo Imobiliário XPML11;atualizacao;2023-04-01;1665.3
-Fundo Imobiliário XPML11;compra;2023-04-01;995.5
-Fundo Imobiliário XPML11;venda;2023-04-01;988.21
-Fundo Imobiliário XPML11;atualizacao;2023-05-01;1627.6
-Fundo Imobiliário XPML11;atualizacao;2023-06-01;1682.59
-Fundo Imobiliário XPML11;venda;2023-06-01;1699.75
-Fundo Imobiliário XPML11;atualizacao;2023-07-01;1736.8
-Fundo Imobiliário XPML11;compra;2023-07-01;2156.62
-Fundo Imobiliário XPML11;atualizacao;2023-08-01;1841.07
-Fundo Imobiliário XPML11;atualizacao;2023-09-01;1943.53
-Fundo Imobiliário XPML11;atualizacao;2023-10-01;1989.13
-Fundo Imobiliário XPML11;atualizacao;2023-11-01;2007.15
-Fundo Imobiliário XPML11;atualizacao;2023-12-01;2014.07
-Fundo Imobiliário XPML11;atualizacao;2024-01-01;2114.89
-Fundo Imobiliário XPML11;atualizacao;2024-02-01;2090.89
-Fundo Imobiliário XPML11;atualizacao;2024-03-01;2112.87
-Fundo Imobiliário XPML11;atualizacao;2024-04-01;2222.38
-Fundo Imobiliário XPML11;venda;2024-04-01;1695.97
-Fundo Imobiliário XPML11;atualizacao;2024-05-01;2362.42
-Fundo Imobiliário XPML11;venda;2024-05-01;1040.78
-Fundo Imobiliário XPML11;atualizacao;2024-06-01;2317.11
-Fundo Imobiliário XPML11;atualizacao;2024-07-01;2318.75
-Fundo Imobiliário XPML11;compra;2024-07-01;1213.96
-Fundo Imobiliário XPML11;venda;2024-07-01;1563.47
-Fundo Imobiliário XPML11;atualizacao;2024-08-01;2370.83
-Fundo Imobiliário XPML11;compra;2024-08-01;1429.85
-Fundo Imobiliário XPML11;atualizacao;2024-09-01;2481.03
-Fundo Imobiliário XPML11;atualizacao;2024-10-01;2502.92
-Fundo Imobiliário XPML11;compra;2024-10-01;1274.28
-Fundo Imobiliário XPML11;atualizacao;2024-11-01;2607.75
-Fundo Imobiliário XPML11;compra;2024-11-01;1443.08
-Fundo Imobiliário XPML11;atualizacao;2024-12-01;2550.34
-Fundo Imobiliário XPML11;atualizacao;2025-01-01;2653.32
-Fundo Imobiliário XPML11;atualizacao;2025-02-01;2721.0
-CDB Banco Inter;atualizacao;2023-01-01;5013.87
-CDB Banco Inter;atualizacao;2023-02-01;5032.22
-CDB Banco Inter;atualizacao;2023-03-01;5054.11
-CDB Banco Inter;compra;2023-03-01;3040.19
-CDB Banco Inter;atualizacao;2023-04-01;5066.74
-CDB Banco Inter;atualizacao;2023-05-01;5079.7
-CDB Banco Inter;compra;2023-05-01;3881.4
-CDB Banco Inter;venda;2023-05-01;5266.76
-CDB Banco Inter;atualizacao;2023-06-01;5090.09
-CDB Banco Inter;atualizacao;2023-07-01;5114.71
-CDB Banco Inter;atualizacao;2023-08-01;5126.54
-CDB Banco Inter;compra;2023-08-01;7408.3
-CDB Banco Inter;atualizacao;2023-09-01;5151.41
-CDB Banco Inter;compra;2023-09-01;4861.95
-CDB Banco Inter;venda;2023-09-01;4701.11
-CDB Banco Inter;atualizacao;2023-10-01;5169.78
-CDB Banco Inter;atualizacao;2023-11-01;5189.9
-CDB Banco Inter;compra;2023-11-01;4823.75
-CDB Banco Inter;venda;2023-11-01;4772.28
-CDB Banco Inter;atualizacao;2023-12-01;5202.0
-CDB Banco Inter;atualizacao;2024-01-01;5227.36
-CDB Banco Inter;atualizacao;2024-02-01;5251.33
-CDB Banco Inter;atualizacao;2024-03-01;5275.14
-CDB Banco Inter;atualizacao;2024-04-01;5297.87
-CDB Banco Inter;compra;2024-04-01;7441.32
-CDB Banco Inter;atualizacao;2024-05-01;5317.3
-CDB Banco Inter;compra;2024-05-01;3422.84
-CDB Banco Inter;venda;2024-05-01;3315.09
-CDB Banco Inter;atualizacao;2024-06-01;5338.36
-CDB Banco Inter;compra;2024-06-01;4567.79
-CDB Banco Inter;venda;2024-06-01;3201.8
-CDB Banco Inter;atualizacao;2024-07-01;5352.32
-CDB Banco Inter;atualizacao;2024-08-01;5369.02
-CDB Banco Inter;atualizacao;2024-09-01;5389.43
-CDB Banco Inter;atualizacao;2024-10-01;5404.63
-CDB Banco Inter;atualizacao;2024-11-01;5422.3
-CDB Banco Inter;compra;2024-11-01;6762.69
-CDB Banco Inter;atualizacao;2024-12-01;5434.94
-CDB Banco Inter;compra;2024-12-01;6728.61
-CDB Banco Inter;atualizacao;2025-01-01;5460.63
-CDB Banco Inter;compra;2025-01-01;5035.63
-CDB Banco Inter;atualizacao;2025-02-01;5482.6
-Ações Vale;atualizacao;2023-01-01;7472.96
-Ações Vale;compra;2023-01-01;7568.77
-Ações Vale;atualizacao;2023-02-01;7144.56
-Ações Vale;compra;2023-02-01;3928.9
-Ações Vale;atualizacao;2023-03-01;7543.74
-Ações Vale;atualizacao;2023-04-01;7789.89
-Ações Vale;compra;2023-04-01;6422.14
-Ações Vale;atualizacao;2023-05-01;8171.78
-Ações Vale;atualizacao;2023-06-01;8677.39
-Ações Vale;compra;2023-06-01;6640.22
-Ações Vale;atualizacao;2023-07-01;8537.1
-Ações Vale;venda;2023-07-01;5094.58
-Ações Vale;atualizacao;2023-08-01;8754.55
-Ações Vale;compra;2023-08-01;8996.1
-Ações Vale;atualizacao;2023-09-01;8337.81
-Ações Vale;atualizacao;2023-10-01;8353.94
-Ações Vale;venda;2023-10-01;4717.42
-Ações Vale;atualizacao;2023-11-01;8528.62
-Ações Vale;atualizacao;2023-12-01;8421.23
-Ações Vale;atualizacao;2024-01-01;8920.18
-Ações Vale;compra;2024-01-01;8414.89
-Ações Vale;venda;2024-01-01;7436.77
-Ações Vale;atualizacao;2024-02-01;8966.32
-Ações Vale;compra;2024-02-01;7476.4
-Ações Vale;atualizacao;2024-03-01;8941.35
-Ações Vale;atualizacao;2024-04-01;8650.73
-Ações Vale;compra;2024-04-01;6328.95
-Ações Vale;atualizacao;2024-05-01;9172.73
-Ações Vale;atualizacao;2024-06-01;9466.19
-Ações Vale;atualizacao;2024-07-01;9936.84
-Ações Vale;atualizacao;2024-08-01;9483.48
-Ações Vale;venda;2024-08-01;4188.42
-Ações Vale;atualizacao;2024-09-01;9934.22
-Ações Vale;atualizacao;2024-10-01;9999.12
-Ações Vale;atualizacao;2024-11-01;10302.1
-Ações Vale;atualizacao;2024-12-01;10402.93
-Ações Vale;compra;2024-12-01;5447.4
-Ações Vale;atualizacao;2025-01-01;10868.82
-Ações Vale;compra;2025-01-01;9110.11
-Ações Vale;venda;2025-01-01;3810.27
-Ações Vale;atualizacao;2025-02-01;11001.55
-Criptomoeda Ethereum;atualizacao;2023-01-01;1502.98
-Criptomoeda Ethereum;atualizacao;2023-02-01;1491.89
-Criptomoeda Ethereum;atualizacao;2023-03-01;1495.81
-Criptomoeda Ethereum;compra;2023-03-01;1256.44
-Criptomoeda Ethereum;venda;2023-03-01;1474.66
-Criptomoeda Ethereum;atualizacao;2023-04-01;1598.76
-Criptomoeda Ethereum;atualizacao;2023-05-01;1643.03
-Criptomoeda Ethereum;atualizacao;2023-06-01;1674.1
-Criptomoeda Ethereum;atualizacao;2023-07-01;1628.58
-Criptomoeda Ethereum;venda;2023-07-01;938.85
-Criptomoeda Ethereum;atualizacao;2023-08-01;1580.71
-Criptomoeda Ethereum;compra;2023-08-01;1743.74
-Criptomoeda Ethereum;atualizacao;2023-09-01;1608.77
-Criptomoeda Ethereum;atualizacao;2023-10-01;1557.24
-Criptomoeda Ethereum;compra;2023-10-01;753.67
-Criptomoeda Ethereum;venda;2023-10-01;1665.57
-Criptomoeda Ethereum;atualizacao;2023-11-01;1633.88
-Criptomoeda Ethereum;atualizacao;2023-12-01;1617.74
-Criptomoeda Ethereum;compra;2023-12-01;1788.45
-Criptomoeda Ethereum;venda;2023-12-01;847.77
-Criptomoeda Ethereum;atualizacao;2024-01-01;1726.23
-Criptomoeda Ethereum;venda;2024-01-01;979.75
-Criptomoeda Ethereum;atualizacao;2024-02-01;1694.63
-Criptomoeda Ethereum;venda;2024-02-01;908.51
-Criptomoeda Ethereum;atualizacao;2024-03-01;1740.6
-Criptomoeda Ethereum;atualizacao;2024-04-01;1721.96
-Criptomoeda Ethereum;atualizacao;2024-05-01;1747.29
-Criptomoeda Ethereum;atualizacao;2024-06-01;1769.62
-Criptomoeda Ethereum;compra;2024-06-01;1725.61
-Criptomoeda Ethereum;atualizacao;2024-07-01;1759.09
-Criptomoeda Ethereum;compra;2024-07-01;1547.57
-Criptomoeda Ethereum;atualizacao;2024-08-01;1774.6
-Criptomoeda Ethereum;atualizacao;2024-09-01;1812.5
-Criptomoeda Ethereum;atualizacao;2024-10-01;1768.82
-Criptomoeda Ethereum;atualizacao;2024-11-01;1877.69
-Criptomoeda Ethereum;venda;2024-11-01;833.86
-Criptomoeda Ethereum;atualizacao;2024-12-01;1915.16
-Criptomoeda Ethereum;atualizacao;2025-01-01;1979.46
-Criptomoeda Ethereum;atualizacao;2025-02-01;2061.38
-Criptomoeda Ethereum;compra;2025-02-01;1825.95
-Fundo Multimercado XP;atualizacao;2023-01-01;3929.25
-Fundo Multimercado XP;atualizacao;2023-02-01;3957.79
-Fundo Multimercado XP;venda;2023-02-01;3859.45
-Fundo Multimercado XP;atualizacao;2023-03-01;3784.01
-Fundo Multimercado XP;venda;2023-03-01;3675.67
-Fundo Multimercado XP;atualizacao;2023-04-01;3999.13
-Fundo Multimercado XP;compra;2023-04-01;2347.54
-Fundo Multimercado XP;atualizacao;2023-05-01;4054.56
-Fundo Multimercado XP;atualizacao;2023-06-01;3917.74
-Fundo Multimercado XP;atualizacao;2023-07-01;3854.33
-Fundo Multimercado XP;atualizacao;2023-08-01;3936.06
-Fundo Multimercado XP;compra;2023-08-01;2723.25
-Fundo Multimercado XP;venda;2023-08-01;2138.65
-Fundo Multimercado XP;atualizacao;2023-09-01;4040.6
-Fundo Multimercado XP;compra;2023-09-01;2571.75
-Fundo Multimercado XP;atualizacao;2023-10-01;4291.39
-Fundo Multimercado XP;atualizacao;2023-11-01;4141.42
-Fundo Multimercado XP;compra;2023-11-01;2145.9
-Fundo Multimercado XP;atualizacao;2023-12-01;4255.52
-Fundo Multimercado XP;compra;2023-12-01;5789.37
-Fundo Multimercado XP;atualizacao;2024-01-01;4119.93
-Fundo Multimercado XP;atualizacao;2024-02-01;4308.13
-Fundo Multimercado XP;atualizacao;2024-03-01;4311.2
-Fundo Multimercado XP;compra;2024-03-01;4215.46
-Fundo Multimercado XP;atualizacao;2024-04-01;4333.08
-Fundo Multimercado XP;atualizacao;2024-05-01;4532.13
-Fundo Multimercado XP;atualizacao;2024-06-01;4452.76
-Fundo Multimercado XP;atualizacao;2024-07-01;4557.84
-Fundo Multimercado XP;compra;2024-07-01;5396.26
-Fundo Multimercado XP;venda;2024-07-01;3539.95
-Fundo Multimercado XP;atualizacao;2024-08-01;4363.67
-Fundo Multimercado XP;atualizacao;2024-09-01;4540.56
-Fundo Multimercado XP;atualizacao;2024-10-01;4485.5
-Fundo Multimercado XP;atualizacao;2024-11-01;4703.56
-Fundo Multimercado XP;atualizacao;2024-12-01;4484.21
-Fundo Multimercado XP;atualizacao;2025-01-01;4350.8
-Fundo Multimercado XP;venda;2025-01-01;4449.16
-Fundo Multimercado XP;atualizacao;2025-02-01;4207.98
-Fundo Multimercado XP;compra;2025-02-01;3430.06
-Tesouro Selic;atualizacao;2023-01-01;2004.95
-Tesouro Selic;atualizacao;2023-02-01;2010.97
-Tesouro Selic;atualizacao;2023-03-01;2020.62
-Tesouro Selic;atualizacao;2023-04-01;2030.27
-Tesouro Selic;atualizacao;2023-05-01;2035.74
-Tesouro Selic;atualizacao;2023-06-01;2041.67
-Tesouro Selic;compra;2023-06-01;2236.82
-Tesouro Selic;atualizacao;2023-07-01;2045.77
-Tesouro Selic;compra;2023-07-01;1974.6
-Tesouro Selic;atualizacao;2023-08-01;2050.85
-Tesouro Selic;venda;2023-08-01;1832.01
-Tesouro Selic;atualizacao;2023-09-01;2057.95
-Tesouro Selic;atualizacao;2023-10-01;2067.03
-Tesouro Selic;compra;2023-10-01;2618.0
-Tesouro Selic;venda;2023-10-01;1566.18
-Tesouro Selic;atualizacao;2023-11-01;2072.21
-Tesouro Selic;atualizacao;2023-12-01;2081.76
-Tesouro Selic;atualizacao;2024-01-01;2089.35
-Tesouro Selic;atualizacao;2024-02-01;2099.75
-Tesouro Selic;compra;2024-02-01;2479.37
-Tesouro Selic;atualizacao;2024-03-01;2106.9
-Tesouro Selic;atualizacao;2024-04-01;2115.42
-Tesouro Selic;atualizacao;2024-05-01;2125.73
-Tesouro Selic;compra;2024-05-01;2767.99
-Tesouro Selic;atualizacao;2024-06-01;2132.84
-Tesouro Selic;atualizacao;2024-07-01;2142.96
-Tesouro Selic;compra;2024-07-01;1812.27
-Tesouro Selic;atualizacao;2024-08-01;2151.06
-Tesouro Selic;atualizacao;2024-09-01;2158.63
-Tesouro Selic;atualizacao;2024-10-01;2164.19
-Tesouro Selic;venda;2024-10-01;1976.06
-Tesouro Selic;atualizacao;2024-11-01;2169.99
-Tesouro Selic;atualizacao;2024-12-01;2176.77
-Tesouro Selic;atualizacao;2025-01-01;2185.2
-Tesouro Selic;venda;2025-01-01;1037.45
-Tesouro Selic;atualizacao;2025-02-01;2193.78
-FII HGLG11;atualizacao;2023-01-01;2467.63
-FII HGLG11;atualizacao;2023-02-01;2346.82
-FII HGLG11;atualizacao;2023-03-01;2273.47
-FII HGLG11;compra;2023-03-01;2148.9
-FII HGLG11;atualizacao;2023-04-01;2273.01
-FII HGLG11;atualizacao;2023-05-01;2195.26
-FII HGLG11;venda;2023-05-01;2921.73
-FII HGLG11;atualizacao;2023-06-01;2138.52
-FII HGLG11;atualizacao;2023-07-01;2117.26
-FII HGLG11;compra;2023-07-01;1991.78
-FII HGLG11;venda;2023-07-01;2658.94
-FII HGLG11;atualizacao;2023-08-01;2179.9
-FII HGLG11;venda;2023-08-01;2905.28
-FII HGLG11;atualizacao;2023-09-01;2201.88
-FII HGLG11;atualizacao;2023-10-01;2260.41
-FII HGLG11;venda;2023-10-01;1893.26
-FII HGLG11;atualizacao;2023-11-01;2203.44
-FII HGLG11;venda;2023-11-01;2569.13
-FII HGLG11;atualizacao;2023-12-01;2285.85
-FII HGLG11;atualizacao;2024-01-01;2304.12
-FII HGLG11;atualizacao;2024-02-01;2282.4
-FII HGLG11;atualizacao;2024-03-01;2347.7
-FII HGLG11;venda;2024-03-01;1965.41
-FII HGLG11;atualizacao;2024-04-01;2439.91
-FII HGLG11;atualizacao;2024-05-01;2333.1
-FII HGLG11;compra;2024-05-01;3093.52
-FII HGLG11;venda;2024-05-01;2601.8
-FII HGLG11;atualizacao;2024-06-01;2254.33
-FII HGLG11;compra;2024-06-01;3308.99
-FII HGLG11;atualizacao;2024-07-01;2392.53
-FII HGLG11;atualizacao;2024-08-01;2441.42
-FII HGLG11;atualizacao;2024-09-01;2579.86
-FII HGLG11;compra;2024-09-01;2019.5
-FII HGLG11;atualizacao;2024-10-01;2677.52
-FII HGLG11;compra;2024-10-01;3578.79
-FII HGLG11;atualizacao;2024-11-01;2677.01
-FII HGLG11;atualizacao;2024-12-01;2766.03
-FII HGLG11;venda;2024-12-01;1824.4
-FII HGLG11;atualizacao;2025-01-01;2698.31
-FII HGLG11;compra;2025-01-01;2269.39
-FII HGLG11;atualizacao;2025-02-01;2578.58
+Tesouro IPCA+;atualizacao;2023-02-01;1003.28
+Tesouro IPCA+;compra;2023-02-01;1367.0
+Tesouro IPCA+;atualizacao;2023-03-01;2381.98
+Tesouro IPCA+;atualizacao;2023-04-01;2393.58
+Tesouro IPCA+;atualizacao;2023-05-01;2399.41
+Tesouro IPCA+;atualizacao;2023-06-01;2404.7
+Tesouro IPCA+;atualizacao;2023-07-01;2409.73
+Tesouro IPCA+;compra;2023-07-01;1325.12
+Tesouro IPCA+;venda;2023-07-01;1054.27
+Tesouro IPCA+;atualizacao;2023-08-01;2691.38
+Tesouro IPCA+;atualizacao;2023-09-01;2704.48
+Tesouro IPCA+;atualizacao;2023-10-01;2712.1
+Tesouro IPCA+;venda;2023-10-01;539.06
+Tesouro IPCA+;atualizacao;2023-11-01;2183.87
+Tesouro IPCA+;compra;2023-11-01;853.15
+Tesouro IPCA+;atualizacao;2023-12-01;3048.43
+Tesouro IPCA+;atualizacao;2024-01-01;3062.24
+Tesouro IPCA+;atualizacao;2024-02-01;3072.38
+Tesouro IPCA+;compra;2024-02-01;1397.4
+Tesouro IPCA+;atualizacao;2024-03-01;4481.69
+Tesouro IPCA+;compra;2024-03-01;690.49
+Tesouro IPCA+;atualizacao;2024-04-01;5191.29
+Tesouro IPCA+;atualizacao;2024-05-01;5207.65
+Tesouro IPCA+;compra;2024-05-01;1317.52
+Tesouro IPCA+;venda;2024-05-01;1074.0
+Tesouro IPCA+;atualizacao;2024-06-01;5473.4
+Tesouro IPCA+;venda;2024-06-01;829.26
+Tesouro IPCA+;atualizacao;2024-07-01;4667.2
+Tesouro IPCA+;compra;2024-07-01;823.72
+Tesouro IPCA+;atualizacao;2024-08-01;5503.24
+Tesouro IPCA+;atualizacao;2024-09-01;5520.59
+Tesouro IPCA+;atualizacao;2024-10-01;5543.79
+Tesouro IPCA+;atualizacao;2024-11-01;5556.51
+Tesouro IPCA+;atualizacao;2024-12-01;5573.53
+Tesouro IPCA+;atualizacao;2025-01-01;5597.24
+Tesouro IPCA+;atualizacao;2025-02-01;5613.69
+Tesouro IPCA+;compra;2025-02-01;1426.28
+Ações Petrobras;atualizacao;2023-02-01;4950.59
+Ações Petrobras;atualizacao;2023-03-01;5165.94
+Ações Petrobras;compra;2023-03-01;3109.93
+Ações Petrobras;atualizacao;2023-04-01;7940.94
+Ações Petrobras;venda;2023-04-01;3071.71
+Ações Petrobras;atualizacao;2023-05-01;4724.94
+Ações Petrobras;atualizacao;2023-06-01;4775.98
+Ações Petrobras;atualizacao;2023-07-01;4668.49
+Ações Petrobras;atualizacao;2023-08-01;4928.73
+Ações Petrobras;atualizacao;2023-09-01;5125.84
+Ações Petrobras;compra;2023-09-01;3134.92
+Ações Petrobras;venda;2023-09-01;5385.47
+Ações Petrobras;atualizacao;2023-10-01;2982.63
+Ações Petrobras;atualizacao;2023-11-01;2933.47
+Ações Petrobras;compra;2023-11-01;6035.08
+Ações Petrobras;venda;2023-11-01;2766.21
+Ações Petrobras;atualizacao;2023-12-01;6370.94
+Ações Petrobras;atualizacao;2024-01-01;6173.07
+Ações Petrobras;atualizacao;2024-02-01;5878.96
+Ações Petrobras;compra;2024-02-01;3019.99
+Ações Petrobras;atualizacao;2024-03-01;9419.66
+Ações Petrobras;compra;2024-03-01;4440.46
+Ações Petrobras;atualizacao;2024-04-01;14743.06
+Ações Petrobras;atualizacao;2024-05-01;15099.94
+Ações Petrobras;compra;2024-05-01;4470.31
+Ações Petrobras;atualizacao;2024-06-01;19625.09
+Ações Petrobras;atualizacao;2024-07-01;18897.01
+Ações Petrobras;atualizacao;2024-08-01;18537.85
+Ações Petrobras;venda;2024-08-01;3809.73
+Ações Petrobras;atualizacao;2024-09-01;14699.43
+Ações Petrobras;compra;2024-09-01;2616.73
+Ações Petrobras;atualizacao;2024-10-01;16705.23
+Ações Petrobras;compra;2024-10-01;4779.96
+Ações Petrobras;atualizacao;2024-11-01;22252.32
+Ações Petrobras;compra;2024-11-01;4375.43
+Ações Petrobras;venda;2024-11-01;3410.0
+Ações Petrobras;atualizacao;2024-12-01;23210.7
+Ações Petrobras;compra;2024-12-01;6940.57
+Ações Petrobras;atualizacao;2025-01-01;32231.07
+Ações Petrobras;atualizacao;2025-02-01;32832.51
+Ações Petrobras;compra;2025-02-01;4357.49
+Criptomoeda Bitcoin;atualizacao;2023-02-01;29739.64
+Criptomoeda Bitcoin;atualizacao;2023-03-01;30899.3
+Criptomoeda Bitcoin;compra;2023-03-01;42708.31
+Criptomoeda Bitcoin;atualizacao;2023-04-01;77937.02
+Criptomoeda Bitcoin;compra;2023-04-01;40247.24
+Criptomoeda Bitcoin;atualizacao;2023-05-01;117772.09
+Criptomoeda Bitcoin;atualizacao;2023-06-01;125120.17
+Criptomoeda Bitcoin;compra;2023-06-01;18508.22
+Criptomoeda Bitcoin;atualizacao;2023-07-01;139885.54
+Criptomoeda Bitcoin;atualizacao;2023-08-01;145442.21
+Criptomoeda Bitcoin;atualizacao;2023-09-01;153635.76
+Criptomoeda Bitcoin;venda;2023-09-01;23656.79
+Criptomoeda Bitcoin;atualizacao;2023-10-01;129655.42
+Criptomoeda Bitcoin;compra;2023-10-01;16307.98
+Criptomoeda Bitcoin;atualizacao;2023-11-01;142170.19
+Criptomoeda Bitcoin;atualizacao;2023-12-01;135464.63
+Criptomoeda Bitcoin;venda;2023-12-01;31604.26
+Criptomoeda Bitcoin;atualizacao;2024-01-01;100701.05
+Criptomoeda Bitcoin;atualizacao;2024-02-01;104374.33
+Criptomoeda Bitcoin;atualizacao;2024-03-01;104935.11
+Criptomoeda Bitcoin;compra;2024-03-01;18148.91
+Criptomoeda Bitcoin;venda;2024-03-01;31251.34
+Criptomoeda Bitcoin;atualizacao;2024-04-01;91292.2
+Criptomoeda Bitcoin;atualizacao;2024-05-01;96327.64
+Criptomoeda Bitcoin;atualizacao;2024-06-01;100826.34
+Criptomoeda Bitcoin;atualizacao;2024-07-01;100469.97
+Criptomoeda Bitcoin;atualizacao;2024-08-01;103588.71
+Criptomoeda Bitcoin;compra;2024-08-01;38796.51
+Criptomoeda Bitcoin;venda;2024-08-01;29057.99
+Criptomoeda Bitcoin;atualizacao;2024-09-01;120161.65
+Criptomoeda Bitcoin;atualizacao;2024-10-01;126646.27
+Criptomoeda Bitcoin;atualizacao;2024-11-01;132404.05
+Criptomoeda Bitcoin;atualizacao;2024-12-01;132420.15
+Criptomoeda Bitcoin;compra;2024-12-01;21758.29
+Criptomoeda Bitcoin;atualizacao;2025-01-01;162162.87
+Criptomoeda Bitcoin;atualizacao;2025-02-01;160142.52
+Criptomoeda Bitcoin;compra;2025-02-01;17130.53
+Criptomoeda Bitcoin;venda;2025-02-01;30492.91
+Fundo Imobiliário XPML11;atualizacao;2023-02-01;1492.92
+Fundo Imobiliário XPML11;compra;2023-02-01;933.35
+Fundo Imobiliário XPML11;atualizacao;2023-03-01;2332.97
+Fundo Imobiliário XPML11;atualizacao;2023-04-01;2374.05
+Fundo Imobiliário XPML11;compra;2023-04-01;1790.42
+Fundo Imobiliário XPML11;atualizacao;2023-05-01;4237.47
+Fundo Imobiliário XPML11;compra;2023-05-01;1091.84
+Fundo Imobiliário XPML11;atualizacao;2023-06-01;5522.0
+Fundo Imobiliário XPML11;atualizacao;2023-07-01;5691.86
+Fundo Imobiliário XPML11;atualizacao;2023-08-01;5972.8
+Fundo Imobiliário XPML11;venda;2023-08-01;895.71
+Fundo Imobiliário XPML11;atualizacao;2023-09-01;5083.3
+Fundo Imobiliário XPML11;atualizacao;2023-10-01;4914.29
+Fundo Imobiliário XPML11;compra;2023-10-01;1967.51
+Fundo Imobiliário XPML11;atualizacao;2023-11-01;6891.33
+Fundo Imobiliário XPML11;atualizacao;2023-12-01;6572.58
+Fundo Imobiliário XPML11;compra;2023-12-01;2125.66
+Fundo Imobiliário XPML11;atualizacao;2024-01-01;8652.1
+Fundo Imobiliário XPML11;atualizacao;2024-02-01;9042.79
+Fundo Imobiliário XPML11;atualizacao;2024-03-01;9497.77
+Fundo Imobiliário XPML11;venda;2024-03-01;1273.85
+Fundo Imobiliário XPML11;atualizacao;2024-04-01;8095.3
+Fundo Imobiliário XPML11;compra;2024-04-01;2008.32
+Fundo Imobiliário XPML11;atualizacao;2024-05-01;10742.92
+Fundo Imobiliário XPML11;atualizacao;2024-06-01;10344.3
+Fundo Imobiliário XPML11;compra;2024-06-01;1671.22
+Fundo Imobiliário XPML11;atualizacao;2024-07-01;11974.26
+Fundo Imobiliário XPML11;atualizacao;2024-08-01;11908.68
+Fundo Imobiliário XPML11;atualizacao;2024-09-01;12411.7
+Fundo Imobiliário XPML11;atualizacao;2024-10-01;12957.1
+Fundo Imobiliário XPML11;atualizacao;2024-11-01;13472.04
+Fundo Imobiliário XPML11;atualizacao;2024-12-01;12806.83
+Fundo Imobiliário XPML11;atualizacao;2025-01-01;12386.22
+Fundo Imobiliário XPML11;atualizacao;2025-02-01;12270.74
+CDB Banco Inter;atualizacao;2023-02-01;5021.9
+CDB Banco Inter;atualizacao;2023-03-01;5041.06
+CDB Banco Inter;compra;2023-03-01;6580.53
+CDB Banco Inter;atualizacao;2023-04-01;11670.56
+CDB Banco Inter;atualizacao;2023-05-01;11694.9
+CDB Banco Inter;atualizacao;2023-06-01;11729.91
+CDB Banco Inter;venda;2023-06-01;5620.49
+CDB Banco Inter;atualizacao;2023-07-01;6139.41
+CDB Banco Inter;compra;2023-07-01;5696.54
+CDB Banco Inter;atualizacao;2023-08-01;11880.54
+CDB Banco Inter;compra;2023-08-01;4415.37
+CDB Banco Inter;atualizacao;2023-09-01;16336.33
+CDB Banco Inter;atualizacao;2023-10-01;16387.69
+CDB Banco Inter;atualizacao;2023-11-01;16447.05
+CDB Banco Inter;compra;2023-11-01;3899.71
+CDB Banco Inter;atualizacao;2023-12-01;20448.08
+CDB Banco Inter;atualizacao;2024-01-01;20503.0
+CDB Banco Inter;venda;2024-01-01;5084.07
+CDB Banco Inter;atualizacao;2024-02-01;15469.95
+CDB Banco Inter;compra;2024-02-01;4461.11
+CDB Banco Inter;atualizacao;2024-03-01;19994.31
+CDB Banco Inter;atualizacao;2024-04-01;20083.05
+CDB Banco Inter;venda;2024-04-01;5946.25
+CDB Banco Inter;atualizacao;2024-05-01;14187.24
+CDB Banco Inter;atualizacao;2024-06-01;14248.59
+CDB Banco Inter;compra;2024-06-01;6792.11
+CDB Banco Inter;atualizacao;2024-07-01;21118.12
+CDB Banco Inter;compra;2024-07-01;5860.41
+CDB Banco Inter;atualizacao;2024-08-01;27077.12
+CDB Banco Inter;compra;2024-08-01;5829.12
+CDB Banco Inter;atualizacao;2024-09-01;32996.06
+CDB Banco Inter;atualizacao;2024-10-01;33159.15
+CDB Banco Inter;compra;2024-10-01;4438.39
+CDB Banco Inter;atualizacao;2024-11-01;37745.15
+CDB Banco Inter;atualizacao;2024-12-01;37833.17
+CDB Banco Inter;venda;2024-12-01;5561.12
+CDB Banco Inter;atualizacao;2025-01-01;32390.8
+CDB Banco Inter;atualizacao;2025-02-01;32544.32
+Ações Vale;atualizacao;2023-02-01;7301.11
+Ações Vale;atualizacao;2023-03-01;7811.81
+Ações Vale;compra;2023-03-01;7119.51
+Ações Vale;atualizacao;2023-04-01;15854.1
+Ações Vale;compra;2023-04-01;6674.5
+Ações Vale;atualizacao;2023-05-01;23019.09
+Ações Vale;atualizacao;2023-06-01;23519.85
+Ações Vale;venda;2023-06-01;7004.12
+Ações Vale;atualizacao;2023-07-01;17439.31
+Ações Vale;atualizacao;2023-08-01;18378.72
+Ações Vale;compra;2023-08-01;9913.1
+Ações Vale;venda;2023-08-01;5984.66
+Ações Vale;atualizacao;2023-09-01;22985.2
+Ações Vale;venda;2023-09-01;4179.14
+Ações Vale;atualizacao;2023-10-01;18030.93
+Ações Vale;atualizacao;2023-11-01;19067.62
+Ações Vale;venda;2023-11-01;8298.76
+Ações Vale;atualizacao;2023-12-01;10361.54
+Ações Vale;atualizacao;2024-01-01;9944.06
+Ações Vale;atualizacao;2024-02-01;10160.69
+Ações Vale;compra;2024-02-01;10088.09
+Ações Vale;atualizacao;2024-03-01;21478.07
+Ações Vale;compra;2024-03-01;6992.8
+Ações Vale;venda;2024-03-01;6987.23
+Ações Vale;atualizacao;2024-04-01;22719.95
+Ações Vale;atualizacao;2024-05-01;23052.83
+Ações Vale;compra;2024-05-01;4710.82
+Ações Vale;venda;2024-05-01;4437.39
+Ações Vale;atualizacao;2024-06-01;23732.27
+Ações Vale;atualizacao;2024-07-01;23746.82
+Ações Vale;compra;2024-07-01;5681.17
+Ações Vale;atualizacao;2024-08-01;28791.2
+Ações Vale;atualizacao;2024-09-01;29795.37
+Ações Vale;atualizacao;2024-10-01;28526.07
+Ações Vale;compra;2024-10-01;10256.76
+Ações Vale;atualizacao;2024-11-01;39027.25
+Ações Vale;atualizacao;2024-12-01;40126.68
+Ações Vale;atualizacao;2025-01-01;41057.76
+Ações Vale;compra;2025-01-01;9631.72
+Ações Vale;venda;2025-01-01;5973.23
+Ações Vale;atualizacao;2025-02-01;46192.88
+Ações Vale;compra;2025-02-01;3686.91
+Criptomoeda Ethereum;atualizacao;2023-02-01;1588.33
+Criptomoeda Ethereum;compra;2023-02-01;1072.68
+Criptomoeda Ethereum;atualizacao;2023-03-01;2834.93
+Criptomoeda Ethereum;compra;2023-03-01;1900.47
+Criptomoeda Ethereum;atualizacao;2023-04-01;4913.54
+Criptomoeda Ethereum;compra;2023-04-01;783.8
+Criptomoeda Ethereum;atualizacao;2023-05-01;6049.2
+Criptomoeda Ethereum;venda;2023-05-01;1383.82
+Criptomoeda Ethereum;atualizacao;2023-06-01;4488.12
+Criptomoeda Ethereum;atualizacao;2023-07-01;4769.03
+Criptomoeda Ethereum;atualizacao;2023-08-01;4997.78
+Criptomoeda Ethereum;atualizacao;2023-09-01;5325.54
+Criptomoeda Ethereum;atualizacao;2023-10-01;5210.1
+Criptomoeda Ethereum;atualizacao;2023-11-01;5454.05
+Criptomoeda Ethereum;atualizacao;2023-12-01;5506.98
+Criptomoeda Ethereum;atualizacao;2024-01-01;5807.64
+Criptomoeda Ethereum;atualizacao;2024-02-01;5632.23
+Criptomoeda Ethereum;atualizacao;2024-03-01;6018.0
+Criptomoeda Ethereum;atualizacao;2024-04-01;6017.45
+Criptomoeda Ethereum;atualizacao;2024-05-01;6019.98
+Criptomoeda Ethereum;compra;2024-05-01;1871.39
+Criptomoeda Ethereum;atualizacao;2024-06-01;8333.44
+Criptomoeda Ethereum;atualizacao;2024-07-01;8877.52
+Criptomoeda Ethereum;atualizacao;2024-08-01;8703.94
+Criptomoeda Ethereum;atualizacao;2024-09-01;8394.99
+Criptomoeda Ethereum;atualizacao;2024-10-01;8822.08
+Criptomoeda Ethereum;atualizacao;2024-11-01;9205.67
+Criptomoeda Ethereum;compra;2024-11-01;1901.88
+Criptomoeda Ethereum;atualizacao;2024-12-01;10901.16
+Criptomoeda Ethereum;compra;2024-12-01;2094.71
+Criptomoeda Ethereum;atualizacao;2025-01-01;12511.66
+Criptomoeda Ethereum;compra;2025-01-01;771.89
+Criptomoeda Ethereum;atualizacao;2025-02-01;13422.58
+Criptomoeda Ethereum;venda;2025-02-01;853.89
+Fundo Multimercado XP;atualizacao;2023-02-01;3815.7
+Fundo Multimercado XP;atualizacao;2023-03-01;3739.93
+Fundo Multimercado XP;atualizacao;2023-04-01;3996.28
+Fundo Multimercado XP;atualizacao;2023-05-01;3835.64
+Fundo Multimercado XP;atualizacao;2023-06-01;3783.06
+Fundo Multimercado XP;venda;2023-06-01;2424.88
+Fundo Multimercado XP;atualizacao;2023-07-01;1291.86
+Fundo Multimercado XP;atualizacao;2023-08-01;1312.65
+Fundo Multimercado XP;atualizacao;2023-09-01;1352.73
+Fundo Multimercado XP;compra;2023-09-01;2667.54
+Fundo Multimercado XP;atualizacao;2023-10-01;4048.73
+Fundo Multimercado XP;atualizacao;2023-11-01;4256.01
+Fundo Multimercado XP;atualizacao;2023-12-01;4214.64
+Fundo Multimercado XP;atualizacao;2024-01-01;4294.16
+Fundo Multimercado XP;atualizacao;2024-02-01;4176.82
+Fundo Multimercado XP;compra;2024-02-01;4680.24
+Fundo Multimercado XP;venda;2024-02-01;3770.69
+Fundo Multimercado XP;atualizacao;2024-03-01;5189.95
+Fundo Multimercado XP;venda;2024-03-01;2988.37
+Fundo Multimercado XP;atualizacao;2024-04-01;2305.39
+Fundo Multimercado XP;venda;2024-04-01;4714.86
+Fundo Multimercado XP;atualizacao;2024-05-01;-2561.27
+Fundo Multimercado XP;compra;2024-05-01;4631.35
+Fundo Multimercado XP;atualizacao;2024-06-01;2125.66
+Fundo Multimercado XP;atualizacao;2024-07-01;2268.74
+Fundo Multimercado XP;compra;2024-07-01;4481.48
+Fundo Multimercado XP;atualizacao;2024-08-01;6609.89
+Fundo Multimercado XP;atualizacao;2024-09-01;6858.28
+Fundo Multimercado XP;compra;2024-09-01;2109.85
+Fundo Multimercado XP;atualizacao;2024-10-01;9386.03
+Fundo Multimercado XP;atualizacao;2024-11-01;9940.16
+Fundo Multimercado XP;atualizacao;2024-12-01;10343.22
+Fundo Multimercado XP;compra;2024-12-01;4951.02
+Fundo Multimercado XP;atualizacao;2025-01-01;15998.19
+Fundo Multimercado XP;compra;2025-01-01;2763.85
+Fundo Multimercado XP;atualizacao;2025-02-01;18195.85
+Tesouro Selic;atualizacao;2023-02-01;2004.16
+Tesouro Selic;compra;2023-02-01;1289.55
+Tesouro Selic;atualizacao;2023-03-01;3304.56
+Tesouro Selic;atualizacao;2023-04-01;3313.52
+Tesouro Selic;venda;2023-04-01;1243.88
+Tesouro Selic;atualizacao;2023-05-01;2078.75
+Tesouro Selic;compra;2023-05-01;2177.07
+Tesouro Selic;atualizacao;2023-06-01;4275.53
+Tesouro Selic;atualizacao;2023-07-01;4284.12
+Tesouro Selic;atualizacao;2023-08-01;4303.28
+Tesouro Selic;venda;2023-08-01;1324.36
+Tesouro Selic;atualizacao;2023-09-01;2992.83
+Tesouro Selic;compra;2023-09-01;1259.7
+Tesouro Selic;atualizacao;2023-10-01;4266.76
+Tesouro Selic;compra;2023-10-01;2436.37
+Tesouro Selic;atualizacao;2023-11-01;6730.22
+Tesouro Selic;atualizacao;2023-12-01;6748.76
+Tesouro Selic;atualizacao;2024-01-01;6776.04
+Tesouro Selic;compra;2024-01-01;2017.24
+Tesouro Selic;atualizacao;2024-02-01;8824.51
+Tesouro Selic;venda;2024-02-01;1334.44
+Tesouro Selic;atualizacao;2024-03-01;7505.27
+Tesouro Selic;atualizacao;2024-04-01;7527.32
+Tesouro Selic;venda;2024-04-01;1711.51
+Tesouro Selic;atualizacao;2024-05-01;5844.85
+Tesouro Selic;atualizacao;2024-06-01;5867.03
+Tesouro Selic;atualizacao;2024-07-01;5881.61
+Tesouro Selic;atualizacao;2024-08-01;5906.31
+Tesouro Selic;atualizacao;2024-09-01;5923.14
+Tesouro Selic;atualizacao;2024-10-01;5944.88
+Tesouro Selic;atualizacao;2024-11-01;5960.76
+Tesouro Selic;atualizacao;2024-12-01;5986.85
+Tesouro Selic;atualizacao;2025-01-01;6002.14
+Tesouro Selic;atualizacao;2025-02-01;6018.58
+Tesouro Selic;compra;2025-02-01;2558.73
+Tesouro Selic;venda;2025-02-01;1103.53
+FII HGLG11;atualizacao;2023-02-01;2546.28
+FII HGLG11;compra;2023-02-01;3615.88
+FII HGLG11;atualizacao;2023-03-01;5959.97
+FII HGLG11;atualizacao;2023-04-01;6001.62
+FII HGLG11;atualizacao;2023-05-01;6417.5
+FII HGLG11;venda;2023-05-01;2310.68
+FII HGLG11;atualizacao;2023-06-01;4267.74
+FII HGLG11;atualizacao;2023-07-01;4088.49
+FII HGLG11;atualizacao;2023-08-01;3891.97
+FII HGLG11;venda;2023-08-01;2495.69
+FII HGLG11;atualizacao;2023-09-01;1327.0
+FII HGLG11;compra;2023-09-01;2542.94
+FII HGLG11;atualizacao;2023-10-01;3797.12
+FII HGLG11;compra;2023-10-01;2854.85
+FII HGLG11;atualizacao;2023-11-01;6903.61
+FII HGLG11;atualizacao;2023-12-01;7262.42
+FII HGLG11;venda;2023-12-01;1859.2
+FII HGLG11;atualizacao;2024-01-01;5525.96
+FII HGLG11;atualizacao;2024-02-01;5485.74
+FII HGLG11;atualizacao;2024-03-01;5567.72
+FII HGLG11;compra;2024-03-01;1935.28
+FII HGLG11;atualizacao;2024-04-01;7173.03
+FII HGLG11;compra;2024-04-01;3746.82
+FII HGLG11;atualizacao;2024-05-01;10992.76
+FII HGLG11;atualizacao;2024-06-01;11585.61
+FII HGLG11;atualizacao;2024-07-01;11831.93
+FII HGLG11;compra;2024-07-01;3491.52
+FII HGLG11;venda;2024-07-01;1269.51
+FII HGLG11;atualizacao;2024-08-01;13444.89
+FII HGLG11;atualizacao;2024-09-01;13995.5
+FII HGLG11;compra;2024-09-01;2467.88
+FII HGLG11;atualizacao;2024-10-01;17381.36
+FII HGLG11;compra;2024-10-01;3051.17
+FII HGLG11;venda;2024-10-01;2344.35
+FII HGLG11;atualizacao;2024-11-01;19117.46
+FII HGLG11;compra;2024-11-01;2070.51
+FII HGLG11;atualizacao;2024-12-01;20264.66
+FII HGLG11;venda;2024-12-01;1880.11
+FII HGLG11;atualizacao;2025-01-01;18335.37
+FII HGLG11;compra;2025-01-01;1462.58
+FII HGLG11;atualizacao;2025-02-01;19518.67
+FII HGLG11;venda;2025-02-01;2453.27

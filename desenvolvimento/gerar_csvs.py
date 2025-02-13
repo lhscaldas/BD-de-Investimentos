@@ -35,7 +35,7 @@ with open("operacoes.csv", mode="w", newline="", encoding="utf-8") as file:
     writer.writerow(["Ativo", "Tipo", "Data", "Valor"])
 
     for ativo in ativos:
-        data_atual = data_inicio
+        data_atual = data_inicio + relativedelta(months=1) # Começa no mês seguinte à aquisição
         valor_atual = ativo["valor_inicial"]
 
         while data_atual <= datetime(2025, 2, 1):
@@ -51,10 +51,12 @@ with open("operacoes.csv", mode="w", newline="", encoding="utf-8") as file:
             if random.random() < 0.3:  # 30% de chance de uma compra no mês
                 compra_valor = random.uniform(0.5, 1.5) * ativo["valor_inicial"]
                 writer.writerow([ativo["nome"], "compra", data_atual.date(), round(compra_valor, 2)])
+                valor_atual += compra_valor
 
             if random.random() < 0.2:  # 20% de chance de uma venda no mês
                 venda_valor = random.uniform(0.5, 1.2) * ativo["valor_inicial"]
                 writer.writerow([ativo["nome"], "venda", data_atual.date(), round(venda_valor, 2)])
+                valor_atual -= venda_valor
 
             # Avança para o próximo mês
             data_atual += relativedelta(months=1)
