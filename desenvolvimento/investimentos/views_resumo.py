@@ -129,21 +129,22 @@ class ResumoView(LoginRequiredMixin, ListView):
 
     def calcular_rentabilidade(self, ativo):
         """Calcula a rentabilidade absoluta e percentual do ativo."""
-        valor_1m, data_1m = self.obter_valor_referencia(ativo, 1 / 12)
-        valor_1a, data_1a = self.obter_valor_referencia(ativo, 1)
-        valor_inicial = ativo.valor_inicial
 
-        valor_1m = self.ajustar_valor_com_operacoes(ativo, valor_1m, data_1m, ativo.ultima_atualizacao)
-        valor_1a = self.ajustar_valor_com_operacoes(ativo, valor_1a, data_1a, ativo.ultima_atualizacao)
-        valor_inicial_ajustado = self.ajustar_valor_com_operacoes(ativo, valor_inicial, ativo.data_aquisicao, ativo.ultima_atualizacao)
+        # Obtém os valores de referência corretamente ajustados com compras e vendas
+        valor_1m = self.get_valor_ajustado(ativo, ativo.ultima_atualizacao - timedelta(days=30))
+        valor_1a = self.get_valor_ajustado(ativo, ativo.ultima_atualizacao - timedelta(days=365))
+        valor_inicial_ajustado = self.get_valor_ajustado(ativo, ativo.data_aquisicao)
 
+        # Calcula a rentabilidade absoluta
         ativo.rentabilidade_1m_abs = ativo.valor_atualizado - valor_1m
         ativo.rentabilidade_1a_abs = ativo.valor_atualizado - valor_1a
         ativo.rentabilidade_total_abs = ativo.valor_atualizado - valor_inicial_ajustado
 
-        ativo.rentabilidade_1m_perc = (ativo.rentabilidade_1m_abs / valor_1m * 100) if valor_1m else 0
-        ativo.rentabilidade_1a_perc = (ativo.rentabilidade_1a_abs / valor_1a * 100) if valor_1a else 0
-        ativo.rentabilidade_total_perc = (ativo.rentabilidade_total_abs / valor_inicial_ajustado * 100) if valor_inicial_ajustado else 0
+        # Calcula a rentabilidade percentual, evitando divisões por zero
+        ativo.rentabilidade_1m_perc = ((ativo.rentabilidade_1m_abs / valor_1m) * 100) if valor_1m else 0
+        ativo.rentabilidade_1a_perc = ((ativo.rentabilidade_1a_abs / valor_1a) * 100) if valor_1a else 0
+        ativo.rentabilidade_total_perc = ((ativo.rentabilidade_total_abs / valor_inicial_ajustado) * 100) if valor_inicial_ajustado else 0
+
 
     def ajustar_valor_com_operacoes(self, ativo, valor_base, data_base, ultima_data):
         """Ajusta o valor do ativo considerando operações de compra e venda entre um período."""
@@ -188,10 +189,11 @@ class ResumoView(LoginRequiredMixin, ListView):
         return context
     
     def get_valor_ajustado(self, ativo, data_ref):
-        """Obtém o valor do ativo em uma data específica, ajustado por compras e vendas."""
+        """Obtém o valor do ativo ajustado por compras e vendas até uma determinada data."""
         if data_ref is None:
-            return ativo.valor_inicial  # Se não houver data de referência, usa o valor inicial como fallback.
+            return ativo.valor_inicial  # Se não houver data de referência, retorna o valor inicial.
 
+        # Obtém a última atualização antes da data de referência
         ultima_atualizacao = (
             Operacao.objects.filter(ativo=ativo, tipo="atualizacao", data__lte=data_ref)
             .order_by("-data")
@@ -199,20 +201,18 @@ class ResumoView(LoginRequiredMixin, ListView):
         )
         valor_base = ultima_atualizacao.valor if ultima_atualizacao else ativo.valor_inicial
 
-        if ultima_atualizacao:
-            compras_ate_data = (
-                Operacao.objects.filter(ativo=ativo, tipo="compra", data__gt=ultima_atualizacao.data, data__lte=data_ref)
-                .aggregate(total=Sum("valor"))["total"] or 0
-            )
-            vendas_ate_data = (
-                Operacao.objects.filter(ativo=ativo, tipo="venda", data__gt=ultima_atualizacao.data, data__lte=data_ref)
-                .aggregate(total=Sum("valor"))["total"] or 0
-            )
-        else:
-            compras_ate_data = 0
-            vendas_ate_data = 0
+        # Ajusta com compras e vendas no período correto
+        compras_ate_data = (
+            Operacao.objects.filter(ativo=ativo, tipo="compra", data__gt=ultima_atualizacao.data if ultima_atualizacao else ativo.data_aquisicao, data__lte=data_ref)
+            .aggregate(total=Sum("valor"))["total"] or 0
+        )
+        vendas_ate_data = (
+            Operacao.objects.filter(ativo=ativo, tipo="venda", data__gt=ultima_atualizacao.data if ultima_atualizacao else ativo.data_aquisicao, data__lte=data_ref)
+            .aggregate(total=Sum("valor"))["total"] or 0
+        )
 
         return valor_base + compras_ate_data - vendas_ate_data
+
 
     def calcular_rentabilidade_global(self, context, ativos):
         """Calcula a rentabilidade global da carteira baseada no método original."""
@@ -272,6 +272,7 @@ class ResumoView(LoginRequiredMixin, ListView):
         })
 
         return context
+
 
 class ResumoAtivoView(DetailView):
     model = Ativo
