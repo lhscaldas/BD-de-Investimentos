@@ -82,7 +82,14 @@ class ResumoView(LoginRequiredMixin, ListView):
         """Retorna os ativos do usuário e calcula sua rentabilidade."""
         ativos = Ativo.objects.filter(usuario=self.request.user)
 
+        # Lista de campos que podem ser filtrados
+        filtros_validos = ['nome', 'classe', 'subclasse', 'banco']
         
+        # Aplica os filtros somente se houver valores preenchidos
+        filtros = {f"{k}__icontains": v for k, v in self.request.GET.items() if v and k in filtros_validos}
+
+        if filtros:
+            ativos = ativos.filter(**filtros)
 
         for ativo in ativos:
             self.calcular_valor_atualizado(ativo)
