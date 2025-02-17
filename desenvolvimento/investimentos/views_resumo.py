@@ -412,6 +412,27 @@ class ResumoView(LoginRequiredMixin, ListView):
 
         return labels, data
     
+    def calcular_composição_por_classe(self, ativos):
+        """Calcula a composição percentual da carteira para Renda Fixa e Renda Variável."""
+
+        if not ativos.exists():
+            return {"Renda Fixa": 0, "Renda Variável": 0}
+
+        # Obtém o valor atualizado total da carteira
+        patrimonio_total = sum(ativo.valor_atualizado for ativo in ativos)
+
+        # Inicializa as classes com 0%
+        composicao = {"Renda Fixa": 0, "Renda Variável": 0}
+
+        # Soma os valores para cada classe
+        for ativo in ativos:
+            if ativo.classe in composicao:
+                composicao[ativo.classe] += ativo.valor_atualizado
+
+        # Converte para percentual
+        composicao = {classe: (valor / patrimonio_total) * 100 for classe, valor in composicao.items()}
+
+        return composicao
 
     def get_context_data(self, **kwargs):
         """Adiciona informações de rentabilidade global, comparativa e evolução patrimonial ao contexto."""
@@ -445,6 +466,11 @@ class ResumoView(LoginRequiredMixin, ListView):
         labels_subclasse, data_subclasse = self.calcular_composicao_por_subclasse(ativos)
         context["grafico_labels_subclasses"] = json.dumps(labels_subclasse)
         context["grafico_data_subclasses"] = json.dumps([float(val) for val in data_subclasse])
+
+        # Composição da carteira por classe de ativo
+        composicao_classes = self.calcular_composição_por_classe(ativos)
+        context["renda_fixa_perc"] = composicao_classes["Renda Fixa"]
+        context["renda_variavel_perc"] = composicao_classes["Renda Variável"]
 
         return context
 
