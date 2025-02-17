@@ -10,6 +10,7 @@ import requests
 import numpy as np
 import yfinance as yf
 from dateutil.relativedelta import relativedelta
+import pandas as pd
 
 def obter_cdi_historico(data_inicio, data_fim):
     url = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial={data_inicio}&dataFinal={data_fim}"
@@ -170,7 +171,7 @@ class ResumoView(LoginRequiredMixin, ListView):
         )
 
     def get_context_data(self, **kwargs):
-        """Adiciona informações de rentabilidade global e mensal da carteira ao contexto."""
+        """Adiciona informações de rentabilidade global, comparativa e evolução patrimonial ao contexto."""
         context = super().get_context_data(**kwargs)
         usuario_ativos = Ativo.objects.filter(usuario=self.request.user)
 
@@ -184,9 +185,21 @@ class ResumoView(LoginRequiredMixin, ListView):
             return self.definir_contexto_vazio(context)
 
         context = self.calcular_rentabilidade_global(context, ativos)
-        context["rentabilidade_mensal"] = self.calcular_rentabilidade_mensal(ativos)  # Adiciona a série histórica
+        context["rentabilidade_mensal"] = self.calcular_rentabilidade_mensal(ativos)
+
+        # Adiciona rentabilidade comparativa (Carteira vs CDI vs IBOVESPA)
+        labels, rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(ativos)
+        context["grafico_labels"] = json.dumps(labels)
+        context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
+        context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
+        context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
+
+        # Adiciona evolução patrimonial
+        labels_patrimonio, patrimonio = self.calcular_evolucao_patrimonial(ativos)
+        context["grafico_data_abs"] = json.dumps([float(val) for val in patrimonio])
 
         return context
+
 
 
     def definir_contexto_vazio(self, context):
@@ -328,6 +341,91 @@ class ResumoView(LoginRequiredMixin, ListView):
             data_atual += relativedelta(months=1)  # Avança para o próximo mês
 
         return rentabilidade_mensal
+    
+    def calcular_rentabilidade_comparativa(self, ativos):
+        """Calcula a rentabilidade acumulada do patrimônio comparada ao CDI e IBOVESPA."""
+
+        if not ativos.exists():
+            return [], [], [], []
+
+        # Determina o período do cálculo
+        data_inicio = min(ativo.data_aquisicao for ativo in ativos if ativo.data_aquisicao)
+        data_fim = max(ativo.ultima_atualizacao for ativo in ativos if ativo.ultima_atualizacao)
+
+        if data_fim < data_inicio:
+            return [], [], [], []
+
+        # Obtém a rentabilidade inicial
+        valor_inicial = sum(self.get_valor_ajustado(ativo, data_inicio) for ativo in ativos)
+
+        # Obtém os dados históricos do CDI e IBOVESPA
+        meses_ordenados = pd.date_range(data_inicio, data_fim, freq='MS').to_pydatetime().tolist()
+        data_inicio_str = meses_ordenados[0].strftime("%d/%m/%Y")
+        data_fim_str = meses_ordenados[-1].strftime("%d/%m/%Y")
+
+        cdi_mensal_historico = obter_cdi_historico(data_inicio_str, data_fim_str)
+        ibov_mensal_historico = obter_ibovespa_historico(data_inicio_str, data_fim_str)
+
+        # Listas para armazenar os dados
+        labels = []
+        rentabilidade_perc = []
+        cdi_acumulado = [1]  # CDI começa em 1 (100% do investimento inicial)
+        ibov_acumulado = [1]  # IBOVESPA começa em 1 (100% do investimento inicial)
+
+        valor_anterior = valor_inicial
+
+        for i, mes_atual in enumerate(meses_ordenados):
+            mes_str = mes_atual.strftime("%Y-%m")
+            valor_atual = sum(self.get_valor_ajustado(ativo, mes_atual) for ativo in ativos)
+
+            # Rentabilidade da carteira em relação ao início
+            rentabilidade = ((valor_atual / valor_inicial) - 1) * 100 if valor_inicial else 0
+            rentabilidade_perc.append(rentabilidade)
+
+            # Obter CDI e IBOV mensal
+            cdi_mensal = cdi_mensal_historico.get(mes_str, 0)
+            ibov_mensal = ibov_mensal_historico.get(mes_str, 0)
+
+            # Acumular CDI e IBOV
+            cdi_acumulado.append(cdi_acumulado[-1] * (1 + cdi_mensal / 100))
+            ibov_acumulado.append(ibov_acumulado[-1] * (1 + ibov_mensal / 100))
+
+            labels.append(mes_str)
+            valor_anterior = valor_atual
+
+        # Converter CDI e IBOV para percentual
+        cdi_acumulado_perc = [(valor - 1) * 100 for valor in cdi_acumulado[1:]]
+        ibov_acumulado_perc = [(valor - 1) * 100 for valor in ibov_acumulado[1:]]
+
+        return labels, rentabilidade_perc, cdi_acumulado_perc, ibov_acumulado_perc
+    
+    def calcular_evolucao_patrimonial(self, ativos):
+        """Calcula a evolução do patrimônio mês a mês."""
+
+        if not ativos.exists():
+            return [], []
+
+        data_inicio = min(ativo.data_aquisicao for ativo in ativos if ativo.data_aquisicao)
+        data_fim = max(ativo.ultima_atualizacao for ativo in ativos if ativo.ultima_atualizacao)
+
+        if data_fim < data_inicio:
+            return [], []
+
+        labels = []
+        patrimonio = []
+
+        meses_ordenados = pd.date_range(data_inicio, data_fim, freq='MS').to_pydatetime().tolist()
+
+        for mes_atual in meses_ordenados:
+            valor_atual = sum(self.get_valor_ajustado(ativo, mes_atual) for ativo in ativos)
+            labels.append(mes_atual.strftime("%Y-%m"))
+            patrimonio.append(valor_atual)
+
+        return labels, patrimonio
+    
+
+
+
 
 
 
