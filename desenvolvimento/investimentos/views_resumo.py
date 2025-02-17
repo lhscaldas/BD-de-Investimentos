@@ -9,6 +9,7 @@ import json
 import requests
 import numpy as np
 import yfinance as yf
+from dateutil.relativedelta import relativedelta
 
 def obter_cdi_historico(data_inicio, data_fim):
     url = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial={data_inicio}&dataFinal={data_fim}"
@@ -80,6 +81,8 @@ class ResumoView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         """Retorna os ativos do usuário e calcula sua rentabilidade."""
         ativos = Ativo.objects.filter(usuario=self.request.user)
+
+        
 
         for ativo in ativos:
             self.calcular_valor_atualizado(ativo)
@@ -160,7 +163,7 @@ class ResumoView(LoginRequiredMixin, ListView):
         )
 
     def get_context_data(self, **kwargs):
-        """Adiciona informações de rentabilidade global da carteira ao contexto."""
+        """Adiciona informações de rentabilidade global e mensal da carteira ao contexto."""
         context = super().get_context_data(**kwargs)
         usuario_ativos = Ativo.objects.filter(usuario=self.request.user)
 
@@ -173,7 +176,11 @@ class ResumoView(LoginRequiredMixin, ListView):
         if not ativos.exists():
             return self.definir_contexto_vazio(context)
 
-        return self.calcular_rentabilidade_global(context, ativos)
+        context = self.calcular_rentabilidade_global(context, ativos)
+        context["rentabilidade_mensal"] = self.calcular_rentabilidade_mensal(ativos)  # Adiciona a série histórica
+
+        return context
+
 
     def definir_contexto_vazio(self, context):
         """Define valores padrão para quando não há ativos."""
@@ -272,6 +279,49 @@ class ResumoView(LoginRequiredMixin, ListView):
         })
 
         return context
+    
+    def calcular_rentabilidade_mensal(self, ativos):
+        """Calcula a rentabilidade mês a mês da carteira inteira."""
+
+        if not ativos.exists():
+            return []  # Retorna lista vazia se não houver ativos
+
+        # Determina o período de cálculo
+        data_inicio = min(ativo.data_aquisicao for ativo in ativos if ativo.data_aquisicao)
+        data_fim = max(ativo.ultima_atualizacao for ativo in ativos if ativo.ultima_atualizacao)
+
+        # Garante que temos pelo menos um mês no intervalo
+        if data_fim < data_inicio:
+            return []
+
+        rentabilidade_mensal = []
+        valor_anterior = None
+
+        # Gera as datas de referência mês a mês
+        data_atual = data_inicio.replace(day=1)  # Sempre começa no primeiro dia do mês
+        while data_atual <= data_fim:
+            valor_atual = sum(self.get_valor_ajustado(ativo, data_atual) for ativo in ativos)
+
+            # Se não há atualização no mês, mantém o valor do mês anterior
+            if valor_atual is None and valor_anterior is not None:
+                valor_atual = valor_anterior
+
+            rentabilidade_abs = (valor_atual - valor_anterior) if valor_anterior else 0
+            rentabilidade_perc = (rentabilidade_abs / valor_anterior * 100) if valor_anterior else 0
+
+            rentabilidade_mensal.append({
+                "mes": data_atual.strftime("%Y-%m"),
+                "valor": valor_atual,
+                "rentabilidade_abs": rentabilidade_abs,
+                "rentabilidade_perc": rentabilidade_perc,
+            })
+
+            # Atualiza o valor do mês anterior para a próxima iteração
+            valor_anterior = valor_atual
+            data_atual += relativedelta(months=1)  # Avança para o próximo mês
+
+        return rentabilidade_mensal
+
 
 
 class ResumoAtivoView(DetailView):

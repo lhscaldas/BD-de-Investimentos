@@ -96,6 +96,41 @@
                 R$ {{ rentabilidade_abs_total|floatformat:2 }} ({{ rentabilidade_perc_total|floatformat:2 }}%)</h5>
         </div>
 
+        <div class="card p-4 shadow-sm mt-4">
+            <h2 class="mb-3">Rentabilidade Mensal da Carteira</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Data Referência</th>
+                            <th>Valor da Carteira (R$)</th>
+                            <th>Rentabilidade Absoluta (R$)</th>
+                            <th>Rentabilidade Percentual (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rentabilidade in rentabilidade_mensal %}
+                            <tr>
+                                <td>{{ rentabilidade.mes }}</td>
+                                <td>R$ {{ rentabilidade.valor|floatformat:2 }}</td>
+                                <td class="{% if rentabilidade.rentabilidade_abs < 0 %}text-danger{% else %}text-success{% endif %}">
+                                    R$ {{ rentabilidade.rentabilidade_abs|floatformat:2 }}
+                                </td>
+                                <td class="{% if rentabilidade.rentabilidade_perc < 0 %}text-danger{% else %}text-success{% endif %}">
+                                    {{ rentabilidade.rentabilidade_perc|floatformat:2 }}%
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-muted">Nenhuma rentabilidade registrada.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+
     {% else %}
         <p class="lead">Faça login para acessar suas informações.</p>
     {% endif %}
