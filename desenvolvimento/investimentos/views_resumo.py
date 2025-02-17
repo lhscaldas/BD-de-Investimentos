@@ -170,38 +170,6 @@ class ResumoView(LoginRequiredMixin, ListView):
             .aggregate(total=Sum("valor"))["total"] or 0
         )
 
-    def get_context_data(self, **kwargs):
-        """Adiciona informações de rentabilidade global, comparativa e evolução patrimonial ao contexto."""
-        context = super().get_context_data(**kwargs)
-        usuario_ativos = Ativo.objects.filter(usuario=self.request.user)
-
-        context["classes_disponiveis"] = usuario_ativos.values_list("classe", flat=True).distinct()
-        context["subclasses_disponiveis"] = usuario_ativos.values_list("subclasse", flat=True).distinct()
-        context["bancos_disponiveis"] = usuario_ativos.values_list("banco", flat=True).distinct()
-
-        ativos = context["ativos"]
-
-        if not ativos.exists():
-            return self.definir_contexto_vazio(context)
-
-        context = self.calcular_rentabilidade_global(context, ativos)
-        context["rentabilidade_mensal"] = self.calcular_rentabilidade_mensal(ativos)
-
-        # Adiciona rentabilidade comparativa (Carteira vs CDI vs IBOVESPA)
-        labels, rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(ativos)
-        context["grafico_labels"] = json.dumps(labels)
-        context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
-        context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
-        context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
-
-        # Adiciona evolução patrimonial
-        labels_patrimonio, patrimonio = self.calcular_evolucao_patrimonial(ativos)
-        context["grafico_data_abs"] = json.dumps([float(val) for val in patrimonio])
-
-        return context
-
-
-
     def definir_contexto_vazio(self, context):
         """Define valores padrão para quando não há ativos."""
         context.update({
@@ -422,6 +390,64 @@ class ResumoView(LoginRequiredMixin, ListView):
             patrimonio.append(valor_atual)
 
         return labels, patrimonio
+
+    def calcular_composicao_por_subclasse(self, ativos):
+        """Calcula a composição percentual da carteira por subclasse de ativo."""
+
+        if not ativos.exists():
+            return [], []
+
+        # Obtém o valor atualizado total da carteira
+        patrimonio_total = sum(ativo.valor_atualizado for ativo in ativos)
+
+        # Agrupa os valores por subclasse
+        composicao_subclasse = {}
+        for ativo in ativos:
+            subclasse = ativo.subclasse
+            composicao_subclasse[subclasse] = composicao_subclasse.get(subclasse, 0) + ativo.valor_atualizado
+
+        # Calcula a participação percentual de cada subclasse
+        labels = list(composicao_subclasse.keys())
+        data = [(valor / patrimonio_total) * 100 for valor in composicao_subclasse.values()]
+
+        return labels, data
+    
+
+    def get_context_data(self, **kwargs):
+        """Adiciona informações de rentabilidade global, comparativa e evolução patrimonial ao contexto."""
+        context = super().get_context_data(**kwargs)
+        usuario_ativos = Ativo.objects.filter(usuario=self.request.user)
+
+        context["classes_disponiveis"] = usuario_ativos.values_list("classe", flat=True).distinct()
+        context["subclasses_disponiveis"] = usuario_ativos.values_list("subclasse", flat=True).distinct()
+        context["bancos_disponiveis"] = usuario_ativos.values_list("banco", flat=True).distinct()
+
+        ativos = context["ativos"]
+
+        if not ativos.exists():
+            return self.definir_contexto_vazio(context)
+
+        context = self.calcular_rentabilidade_global(context, ativos)
+        context["rentabilidade_mensal"] = self.calcular_rentabilidade_mensal(ativos)
+
+        # Adiciona rentabilidade comparativa (Carteira vs CDI vs IBOVESPA)
+        labels, rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(ativos)
+        context["grafico_labels"] = json.dumps(labels)
+        context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
+        context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
+        context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
+
+        # Adiciona evolução patrimonial
+        labels_patrimonio, patrimonio = self.calcular_evolucao_patrimonial(ativos)
+        context["grafico_data_abs"] = json.dumps([float(val) for val in patrimonio])
+
+         # Composição da carteira por subclasse
+        labels_subclasse, data_subclasse = self.calcular_composicao_por_subclasse(ativos)
+        context["grafico_labels_subclasses"] = json.dumps(labels_subclasse)
+        context["grafico_data_subclasses"] = json.dumps([float(val) for val in data_subclasse])
+
+        return context
+
     
 
 

@@ -83,18 +83,75 @@
             
         </div>
 
-        <div class="mt-4">
-            <h5 class="text-end"><strong>Patrimônio Total:</strong> R$ {{ patrimonio_total|floatformat:2 }}</h5>
+        <!-- Informações gerais e gráfico de alocação da Carteira -->
+
+        <div class="row mt-4">
+
+            <!-- Coluna: Gráfico de Pizza -->
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <h2 class="mb-3 text-center">Composição da Carteira</h2>
+                    <div class="d-flex justify-content-center">
+                        <canvas id="graficoComposicaoCarteira" style="max-width: 300px; max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna: Informações Gerais -->
+            <div class="col-md-6">
+                <div class="p-3 border rounded shadow-sm">
+                    <h5 class="text-end"><strong>Patrimônio Total:</strong> R$ {{ patrimonio_total|floatformat:2 }}</h5>
         
-            <h5 class="text-end"><strong>Rentabilidade - Último Mês:</strong> 
-                R$ {{ rentabilidade_abs_1m|floatformat:2 }} ({{ rentabilidade_perc_1m|floatformat:2 }}%)</h5>
+                    <h5 class="text-end"><strong>Rentabilidade - Último Mês:</strong> 
+                        R$ {{ rentabilidade_abs_1m|floatformat:2 }} ({{ rentabilidade_perc_1m|floatformat:2 }}%)</h5>
         
-            <h5 class="text-end"><strong>Rentabilidade - Último Ano:</strong> 
-                R$ {{ rentabilidade_abs_1a|floatformat:2 }} ({{ rentabilidade_perc_1a|floatformat:2 }}%)</h5>
+                    <h5 class="text-end"><strong>Rentabilidade - Último Ano:</strong> 
+                        R$ {{ rentabilidade_abs_1a|floatformat:2 }} ({{ rentabilidade_perc_1a|floatformat:2 }}%)</h5>
         
-            <h5 class="text-end"><strong>Rentabilidade - Todo o Período:</strong> 
-                R$ {{ rentabilidade_abs_total|floatformat:2 }} ({{ rentabilidade_perc_total|floatformat:2 }}%)</h5>
-        </div>
+                    <h5 class="text-end"><strong>Rentabilidade - Todo o Período:</strong> 
+                        R$ {{ rentabilidade_abs_total|floatformat:2 }} ({{ rentabilidade_perc_total|floatformat:2 }}%)</h5>
+                </div>
+            </div>
+        
+        </div> 
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var labelsSubclasse = JSON.parse('{{ grafico_labels_subclasses|escapejs }}');
+                var dataSubclasse = JSON.parse('{{ grafico_data_subclasses|escapejs }}');
+        
+                var ctxSubclasse = document.getElementById("graficoComposicaoCarteira").getContext("2d");
+                new Chart(ctxSubclasse, {
+                    type: "pie",
+                    data: {
+                        labels: labelsSubclasse,
+                        datasets: [{
+                            data: dataSubclasse,
+                            backgroundColor: [
+                                "rgba(255, 99, 132, 0.6)",
+                                "rgba(54, 162, 235, 0.6)",
+                                "rgba(255, 206, 86, 0.6)",
+                                "rgba(75, 192, 192, 0.6)",
+                                "rgba(153, 102, 255, 0.6)",
+                                "rgba(255, 159, 64, 0.6)"
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: "bottom"
+                            }
+                        }
+                    }
+                });
+            });
+        </script>        
+        
 
         <!-- Gráficos de Rentabilidade e evolução da Carteira -->
         <div class="card p-4 shadow-sm mt-4">
