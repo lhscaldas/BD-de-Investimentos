@@ -133,7 +133,7 @@ STATIC_URL = "/static/"
 
 # Durante o desenvolvimento: incluir arquivos estáticos no diretório "static"
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Adicione arquivos estáticos do projeto aqui
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 # Produção: Habilite estas configurações apenas ao preparar o ambiente de produção

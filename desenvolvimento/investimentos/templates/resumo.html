@@ -111,7 +111,7 @@
         
                     <h5 class="text-end"><strong>Rentabilidade - Todo o Período:</strong> 
                         R$ {{ rentabilidade_abs_total|floatformat:2 }} ({{ rentabilidade_perc_total|floatformat:2 }}%)</h5>
-                </div>
+                
 
                 <!-- Composição da Carteira com Barra de Progresso -->
                 <h5 class="mt-3"><strong>Distribuição da Carteira:</strong></h5>
@@ -139,110 +139,14 @@
                         <span class="legenda renda-variavel"></span> Renda Variável
                     </span>
                 </div>
-
-                <!-- Estilos CSS -->
-                <style>
-                    .progress {
-                        height: 25px;
-                        display: flex;
-                    }
-
-                    .progress-bar {
-                        text-align: center;
-                        font-weight: bold;
-                        color: white;
-                        transition: width 1s ease-in-out;
-                        display: block;
-                        padding: 5px;
-                        white-space: nowrap;
-                    }
-
-                    .renda-fixa {
-                        background-color: #007bff; /* Azul */
-                    }
-
-                    .renda-variavel {
-                        background-color: #dc3545; /* Vermelho */
-                    }
-
-                    .legenda {
-                        display: inline-block;
-                        width: 15px;
-                        height: 15px;
-                        border-radius: 3px;
-                        margin-right: 5px;
-                    }
-
-                    .renda-fixa.legenda {
-                        background-color: #007bff;
-                    }
-
-                    .renda-variavel.legenda {
-                        background-color: #dc3545;
-                    }
-                </style>
-
-                <!-- JavaScript para corrigir a soma e evitar a barra cinza -->
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        var barraFixa = document.querySelector(".progress-bar.renda-fixa");
-                        var barraVariavel = document.querySelector(".progress-bar.renda-variavel");
-
-                        var fixaPerc = parseFloat(barraFixa.getAttribute("data-width")) || 0;
-                        var variavelPerc = parseFloat(barraVariavel.getAttribute("data-width")) || 0;
-
-                        // Ajusta os valores para garantir que a soma seja exatamente 100%
-                        var soma = fixaPerc + variavelPerc;
-                        if (soma > 100) {
-                            fixaPerc = (fixaPerc / soma) * 100;
-                            variavelPerc = (variavelPerc / soma) * 100;
-                        } else if (soma < 100) {
-                            variavelPerc = 100 - fixaPerc;  // Garante que a soma seja 100%
-                        }
-
-                        barraFixa.style.width = fixaPerc + "%";
-                        barraVariavel.style.width = variavelPerc + "%";
-                    });
-                </script>      
+                </div>    
             </div>
         
         </div> 
         
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                var labelsSubclasse = JSON.parse('{{ grafico_labels_subclasses|escapejs }}');
-                var dataSubclasse = JSON.parse('{{ grafico_data_subclasses|escapejs }}');
-        
-                var ctxSubclasse = document.getElementById("graficoComposicaoCarteira").getContext("2d");
-                new Chart(ctxSubclasse, {
-                    type: "pie",
-                    data: {
-                        labels: labelsSubclasse,
-                        datasets: [{
-                            data: dataSubclasse,
-                            backgroundColor: [
-                                "rgba(255, 99, 132, 0.6)",
-                                "rgba(54, 162, 235, 0.6)",
-                                "rgba(255, 206, 86, 0.6)",
-                                "rgba(75, 192, 192, 0.6)",
-                                "rgba(153, 102, 255, 0.6)",
-                                "rgba(255, 159, 64, 0.6)"
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: "bottom"
-                            }
-                        }
-                    }
-                });
-            });
+            var labelsSubclasse = JSON.parse('{{ grafico_labels_subclasses|escapejs }}');
+            var dataSubclasse = JSON.parse('{{ grafico_data_subclasses|escapejs }}');
         </script>        
         
 
@@ -260,151 +164,20 @@
                 </label>
                 <span class="ms-2">IBOVESPA</span>
             </div>
-            <canvas id="graficoRentabilidadePerc"></canvas>
+            <canvas id="graficoRentabilidadePercCarteira"></canvas>
         </div>
-        
-        <style>
-            .switch {
-                position: relative;
-                display: inline-block;
-                width: 50px;
-                height: 25px;
-            }
-        
-            .switch input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-        
-            .slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: #ccc;
-                transition: .4s;
-                border-radius: 25px;
-            }
-        
-            .slider:before {
-                position: absolute;
-                content: "";
-                height: 18px;
-                width: 18px;
-                left: 4px;
-                bottom: 3.5px;
-                background-color: white;
-                transition: .4s;
-                border-radius: 50%;
-            }
-        
-            input:checked + .slider {
-                background-color: #2196F3;
-            }
-        
-            input:checked + .slider:before {
-                transform: translateX(24px);
-            }
-        </style>
         
         <div class="card p-4 shadow-sm mt-4">
             <h2 class="mb-3">Gráfico de Evolução do Patrimônio da Carteira</h2>
-            <canvas id="graficoRentabilidadeAbs"></canvas>
+            <canvas id="graficoRentabilidadeAbsCarteira"></canvas>
         </div>
         
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                var labels = JSON.parse('{{ grafico_labels|escapejs }}');
+            var labels = JSON.parse('{{ grafico_labels|escapejs }}');
                 var dataPerc = JSON.parse('{{ grafico_data_perc|escapejs }}');
                 var dataCdi = JSON.parse('{{ grafico_data_cdi|escapejs }}');
                 var dataIbov = JSON.parse('{{ grafico_data_ibov|escapejs }}');
                 var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}');
-        
-                var ctxPerc = document.getElementById("graficoRentabilidadePerc").getContext("2d");
-                var chartPerc = new Chart(ctxPerc, {
-                    type: "line",
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: "Rentabilidade Percentual Acumulada da Carteira (%)",
-                                data: dataPerc,
-                                borderColor: "green",
-                                backgroundColor: "rgba(0, 128, 0, 0.1)",
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.3
-                            },
-                            {
-                                label: "CDI Acumulado (%)",
-                                data: dataCdi,
-                                borderColor: "red",
-                                borderDash: [5, 5],
-                                backgroundColor: "rgba(255, 0, 0, 0.1)",
-                                borderWidth: 2,
-                                fill: false,
-                                tension: 0.3
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: { title: { display: true, text: "Mês" } },
-                            y: { title: { display: true, text: "Rentabilidade Acumulada (%)" }, beginAtZero: false }
-                        }
-                    }
-                });
-        
-                // Atualizar gráfico ao alternar entre CDI e IBOVESPA
-                document.getElementById("toggleIndice").addEventListener("change", function () {
-                    var datasetIndex = 1; // Índice do conjunto de dados CDI/IBOVESPA
-        
-                    if (this.checked) {
-                        console.log("Alternando para IBOVESPA");
-                        chartPerc.data.datasets[datasetIndex].label = "IBOVESPA Acumulado (%)";
-                        chartPerc.data.datasets[datasetIndex].data = [...dataIbov]; // Garante cópia dos dados
-                        chartPerc.data.datasets[datasetIndex].borderColor = "blue";
-                        chartPerc.data.datasets[datasetIndex].backgroundColor = "rgba(0, 0, 255, 0.1)";
-                    } else {
-                        console.log("Alternando para CDI");
-                        chartPerc.data.datasets[datasetIndex].label = "CDI Acumulado (%)";
-                        chartPerc.data.datasets[datasetIndex].data = [...dataCdi]; // Garante cópia dos dados
-                        chartPerc.data.datasets[datasetIndex].borderColor = "red";
-                        chartPerc.data.datasets[datasetIndex].backgroundColor = "rgba(255, 0, 0, 0.1)";
-                    }
-        
-                    chartPerc.update(); // Força atualização do gráfico
-                });
-        
-                var ctxAbs = document.getElementById("graficoRentabilidadeAbs").getContext("2d");
-                new Chart(ctxAbs, {
-                    type: "line",
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "Evolução do Patrimônio da Carteira (R$)",
-                            data: dataAbs,
-                            borderColor: "blue",
-                            backgroundColor: "rgba(0, 0, 255, 0.1)",
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: { title: { display: true, text: "Mês" } },
-                            y: { title: { display: true, text: "Valor da Carteira (R$)" }, beginAtZero: false }
-                        }
-                    }
-                });
-            });
         </script>
         
         <!-- Rentabilidade Mensal da Carteira -->
@@ -447,4 +220,9 @@
         <p class="lead">Faça login para acessar suas informações.</p>
     {% endif %}
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% load static %}
+<script src="{% static 'js/scripts.js' %}" defer></script>
+
 {% endblock %}
