@@ -11,6 +11,7 @@ import numpy as np
 import yfinance as yf
 from dateutil.relativedelta import relativedelta
 import pandas as pd
+import os
 
 def obter_cdi_historico(data_inicio, data_fim):
     url = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial={data_inicio}&dataFinal={data_fim}"
@@ -72,6 +73,33 @@ def obter_ibovespa_historico(data_inicio, data_fim):
         print(f"Erro ao obter IBOVESPA: {e}")
         return {}
 
+
+# def carregar_dados_cache(caminho_cache):
+#     if os.path.exists(caminho_cache):
+#         return pd.read_csv(caminho_cache)
+#     return None
+
+# def salvar_dados_cache(caminho_cache, dados):
+#     dados.to_csv(caminho_cache, index=False)
+
+# def obter_ibovespa_historico(data_inicio, data_fim, caminho_cache="ibov_cache.csv"):
+#     # Verificar se os dados já estão em cache
+#     dados_cache = carregar_dados_cache(caminho_cache)
+#     if dados_cache is not None:
+#         print("Dados carregados do cache.")
+#         return dados_cache
+
+#     # Se não houver cache, buscar dados da API
+#     ibov = yf.Ticker("^BVSP")
+#     historico = ibov.history(start=data_inicio, end=data_fim, interval="1d")
+
+#     if historico.empty:
+#         print("Erro: Nenhum dado encontrado para o IBOVESPA no período especificado.")
+#         return {}
+
+#     # Salvar dados no cache
+#     salvar_dados_cache(caminho_cache, historico)
+#     return historico
 
 
 class ResumoView(LoginRequiredMixin, ListView):
@@ -260,10 +288,10 @@ class ResumoView(LoginRequiredMixin, ListView):
             "patrimonio_total": patrimonio_total,
             "rentabilidade_abs_1m": rentabilidade_abs_1m,
             "rentabilidade_abs_1a": rentabilidade_abs_1a,
-            "rentabilidade_abs_total": rentabilidade_abs_total,  # 🛠️ Correção
+            "rentabilidade_abs_total": rentabilidade_abs_total,  
             "rentabilidade_perc_1m": rentabilidade_perc_1m,
             "rentabilidade_perc_1a": rentabilidade_perc_1a,
-            "rentabilidade_perc_total": rentabilidade_perc_total,  # 🛠️ Correção
+            "rentabilidade_perc_total": rentabilidade_perc_total,
         })
 
         return context

@@ -51,25 +51,25 @@ document.addEventListener("DOMContentLoaded", function () {
     function alternarIndice(chart) {
         var toggle = document.getElementById("toggleIndice");
         if (!toggle) return;
-
+    
         toggle.addEventListener("change", function () {
-            var datasetIndex = 1; // Segundo conjunto de dados (CDI ou IBOVESPA)
-
+            var datasetIndex = 1; // Índice do conjunto de dados CDI/IBOVESPA
+    
             if (this.checked) {
                 console.log("Alternando para IBOVESPA");
                 chart.data.datasets[datasetIndex].label = "IBOVESPA Acumulado (%)";
-                chart.data.datasets[datasetIndex].data = [...dataIbov];
+                chart.data.datasets[datasetIndex].data = JSON.parse(JSON.stringify(dataIbov)); // Garantia de cópia correta
                 chart.data.datasets[datasetIndex].borderColor = "blue";
                 chart.data.datasets[datasetIndex].backgroundColor = "rgba(0, 0, 255, 0.1)";
             } else {
                 console.log("Alternando para CDI");
                 chart.data.datasets[datasetIndex].label = "CDI Acumulado (%)";
-                chart.data.datasets[datasetIndex].data = [...dataCdi];
+                chart.data.datasets[datasetIndex].data = JSON.parse(JSON.stringify(dataCdi)); // Garantia de cópia correta
                 chart.data.datasets[datasetIndex].borderColor = "red";
                 chart.data.datasets[datasetIndex].backgroundColor = "rgba(255, 0, 0, 0.1)";
             }
-
-            chart.update(); // Atualiza o gráfico
+    
+            chart.update(); // Atualiza o gráfico após a mudança
         });
     }
 
