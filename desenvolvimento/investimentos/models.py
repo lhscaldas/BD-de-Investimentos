@@ -29,6 +29,10 @@ class Ativo(models.Model):
         verbose_name = "ativos"  # Nome singular para o admin
         verbose_name_plural = "ativos"  # Nome plural para o admin
 
+    def save(self, *args, **kwargs):
+            super().save(*args, **kwargs)
+            ValorAtivo.objects.get_or_create(ativo=self, data=self.data_aquisicao, defaults={'valor': self.valor_inicial})
+
     def __str__(self):
         return f"{self.nome}"
 
@@ -50,7 +54,40 @@ class Operacao(models.Model):
         verbose_name = "operação"  # Nome singular para o admin
         verbose_name_plural = "operações"  # Nome plural para o admin
 
+    def save(self, *args, **kwargs):
+            super().save(*args, **kwargs)
+            
+            if self.tipo == 'atualizacao':
+                valor = self.valor
+            else:
+                ultimo_valor = (ValorAtivo.objects.filter(ativo=self.ativo, data__lt=self.data)
+                                .order_by('-data').first())
+                ultimo_valor = ultimo_valor.valor if ultimo_valor else self.ativo.valor_inicial
+                
+                if self.tipo == 'compra':
+                    valor = ultimo_valor + self.valor
+                elif self.tipo == 'venda':
+                    valor = ultimo_valor - self.valor
+
+            ValorAtivo.objects.create(ativo=self.ativo, data=self.data, valor=valor)
+
     def __str__(self):
         return f"{self.tipo.capitalize()} - R$ {self.valor} ({self.ativo.nome})"
+    
+
+class ValorAtivo(models.Model):
+    ativo = models.ForeignKey(Ativo, on_delete=models.CASCADE, related_name='valores')
+    data = models.DateField()
+    valor = models.DecimalField(max_digits=15, decimal_places=2)
+
+    class Meta:
+        db_table = "valores_ativo"
+        verbose_name = "valor ativo"
+        verbose_name_plural = "valores ativos"
+
+    def __str__(self):
+        return f"{self.ativo.nome} - {self.data}: R$ {self.valor}"
+        
+
 
 

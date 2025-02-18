@@ -128,30 +128,43 @@ class ImportarOperacoesView(LoginRequiredMixin, FormView):
         try:
             # Lê e processa o CSV
             decoded_file = csv_file.read().decode("utf-8")
-            reader = csv.DictReader(io.StringIO(decoded_file), delimiter=";")
+            reader = list(csv.DictReader(io.StringIO(decoded_file), delimiter=";"))  # Convertendo para lista para depuração
 
+            if not reader:
+                messages.error(self.request, "O arquivo CSV está vazio ou mal formatado.")
+                return redirect("importar_operacoes")
+
+            linhas_importadas = 0
             for row in reader:
-                ativo_nome = row["Ativo"]
-                tipo = row["Tipo"]
-                data = row["Data"]
-                valor = float(row["Valor"].replace("R$", "").replace(",", ".").strip())
+                try:
+                    ativo_nome = row["Ativo"]
+                    tipo = row["Tipo"]
+                    data = row["Data"]
+                    valor = float(row["Valor"].replace("R$", "").replace(",", ".").strip())
 
-                # Verifica se o ativo existe
-                ativo = Ativo.objects.filter(nome=ativo_nome, usuario=self.request.user).first()
-                if not ativo:
-                    messages.warning(self.request, f"Ativo '{ativo_nome}' não encontrado. Operação ignorada.")
-                    continue  # Pula esta linha se o ativo não for encontrado
+                    # Verifica se o ativo existe
+                    ativo = Ativo.objects.filter(nome=ativo_nome, usuario=self.request.user).first()
+                    if not ativo:
+                        messages.warning(self.request, f"Ativo '{ativo_nome}' não encontrado. Operação ignorada.")
+                        continue  # Pula esta linha se o ativo não for encontrado
 
-                # Criar a operação no banco de dados
-                Operacao.objects.create(
-                    usuario=self.request.user,
-                    ativo=ativo,
-                    tipo=tipo,
-                    data=data,
-                    valor=valor
-                )
+                    # Criar a operação no banco de dados
+                    Operacao.objects.create(
+                        usuario=self.request.user,
+                        ativo=ativo,
+                        tipo=tipo,
+                        data=data,
+                        valor=valor
+                    )
+                    linhas_importadas += 1  # Conta quantas operações foram importadas
+                except Exception as e:
+                    messages.error(self.request, f"Erro ao processar linha: {row}. Erro: {e}")
 
-            messages.success(self.request, "Operações importadas com sucesso!")
+            if linhas_importadas > 0:
+                messages.success(self.request, f"{linhas_importadas} operações importadas com sucesso!")
+            else:
+                messages.warning(self.request, "Nenhuma operação foi importada.")
+
         except Exception as e:
             messages.error(self.request, f"Erro ao processar o CSV: {e}")
 
@@ -159,3 +172,4 @@ class ImportarOperacoesView(LoginRequiredMixin, FormView):
         list(messages.get_messages(self.request))
 
         return super().form_valid(form)
+

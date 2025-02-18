@@ -123,28 +123,41 @@ class ImportarAtivosView(LoginRequiredMixin, FormView):
         try:
             # Lê e processa o CSV
             decoded_file = csv_file.read().decode("utf-8")
-            reader = csv.DictReader(io.StringIO(decoded_file), delimiter=";")
+            reader = list(csv.DictReader(io.StringIO(decoded_file), delimiter=";"))  # Convertendo para lista
 
+            if not reader:
+                messages.error(self.request, "O arquivo CSV está vazio ou mal formatado.")
+                return redirect("importar_ativos")
+
+            ativos_importados = 0
             for row in reader:
-                nome = row["Nome"]
-                classe = row["Classe"]
-                subclasse = row["Subclasse"]
-                banco = row["Banco"]
-                valor_inicial = float(row["Valor Inicial"].replace("R$", "").replace(",", ".").strip())
-                data_aquisicao = row["Data de Aquisição"]
+                try:
+                    nome = row["Nome"]
+                    classe = row["Classe"]
+                    subclasse = row["Subclasse"]
+                    banco = row["Banco"]
+                    valor_inicial = float(row["Valor Inicial"].replace("R$", "").replace(",", ".").strip())
+                    data_aquisicao = row["Data de Aquisição"]
 
-                # Criar o ativo no banco de dados
-                Ativo.objects.create(
-                    usuario=self.request.user,
-                    nome=nome,
-                    classe=classe,
-                    subclasse=subclasse,
-                    banco=banco,
-                    valor_inicial=valor_inicial,
-                    data_aquisicao=data_aquisicao
-                )
+                    # Criar o ativo no banco de dados
+                    Ativo.objects.create(
+                        usuario=self.request.user,
+                        nome=nome,
+                        classe=classe,
+                        subclasse=subclasse,
+                        banco=banco,
+                        valor_inicial=valor_inicial,
+                        data_aquisicao=data_aquisicao
+                    )
+                    ativos_importados += 1
+                except Exception as e:
+                    messages.error(self.request, f"Erro ao processar linha: {row}. Erro: {e}")
 
-            messages.success(self.request, "Ativos importados com sucesso!")
+            if ativos_importados > 0:
+                messages.success(self.request, f"{ativos_importados} ativos importados com sucesso!")
+            else:
+                messages.warning(self.request, "Nenhum ativo foi importado.")
+
         except Exception as e:
             messages.error(self.request, f"Erro ao processar o CSV: {e}")
 
@@ -152,3 +165,4 @@ class ImportarAtivosView(LoginRequiredMixin, FormView):
         list(messages.get_messages(self.request))
 
         return super().form_valid(form)
+
