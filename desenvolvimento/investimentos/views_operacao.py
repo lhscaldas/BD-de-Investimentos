@@ -155,4 +155,7 @@ class ImportarOperacoesView(LoginRequiredMixin, FormView):
         except Exception as e:
             messages.error(self.request, f"Erro ao processar o CSV: {e}")
 
+        # Consumir mensagens antes do redirecionamento
+        list(messages.get_messages(self.request))
+
         return super().form_valid(form)

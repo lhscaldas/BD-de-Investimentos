@@ -328,6 +328,9 @@ class ResumoView(LoginRequiredMixin, ListView):
 
         # Obtém os dados históricos do CDI e IBOVESPA
         meses_ordenados = pd.date_range(data_inicio, data_fim, freq='MS').to_pydatetime().tolist()
+        if not meses_ordenados:
+            return [], [], [], []
+        
         data_inicio_str = meses_ordenados[0].strftime("%d/%m/%Y")
         data_fim_str = meses_ordenados[-1].strftime("%d/%m/%Y")
 
@@ -473,11 +476,6 @@ class ResumoView(LoginRequiredMixin, ListView):
         context["renda_variavel_perc"] = composicao_classes["Renda Variável"]
 
         return context
-
-    
-
-
-
 
 
 

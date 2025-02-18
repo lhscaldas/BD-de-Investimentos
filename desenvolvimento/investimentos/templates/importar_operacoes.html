@@ -8,6 +8,7 @@
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}">{{ message }}</div>
             {% endfor %}
+            {% for _ in messages %} {% endfor %}  {# Isso consome as mensagens para evitar que reapareçam #}
         {% endif %}
 
         <!-- Instruções para formatação correta do CSV -->
