@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Ativo, Operacao
+from .models import Ativo, Operacao, ValorAtivo
 from datetime import timedelta, datetime
 from django.db.models import Sum
 from django.utils.timezone import now
@@ -511,13 +511,59 @@ class ResumoAtivoView(DetailView):
     template_name = "resumo_ativo.html"
     context_object_name = "ativo"
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     ativo = self.object
+
+    #     operacoes = Operacao.objects.filter(ativo=ativo).order_by("data")
+
+    #     if not operacoes.exists():
+    #         context["rentabilidades"] = []
+    #         context["grafico_labels"] = json.dumps([])
+    #         context["grafico_data_perc"] = json.dumps([])
+    #         context["grafico_data_abs"] = json.dumps([])
+    #         return context
+
+    #     historico = defaultdict(lambda: {"valor": None, "rentabilidade_abs": 0, "rentabilidade_perc": 0})
+
+    #     valor_atualizado = float(ativo.valor_inicial)
+    #     data_aquisicao = ativo.data_aquisicao
+    #     mes_atual = data_aquisicao.replace(day=1)
+
+    #     # Mapeamento de atualizações e operações
+    #     atualizacoes_mensais = {}
+    #     compras_vendas_mensais = defaultdict(float)
+
+    #     for operacao in operacoes:
+    #         mes_operacao = operacao.data.replace(day=1)
+
+    #         if operacao.tipo == "atualizacao":
+    #             atualizacoes_mensais[mes_operacao] = float(operacao.valor)
+    #         elif operacao.tipo == "compra":
+    #             compras_vendas_mensais[mes_operacao] += float(operacao.valor)
+    #         elif operacao.tipo == "venda":
+    #             compras_vendas_mensais[mes_operacao] -= float(operacao.valor)
+
+    #     mes_final = now().date().replace(day=1)
+
+    #     # Preencher o histórico com os valores mensais atualizados
+    #     while mes_atual <= mes_final:
+    #         if mes_atual in atualizacoes_mensais:
+    #             valor_atualizado = atualizacoes_mensais[mes_atual]
+
+    #         historico[mes_atual]["valor"] = valor_atualizado
+    #         mes_atual += timedelta(days=32)
+    #         mes_atual = mes_atual.replace(day=1)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ativo = self.object
 
+        valores_ativos = ValorAtivo.objects.filter(ativo=ativo).order_by("data")
+
         operacoes = Operacao.objects.filter(ativo=ativo).order_by("data")
 
-        if not operacoes.exists():
+        if not valores_ativos.exists():
             context["rentabilidades"] = []
             context["grafico_labels"] = json.dumps([])
             context["grafico_data_perc"] = json.dumps([])
@@ -525,10 +571,6 @@ class ResumoAtivoView(DetailView):
             return context
 
         historico = defaultdict(lambda: {"valor": None, "rentabilidade_abs": 0, "rentabilidade_perc": 0})
-
-        valor_atualizado = float(ativo.valor_inicial)
-        data_aquisicao = ativo.data_aquisicao
-        mes_atual = data_aquisicao.replace(day=1)
 
         # Mapeamento de atualizações e operações
         atualizacoes_mensais = {}
@@ -544,16 +586,18 @@ class ResumoAtivoView(DetailView):
             elif operacao.tipo == "venda":
                 compras_vendas_mensais[mes_operacao] -= float(operacao.valor)
 
+        mes_atual = ativo.data_aquisicao.replace(day=1)
         mes_final = now().date().replace(day=1)
 
-        # Preencher o histórico com os valores mensais atualizados
-        while mes_atual <= mes_final:
-            if mes_atual in atualizacoes_mensais:
-                valor_atualizado = atualizacoes_mensais[mes_atual]
+        valores_por_mes = {va.data.replace(day=1): float(va.valor) for va in valores_ativos}
 
-            historico[mes_atual]["valor"] = valor_atualizado
+        while mes_atual <= mes_final:
+            if mes_atual in valores_por_mes:
+                historico[mes_atual]["valor"] = valores_por_mes[mes_atual]
             mes_atual += timedelta(days=32)
             mes_atual = mes_atual.replace(day=1)
+
+        context["historico"] = historico
 
         meses_ordenados = sorted(historico.keys())
 
