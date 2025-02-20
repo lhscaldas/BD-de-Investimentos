@@ -13,93 +13,91 @@ from dateutil.relativedelta import relativedelta
 import pandas as pd
 import os
 
-def obter_cdi_historico(data_inicio, data_fim):
-    url = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial={data_inicio}&dataFinal={data_fim}"
-    
-    resposta = requests.get(url)
-    if resposta.status_code != 200:
-        return None  # API indisponível
-    
-    dados_cdi = resposta.json()
-    cdi_por_mes = defaultdict(list)
-    
-    for entrada in dados_cdi:
-        data = datetime.strptime(entrada["data"], "%d/%m/%Y").date()
-        mes_ano = data.strftime("%Y-%m")
-        cdi_por_mes[mes_ano].append(float(entrada["valor"]) / 100)  # Convertendo para decimal
-    
-    # Calcular o CDI mensal corretamente com capitalização composta
-    cdi_mensal = {mes: (np.prod([1 + taxa for taxa in valores]) - 1) * 100 for mes, valores in cdi_por_mes.items()}
-    
-    return cdi_mensal
+CACHE_FILE = "indices_cache.json"
 
-def obter_ibovespa_historico(data_inicio, data_fim):
+def carregar_cache():
+    """Carrega o cache do arquivo, se existir."""
+    if os.path.exists(CACHE_FILE):
+        with open(CACHE_FILE, "r") as f:
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return {}
+    return {}
+
+def salvar_cache(dados):
+    """Salva os dados no arquivo de cache."""
+    with open(CACHE_FILE, "w") as f:
+        json.dump(dados, f)
+
+def obter_indices_historicos(data_inicio, data_fim):
     try:
+        # Carregar cache
+        cache = carregar_cache()
+        hoje = datetime.today().strftime("%Y-%m-%d")
+
+        # Se já buscamos os dados hoje, retornamos do cache
+        if cache.get("data_atualizacao") == hoje:
+            print("Retornando dados do cache.")
+            return cache.get("indices", {})
+
         # Converter datas para o formato YYYY-MM-DD
-        data_inicio = datetime.strptime(data_inicio, "%d/%m/%Y").strftime("%Y-%m-%d")
-        data_fim = datetime.strptime(data_fim, "%d/%m/%Y").strftime("%Y-%m-%d")
+        data_inicio_iso = datetime.strptime(data_inicio, "%d/%m/%Y").strftime("%Y-%m-%d")
+        data_fim_iso = datetime.strptime(data_fim, "%d/%m/%Y").strftime("%Y-%m-%d")
 
         # Baixar os dados do IBOVESPA via Yahoo Finance
         ibov = yf.Ticker("^BVSP")
-        historico = ibov.history(start=data_inicio, end=data_fim, interval="1mo")  # Dados mensais
+        historico_ibov = ibov.history(start=data_inicio_iso, end=data_fim_iso, interval="1mo")
 
-        if historico.empty:
-            print("Erro: Nenhum dado encontrado para o IBOVESPA no período especificado.")
-            return {}
-
-        # Organizar os dados por mês
-        ibov_por_mes = defaultdict(list)
-        for data, row in historico.iterrows():
-            mes_ano = data.strftime("%Y-%m")
-            ibov_por_mes[mes_ano].append(row["Close"])
-
-        # Calcular a variação percentual mensal do IBOVESPA
         ibov_mensal = {}
-        meses_ordenados = sorted(ibov_por_mes.keys())
+        if not historico_ibov.empty:
+            ibov_por_mes = defaultdict(list)
+            for data, row in historico_ibov.iterrows():
+                mes_ano = data.strftime("%Y-%m")
+                ibov_por_mes[mes_ano].append(row["Close"])
 
-        for i in range(1, len(meses_ordenados)):
-            mes_atual = meses_ordenados[i]
-            mes_anterior = meses_ordenados[i - 1]
+            meses_ordenados = sorted(ibov_por_mes.keys())
+            for i in range(1, len(meses_ordenados)):
+                mes_atual = meses_ordenados[i]
+                mes_anterior = meses_ordenados[i - 1]
 
-            valor_atual = ibov_por_mes[mes_atual][0]
-            valor_anterior = ibov_por_mes[mes_anterior][0]
+                valor_atual = ibov_por_mes[mes_atual][0]
+                valor_anterior = ibov_por_mes[mes_anterior][0]
 
-            if valor_anterior > 0:
-                ibov_mensal[mes_atual] = ((valor_atual / valor_anterior) - 1) * 100  # Percentual
+                if valor_anterior > 0:
+                    ibov_mensal[mes_atual] = ((valor_atual / valor_anterior) - 1) * 100  # Percentual
 
-        return ibov_mensal if ibov_mensal else {}
+        # Baixar os dados do CDI via API do Banco Central
+        url = f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial={data_inicio}&dataFinal={data_fim}"
+        resposta = requests.get(url)
+        cdi_mensal = {}
+
+        if resposta.status_code == 200:
+            dados_cdi = resposta.json()
+            cdi_por_mes = defaultdict(list)
+            for entrada in dados_cdi:
+                data = datetime.strptime(entrada["data"], "%d/%m/%Y").date()
+                mes_ano = data.strftime("%Y-%m")
+                cdi_por_mes[mes_ano].append(float(entrada["valor"]) / 100)  # Convertendo para decimal
+
+            cdi_mensal = {mes: (np.prod([1 + taxa for taxa in valores]) - 1) * 100 for mes, valores in cdi_por_mes.items()}
+
+        # Salvar no cache
+        indices = {
+            "IBOVESPA": ibov_mensal,
+            "CDI": cdi_mensal
+        }
+        cache = {
+            "data_atualizacao": hoje,
+            "indices": indices
+        }
+        salvar_cache(cache)
+
+        return indices
 
     except Exception as e:
-        print(f"Erro ao obter IBOVESPA: {e}")
+        print(f"Erro ao obter índices históricos: {e}")
         return {}
-
-
-# def carregar_dados_cache(caminho_cache):
-#     if os.path.exists(caminho_cache):
-#         return pd.read_csv(caminho_cache)
-#     return None
-
-# def salvar_dados_cache(caminho_cache, dados):
-#     dados.to_csv(caminho_cache, index=False)
-
-# def obter_ibovespa_historico(data_inicio, data_fim, caminho_cache="ibov_cache.csv"):
-#     # Verificar se os dados já estão em cache
-#     dados_cache = carregar_dados_cache(caminho_cache)
-#     if dados_cache is not None:
-#         print("Dados carregados do cache.")
-#         return dados_cache
-
-#     # Se não houver cache, buscar dados da API
-#     ibov = yf.Ticker("^BVSP")
-#     historico = ibov.history(start=data_inicio, end=data_fim, interval="1d")
-
-#     if historico.empty:
-#         print("Erro: Nenhum dado encontrado para o IBOVESPA no período especificado.")
-#         return {}
-
-#     # Salvar dados no cache
-#     salvar_dados_cache(caminho_cache, historico)
-#     return historico
 
 
 class ResumoView(LoginRequiredMixin, ListView):
@@ -362,8 +360,9 @@ class ResumoView(LoginRequiredMixin, ListView):
         data_inicio_str = meses_ordenados[0].strftime("%d/%m/%Y")
         data_fim_str = meses_ordenados[-1].strftime("%d/%m/%Y")
 
-        cdi_mensal_historico = obter_cdi_historico(data_inicio_str, data_fim_str)
-        ibov_mensal_historico = obter_ibovespa_historico(data_inicio_str, data_fim_str)
+        indices_historicos = obter_indices_historicos(data_inicio_str, data_fim_str)
+        cdi_mensal_historico = indices_historicos.get("CDI", {})
+        ibov_mensal_historico = indices_historicos.get("IBOVESPA", {})
 
         # Listas para armazenar os dados
         labels = []
@@ -599,11 +598,34 @@ class ResumoAtivoView(DetailView):
         context["grafico_data_perc"] = json.dumps(data_perc)
         context["grafico_data_abs"] = json.dumps(data_abs)
 
-       # CDI e IBOVESPA
+        # Carregar cache do arquivo JSON
+        indices_historicos = {}
+        if os.path.exists("indices_cache.json"):
+            with open("indices_cache.json", "r") as f:
+                try:
+                    indices_historicos = json.load(f).get("indices", {})
+                except json.JSONDecodeError:
+                    indices_historicos = {}
+
+        # Determinar período desejado
         data_inicio = meses_ordenados[0].strftime("%d/%m/%Y")
         data_fim = meses_ordenados[-1].strftime("%d/%m/%Y")
-        cdi_mensal_historico = obter_cdi_historico(data_inicio, data_fim)
-        ibov_mensal_historico = obter_ibovespa_historico(data_inicio, data_fim)
+
+        # Converter datas para o formato YYYY-MM para comparação
+        data_inicio_fmt = datetime.strptime(data_inicio, "%d/%m/%Y").strftime("%Y-%m")
+        data_fim_fmt = datetime.strptime(data_fim, "%d/%m/%Y").strftime("%Y-%m")
+
+        # Filtrar diretamente na view
+        cdi_mensal_historico = {
+            mes: valor for mes, valor in indices_historicos.get("CDI", {}).items()
+            if data_inicio_fmt <= mes <= data_fim_fmt
+        }
+
+        ibov_mensal_historico = {
+            mes: valor for mes, valor in indices_historicos.get("IBOVESPA", {}).items()
+            if data_inicio_fmt <= mes <= data_fim_fmt
+        }
+
 
         data_cdi = [1]  # CDI começa em 1 (100% do investimento inicial)
         data_ibov = [1]  # IBOVESPA começa em 1 (100% do investimento inicial)
