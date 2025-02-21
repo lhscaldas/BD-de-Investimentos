@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 import csv
 import io
+from datetime import datetime
 
 class OperacaoListView(LoginRequiredMixin, ListView):
     model = Operacao
@@ -85,9 +86,6 @@ class OperacaoCreateView(LoginRequiredMixin, CreateView):
         """Redireciona para a página de origem (next) se existir, senão retorna para listar_operacoes"""
         next_url = self.request.POST.get("next") or self.request.GET.get("next")
 
-        # Depuração: Verificar o que está sendo capturado
-        print(f"DEBUG: Redirecionando para: {next_url}")
-
         return next_url if next_url else "/listar-operacoes/"
 
     def get_form_kwargs(self):
@@ -139,7 +137,7 @@ class ImportarOperacoesView(LoginRequiredMixin, FormView):
                 try:
                     ativo_nome = row["Ativo"]
                     tipo = row["Tipo"]
-                    data = row["Data"]
+                    data = datetime.strptime(row["Data"], "%Y-%m-%d").date()
                     valor = float(row["Valor"].replace("R$", "").replace(",", ".").strip())
 
                     # Verifica se o ativo existe
