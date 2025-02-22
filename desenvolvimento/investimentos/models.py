@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from collections import defaultdict
+import json
 
 CLASSES_ATIVO = [
     ('Renda Fixa', 'Renda Fixa'),
@@ -37,6 +38,8 @@ class Ativo(models.Model):
     def __str__(self):
         return f"{self.nome}"
 
+
+
 class Operacao(models.Model):
     TIPO_OPERACAO = [
         ('compra', 'Compra'),
@@ -51,68 +54,99 @@ class Operacao(models.Model):
     ativo = models.ForeignKey(Ativo, on_delete=models.CASCADE, related_name='operacoes')
 
     class Meta:
-        db_table = "operacoes"  # Define explicitamente o nome da tabela
-        verbose_name = "operação"  # Nome singular para o admin
-        verbose_name_plural = "operações"  # Nome plural para o admin
+        db_table = "operacoes"
+        verbose_name = "operação"
+        verbose_name_plural = "operações"
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        
-        if self.tipo == 'atualizacao':
-            valor = self.valor
-        else:
-            ultimo_valor = (ValorAtivo.objects.filter(ativo=self.ativo, data__lt=self.data)
-                            .order_by('-data').first())
-            ultimo_valor = ultimo_valor.valor if ultimo_valor else self.ativo.valor_inicial
-            
-            if self.tipo == 'compra':
-                valor = ultimo_valor + self.valor
-            elif self.tipo == 'venda':
-                valor = ultimo_valor - self.valor
+    def atualizar_valores_e_rentabilidades(self):
+        """Recalcula os valores do ativo e as rentabilidades simultaneamente e armazena tudo em um JSON.
+        Estrutura do JSON: usuario -> ativo -> valores[mês], rentabilidades[mês]"""
 
-        ValorAtivo.objects.create(ativo=self.ativo, data=self.data, valor=valor)
+        # Estrutura JSON para armazenar valores e rentabilidades organizados por usuário e ativo
+        dados_financeiros = defaultdict(lambda: defaultdict(lambda: {"valor": defaultdict(float), "rentabilidade": defaultdict(float)}))
 
-        # mes_referencia = self.data.replace(day=1)
-        valores_ativos = ValorAtivo.objects.filter(ativo=self.ativo).order_by("data")
-        operacoes = Operacao.objects.filter(ativo=self.ativo).order_by("data")
+        usuario = self.usuario
+        ativo = self.ativo
 
-        # historico = defaultdict(lambda: {"valor": None, "rentabilidade_abs": 0, "rentabilidade_perc": 0})
-        atualizacoes_mensais = {}
+        operacoes = Operacao.objects.filter(ativo=ativo, usuario=usuario).order_by("data")
+
+        # Dicionários para armazenar valores mensais
+        atualizacoes_mensais = defaultdict(float)
         compras_vendas_mensais = defaultdict(float)
+        rentabilidade_mensal = defaultdict(float)
 
+        primeiro_mes = ativo.data_aquisicao.replace(day=1)
+
+        # O primeiro mês recebe o valor inicial como atualização
+        atualizacoes_mensais[primeiro_mes] = float(ativo.valor_inicial)
+
+        # Coletar todas as atualizações, compras e vendas organizadas por mês
         for operacao in operacoes:
             mes_operacao = operacao.data.replace(day=1)
+
             if operacao.tipo == "atualizacao":
-                atualizacoes_mensais[mes_operacao] = float(operacao.valor)
+                atualizacoes_mensais[mes_operacao] = float(operacao.valor)  # Atualizações substituem o valor do mês
             elif operacao.tipo == "compra":
                 compras_vendas_mensais[mes_operacao] += float(operacao.valor)
             elif operacao.tipo == "venda":
                 compras_vendas_mensais[mes_operacao] -= float(operacao.valor)
 
-        valores_por_mes = {va.data.replace(day=1): float(va.valor) for va in valores_ativos}
-        meses_ordenados = sorted(valores_por_mes.keys())
+        # Lista ordenada de meses para processamento
+        meses_ordenados = sorted(set(atualizacoes_mensais.keys()) | set(compras_vendas_mensais.keys()))
 
-        for i in range(1, len(meses_ordenados)):
-            mes_anterior = meses_ordenados[i - 1]
-            mes_atual = meses_ordenados[i]
-            valor_anterior = valores_por_mes[mes_anterior]
-            valor_atual = valores_por_mes[mes_atual]
-            ajuste = sum(
-                compras_vendas_mensais[m] for m in meses_ordenados if mes_anterior <= m < mes_atual
-            )
-            rentabilidade_abs = valor_atual - (valor_anterior + ajuste)
-            rentabilidade_perc = (rentabilidade_abs / (valor_anterior + ajuste)) * 100 if (valor_anterior + ajuste) != 0 else 0
-            RentabilidadeAtivo.objects.update_or_create(
-                ativo=self.ativo, data_referencia=mes_atual,
-                defaults={"rentabilidade_abs": rentabilidade_abs, "rentabilidade_perc": rentabilidade_perc}
-            )
-            
+        valores_por_mes = {}
+
+        # Calcular valores mensais e rentabilidades simultaneamente
+        for i in range(len(meses_ordenados)):
+            mes_operacao = meses_ordenados[i]
+
+            # Define o valor mensal considerando atualização + compras e vendas
+            atualizacoes_mensais[mes_operacao] = atualizacoes_mensais.get(mes_operacao, 0)
+            compras_vendas_mensais[mes_operacao] = compras_vendas_mensais.get(mes_operacao, 0)
+
+            valores_por_mes[mes_operacao] = atualizacoes_mensais[mes_operacao] + compras_vendas_mensais[mes_operacao]
+
+            # Calcular rentabilidade: valor do mês seguinte antes da atualização - valor do mês atual atualizado
+            if i < len(meses_ordenados) - 1:
+                mes_proximo = meses_ordenados[i + 1]
+                rentabilidade_mensal[mes_operacao] = atualizacoes_mensais[mes_proximo] - valores_por_mes[mes_operacao]
+            else:
+                rentabilidade_mensal[mes_operacao] = 0.0  # Último mês recebe rentabilidade 0
+
+            # Salvar valores e rentabilidades no JSON
+            dados_financeiros[str(usuario.id)][str(ativo.id)]["valor"][mes_operacao.strftime("%Y-%m")] = valores_por_mes[mes_operacao]
+            dados_financeiros[str(usuario.id)][str(ativo.id)]["rentabilidade"][mes_operacao.strftime("%Y-%m")] = rentabilidade_mensal[mes_operacao]
+
+        # Salvar JSON no banco de dados ou em arquivo
+        try:
+            with open("dados_financeiros.json", "w", encoding="utf-8") as json_file:
+                json.dump(dados_financeiros, json_file, indent=4, ensure_ascii=False)
+            print("DEBUG: Dados financeiros salvos com sucesso")
+        except Exception as e:
+            print(f"DEBUG: Erro ao salvar JSON de dados financeiros: {e}")
+
+        print("DEBUG: JSON gerado:", json.dumps(dados_financeiros, indent=4, ensure_ascii=False))
+
+
+
+
+
+
+    def save(self, *args, **kwargs):
+        """Salva a operação e atualiza os valores do ativo e rentabilidades."""
+        super().save(*args, **kwargs)
+        self.atualizar_valores_e_rentabilidades()
+
+    def delete(self, *args, **kwargs):
+        """Deleta a operação e recalcula os valores do ativo e rentabilidades."""
+        super().delete(*args, **kwargs)
+        self.atualizar_valores_e_rentabilidades()
+
     def __str__(self):
         return f"{self.tipo.capitalize()} - R$ {self.valor} ({self.ativo.nome})"
     
-
 class ValorAtivo(models.Model):
-    ativo = models.ForeignKey(Ativo, on_delete=models.CASCADE, related_name='valores')
+    ativo = models.ForeignKey(Ativo, on_delete=models.CASCADE, related_name='valores_ativos')
     data = models.DateField()
     valor = models.DecimalField(max_digits=15, decimal_places=2)
 

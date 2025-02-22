@@ -104,9 +104,15 @@
 
 <script>    var labels = JSON.parse('{{ grafico_labels|escapejs }}');
             var dataPerc = JSON.parse('{{ grafico_data_perc|escapejs }}');
+            var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}'); 
             var dataCdi = JSON.parse('{{ grafico_data_cdi|escapejs }}');
             var dataIbov = JSON.parse('{{ grafico_data_ibov|escapejs }}');
-            var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}'); 
+            
+
+            console.log(document.getElementById("graficoRentabilidadePerc"));
+            console.log(document.getElementById("graficoRentabilidadeAbs"));
+
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% load static %}

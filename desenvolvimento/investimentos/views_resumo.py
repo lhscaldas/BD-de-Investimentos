@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Ativo, Operacao, ValorAtivo
+from .models import Ativo, Operacao, ValorAtivo, RentabilidadeAtivo
 from datetime import timedelta, datetime
 from django.db.models import Sum
 from django.utils.timezone import now
@@ -98,7 +98,148 @@ def obter_indices_historicos(data_inicio, data_fim):
     except Exception as e:
         print(f"Erro ao obter índices históricos: {e}")
         return {}
+    
+def calcular_indices_acumulados(meses_ordenados):
+    # Carregar cache do arquivo JSON
+        indices_historicos = {}
+        if os.path.exists("indices_cache.json"):
+            with open("indices_cache.json", "r") as f:
+                try:
+                    indices_historicos = json.load(f).get("indices", {})
+                except json.JSONDecodeError:
+                    indices_historicos = {}
 
+        # Determinar período desejado
+        data_inicio = meses_ordenados[0].strftime("%d/%m/%Y")
+        data_fim = meses_ordenados[-1].strftime("%d/%m/%Y")
+
+        # Converter datas para o formato YYYY-MM para comparação
+        data_inicio_fmt = datetime.strptime(data_inicio, "%d/%m/%Y").strftime("%Y-%m")
+        data_fim_fmt = datetime.strptime(data_fim, "%d/%m/%Y").strftime("%Y-%m")
+
+        # Filtrar diretamente na view
+        cdi_mensal_historico = {
+            mes: valor for mes, valor in indices_historicos.get("CDI", {}).items()
+            if data_inicio_fmt <= mes <= data_fim_fmt
+        }
+
+        ibov_mensal_historico = {
+            mes: valor for mes, valor in indices_historicos.get("IBOVESPA", {}).items()
+            if data_inicio_fmt <= mes <= data_fim_fmt
+        }
+
+
+        data_cdi = [1]  # CDI começa em 1 (100% do investimento inicial)
+        data_ibov = [1]  # IBOVESPA começa em 1 (100% do investimento inicial)
+
+        for i in range(1, len(meses_ordenados)):
+            mes_atual = meses_ordenados[i]
+            mes_atual_str = mes_atual.strftime("%Y-%m")
+
+            # Obter CDI e IBOV mensal
+            cdi_mensal = cdi_mensal_historico.get(mes_atual_str, 0)
+            ibov_mensal = ibov_mensal_historico.get(mes_atual_str, 0)
+
+            # Acumular CDI e IBOV
+            cdi_acumulado = data_cdi[-1] * (1 + cdi_mensal / 100)
+            ibov_acumulado = data_ibov[-1] * (1 + ibov_mensal / 100)
+
+            data_cdi.append(cdi_acumulado)
+            data_ibov.append(ibov_acumulado)
+
+        # Converter para percentual antes de exibir no gráfico
+        data_cdi_percentual = [(valor - 1) * 100 for valor in data_cdi]
+        data_ibov_percentual = [(valor - 1) * 100 for valor in data_ibov]
+
+        return data_cdi_percentual, data_ibov_percentual
+
+class ResumoAtivoView(DetailView):
+    model = Ativo
+    template_name = "resumo_ativo.html"
+    context_object_name = "ativo"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ativo = self.object
+        usuario = self.request.user
+
+        # Caminho do arquivo JSON
+        json_path = "dados_financeiros.json"
+
+        # Verifica se o arquivo existe
+        if not os.path.exists(json_path):
+            context["rentabilidades"] = []
+            context["grafico_labels"] = json.dumps([])
+            context["grafico_data_perc"] = json.dumps([])
+            context["grafico_data_abs"] = json.dumps([])
+            return context
+
+        # Carrega os dados do JSON
+        with open(json_path, "r", encoding="utf-8") as f:
+            try:
+                dados_financeiros = json.load(f)
+            except json.JSONDecodeError:
+                context["rentabilidades"] = []
+                context["grafico_labels"] = json.dumps([])
+                context["grafico_data_perc"] = json.dumps([])
+                context["grafico_data_abs"] = json.dumps([])
+                return context
+
+        # Verifica se há dados para o usuário e ativo
+        usuario_id = str(usuario.id)
+        ativo_id = str(ativo.id)
+
+        if usuario_id not in dados_financeiros or ativo_id not in dados_financeiros[usuario_id]:
+            context["rentabilidades"] = []
+            context["grafico_labels"] = json.dumps([])
+            context["grafico_data_perc"] = json.dumps([])
+            context["grafico_data_abs"] = json.dumps([])
+            return context
+
+        # Obtém valores e rentabilidades do JSON
+        dados_ativo = dados_financeiros[usuario_id][ativo_id]
+        valores_por_mes = {datetime.strptime(mes, "%Y-%m"): float(valor) for mes, valor in dados_ativo["valor"].items()}
+        rentabilidades_por_mes = {datetime.strptime(mes, "%Y-%m"): float(rent) for mes, rent in dados_ativo["rentabilidade"].items()}
+
+        # Ordenação por data
+        meses_ordenados = sorted(valores_por_mes.keys())
+
+        # Criar estrutura do histórico
+        historico = {
+            mes: {
+                "valor": valores_por_mes.get(mes, 0.0),
+                "rentabilidade_abs": rentabilidades_por_mes.get(mes, 0.0),
+                "rentabilidade_perc": (rentabilidades_por_mes.get(mes, 0.0) / valores_por_mes.get(mes, 1)) * 100 if valores_por_mes.get(mes, 1) != 0 else 0.0
+            }
+            for mes in meses_ordenados
+        }
+
+        context["historico"] = historico
+        labels = [mes.strftime("%Y-%m") for mes in meses_ordenados]
+        data_abs = [historico[mes]["valor"] for mes in meses_ordenados]
+
+        # Calculando rentabilidade acumulada
+        data_perc = []
+        rentabilidade_acumulada = 0
+        for mes in meses_ordenados:
+            rentabilidade_acumulada += historico[mes]["rentabilidade_perc"]
+            data_perc.append(rentabilidade_acumulada)
+
+        context["rentabilidades"] = [
+            {"data_referencia": mes, **dados} for mes, dados in sorted(historico.items())
+        ]
+
+        # Serializa os dados para o gráfico
+        context["grafico_labels"] = json.dumps(labels)
+        context["grafico_data_perc"] = json.dumps(data_perc[:-1])
+        context["grafico_data_abs"] = json.dumps(data_abs)
+
+        # Calcula CDI e IBOV
+        data_cdi_percentual, data_ibov_percentual = calcular_indices_acumulados(meses_ordenados)
+        context["grafico_data_cdi"] = json.dumps(data_cdi_percentual[:-1])
+        context["grafico_data_ibov"] = json.dumps(data_ibov_percentual[:-1])
+
+        return context
 
 class ResumoView(LoginRequiredMixin, ListView):
     model = Ativo
@@ -504,154 +645,4 @@ class ResumoView(LoginRequiredMixin, ListView):
 
         return context
 
-
-
-class ResumoAtivoView(DetailView):
-    model = Ativo
-    template_name = "resumo_ativo.html"
-    context_object_name = "ativo"
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        ativo = self.object
-
-        valores_ativos = ValorAtivo.objects.filter(ativo=ativo).order_by("data")
-
-        operacoes = Operacao.objects.filter(ativo=ativo).order_by("data")
-
-        if not valores_ativos.exists():
-            context["rentabilidades"] = []
-            context["grafico_labels"] = json.dumps([])
-            context["grafico_data_perc"] = json.dumps([])
-            context["grafico_data_abs"] = json.dumps([])
-            return context
-
-        historico = defaultdict(lambda: {"valor": None, "rentabilidade_abs": 0, "rentabilidade_perc": 0})
-
-        # Mapeamento de atualizações e operações
-        atualizacoes_mensais = {}
-        compras_vendas_mensais = defaultdict(float)
-
-        for operacao in operacoes:
-            mes_operacao = operacao.data.replace(day=1)
-
-            if operacao.tipo == "atualizacao":
-                atualizacoes_mensais[mes_operacao] = float(operacao.valor)
-            elif operacao.tipo == "compra":
-                compras_vendas_mensais[mes_operacao] += float(operacao.valor)
-            elif operacao.tipo == "venda":
-                compras_vendas_mensais[mes_operacao] -= float(operacao.valor)
-
-        mes_atual = ativo.data_aquisicao.replace(day=1)
-        mes_final = now().date().replace(day=1)
-
-        valores_por_mes = {va.data.replace(day=1): float(va.valor) for va in valores_ativos}
-
-        while mes_atual <= mes_final:
-            if mes_atual in valores_por_mes:
-                historico[mes_atual]["valor"] = valores_por_mes[mes_atual]
-            mes_atual += timedelta(days=32)
-            mes_atual = mes_atual.replace(day=1)
-
-        context["historico"] = historico
-
-        meses_ordenados = sorted(historico.keys())
-
-        labels = []
-        data_perc = []
-        data_abs = []
-
-        # Cálculo da rentabilidade baseado na metodologia anterior
-        for i in range(1, len(meses_ordenados)):
-            mes_anterior = meses_ordenados[i - 1]
-            mes_atual = meses_ordenados[i]
-
-            valor_anterior = historico[mes_anterior]["valor"]
-            valor_atual = historico[mes_atual]["valor"]
-
-            # Ajustando o valor de referência com compras e vendas entre os meses
-            ajuste = sum(
-                compras_vendas_mensais[m] for m in meses_ordenados if mes_anterior <= m < mes_atual
-            )
-
-            if valor_anterior is not None and valor_atual is not None:
-                rentabilidade_abs = valor_atual - (valor_anterior + ajuste)
-                rentabilidade_perc = (rentabilidade_abs / (valor_anterior + ajuste)) * 100 if (valor_anterior + ajuste) != 0 else 0
-            else:
-                rentabilidade_abs = 0
-                rentabilidade_perc = 0
-
-            historico[mes_atual]["rentabilidade_abs"] = rentabilidade_abs
-            historico[mes_atual]["rentabilidade_perc"] = rentabilidade_perc
-
-            # Adicionando ao gráfico
-            labels.append(mes_atual.strftime("%Y-%m"))
-            data_perc.append(data_perc[-1] + rentabilidade_perc if data_perc else rentabilidade_perc)
-            data_abs.append(valor_atual)
-
-
-        context["rentabilidades"] = [
-            {"data_referencia": mes, **dados} for mes, dados in sorted(historico.items())
-        ]
-
-        context["grafico_labels"] = json.dumps(labels)
-        context["grafico_data_perc"] = json.dumps(data_perc)
-        context["grafico_data_abs"] = json.dumps(data_abs)
-
-        # Carregar cache do arquivo JSON
-        indices_historicos = {}
-        if os.path.exists("indices_cache.json"):
-            with open("indices_cache.json", "r") as f:
-                try:
-                    indices_historicos = json.load(f).get("indices", {})
-                except json.JSONDecodeError:
-                    indices_historicos = {}
-
-        # Determinar período desejado
-        data_inicio = meses_ordenados[0].strftime("%d/%m/%Y")
-        data_fim = meses_ordenados[-1].strftime("%d/%m/%Y")
-
-        # Converter datas para o formato YYYY-MM para comparação
-        data_inicio_fmt = datetime.strptime(data_inicio, "%d/%m/%Y").strftime("%Y-%m")
-        data_fim_fmt = datetime.strptime(data_fim, "%d/%m/%Y").strftime("%Y-%m")
-
-        # Filtrar diretamente na view
-        cdi_mensal_historico = {
-            mes: valor for mes, valor in indices_historicos.get("CDI", {}).items()
-            if data_inicio_fmt <= mes <= data_fim_fmt
-        }
-
-        ibov_mensal_historico = {
-            mes: valor for mes, valor in indices_historicos.get("IBOVESPA", {}).items()
-            if data_inicio_fmt <= mes <= data_fim_fmt
-        }
-
-
-        data_cdi = [1]  # CDI começa em 1 (100% do investimento inicial)
-        data_ibov = [1]  # IBOVESPA começa em 1 (100% do investimento inicial)
-
-        for i in range(1, len(meses_ordenados)):
-            mes_atual = meses_ordenados[i]
-            mes_atual_str = mes_atual.strftime("%Y-%m")
-
-            # Obter CDI e IBOV mensal
-            cdi_mensal = cdi_mensal_historico.get(mes_atual_str, 0)
-            ibov_mensal = ibov_mensal_historico.get(mes_atual_str, 0)
-
-            # Acumular CDI e IBOV
-            cdi_acumulado = data_cdi[-1] * (1 + cdi_mensal / 100)
-            ibov_acumulado = data_ibov[-1] * (1 + ibov_mensal / 100)
-
-            data_cdi.append(cdi_acumulado)
-            data_ibov.append(ibov_acumulado)
-
-        # Converter para percentual antes de exibir no gráfico
-        data_cdi_percentual = [(valor - 1) * 100 for valor in data_cdi]
-        data_ibov_percentual = [(valor - 1) * 100 for valor in data_ibov]
-
-        # Enviar os dados corretos para o gráfico
-        context["grafico_data_cdi"] = json.dumps(data_cdi_percentual)
-        context["grafico_data_ibov"] = json.dumps(data_ibov_percentual)
-
-        return context
 
