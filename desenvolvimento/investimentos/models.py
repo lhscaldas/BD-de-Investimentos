@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from collections import defaultdict
 import json
+import os
+
+CAMINHO_JSON = "dados_financeiros.json"
 
 CLASSES_ATIVO = [
     ('Renda Fixa', 'Renda Fixa'),
@@ -58,29 +61,109 @@ class Operacao(models.Model):
         verbose_name = "operação"
         verbose_name_plural = "operações"
 
+    # def atualizar_valores_e_rentabilidades(self):
+    #     """Recalcula os valores do ativo e as rentabilidades simultaneamente e armazena tudo em um JSON.
+    #     Estrutura do JSON: usuario -> ativo -> valores[mês], rentabilidades[mês]"""
+
+    #     # Estrutura JSON para armazenar valores e rentabilidades organizados por usuário e ativo
+    #     dados_financeiros = defaultdict(lambda: defaultdict(lambda: {"valor": defaultdict(float), "rentabilidade": defaultdict(float)}))
+
+    #     usuario = self.usuario
+    #     ativo = self.ativo
+
+    #     operacoes = Operacao.objects.filter(ativo=ativo, usuario=usuario).order_by("data")
+
+    #     # Dicionários para armazenar valores mensais
+    #     atualizacoes_mensais = defaultdict(float)
+    #     compras_vendas_mensais = defaultdict(float)
+    #     rentabilidade_mensal = defaultdict(float)
+
+    #     primeiro_mes = ativo.data_aquisicao.replace(day=1)
+
+    #     # O primeiro mês recebe o valor inicial como atualização
+    #     atualizacoes_mensais[primeiro_mes] = float(ativo.valor_inicial)
+
+    #     # Coletar todas as atualizações, compras e vendas organizadas por mês
+    #     for operacao in operacoes:
+    #         mes_operacao = operacao.data.replace(day=1)
+
+    #         if operacao.tipo == "atualizacao":
+    #             atualizacoes_mensais[mes_operacao] = float(operacao.valor)  # Atualizações substituem o valor do mês
+    #         elif operacao.tipo == "compra":
+    #             compras_vendas_mensais[mes_operacao] += float(operacao.valor)
+    #         elif operacao.tipo == "venda":
+    #             compras_vendas_mensais[mes_operacao] -= float(operacao.valor)
+
+    #     # Lista ordenada de meses para processamento
+    #     meses_ordenados = sorted(set(atualizacoes_mensais.keys()) | set(compras_vendas_mensais.keys()))
+
+    #     valores_por_mes = {}
+
+    #     # Calcular valores mensais e rentabilidades simultaneamente
+    #     for i in range(len(meses_ordenados)):
+    #         mes_operacao = meses_ordenados[i]
+
+    #         # Define o valor mensal considerando atualização + compras e vendas
+    #         atualizacoes_mensais[mes_operacao] = atualizacoes_mensais.get(mes_operacao, 0)
+    #         compras_vendas_mensais[mes_operacao] = compras_vendas_mensais.get(mes_operacao, 0)
+
+    #         valores_por_mes[mes_operacao] = atualizacoes_mensais[mes_operacao] + compras_vendas_mensais[mes_operacao]
+
+    #         # Calcular rentabilidade: valor do mês seguinte antes da atualização - valor do mês atual atualizado
+    #         if i < len(meses_ordenados) - 1:
+    #             mes_proximo = meses_ordenados[i + 1]
+    #             rentabilidade_mensal[mes_operacao] = atualizacoes_mensais[mes_proximo] - valores_por_mes[mes_operacao]
+    #         else:
+    #             rentabilidade_mensal[mes_operacao] = 0.0  # Último mês recebe rentabilidade 0
+
+    #         # Salvar valores e rentabilidades no JSON
+    #         dados_financeiros[str(usuario.id)][str(ativo.id)]["valor"][mes_operacao.strftime("%Y-%m")] = valores_por_mes[mes_operacao]
+    #         dados_financeiros[str(usuario.id)][str(ativo.id)]["rentabilidade"][mes_operacao.strftime("%Y-%m")] = rentabilidade_mensal[mes_operacao]
+
+    #     # Salvar JSON no banco de dados ou em arquivo
+    #     try:
+    #         with open("dados_financeiros.json", "w", encoding="utf-8") as json_file:
+    #             json.dump(dados_financeiros, json_file, indent=4, ensure_ascii=False)
+    #     except Exception as e:
+    #         print(f"DEBUG: Erro ao salvar JSON de dados financeiros: {e}")
+
     def atualizar_valores_e_rentabilidades(self):
         """Recalcula os valores do ativo e as rentabilidades simultaneamente e armazena tudo em um JSON.
         Estrutura do JSON: usuario -> ativo -> valores[mês], rentabilidades[mês]"""
 
-        # Estrutura JSON para armazenar valores e rentabilidades organizados por usuário e ativo
-        dados_financeiros = defaultdict(lambda: defaultdict(lambda: {"valor": defaultdict(float), "rentabilidade": defaultdict(float)}))
+        # Carregar JSON existente para evitar sobrescrita
+        if os.path.exists(CAMINHO_JSON):
+            with open(CAMINHO_JSON, "r", encoding="utf-8") as f:
+                try:
+                    dados_financeiros = json.load(f)
+                except json.JSONDecodeError:
+                    dados_financeiros = {}
+        else:
+            dados_financeiros = {}
 
-        usuario = self.usuario
-        ativo = self.ativo
+        usuario = str(self.usuario.id)
+        ativo = str(self.ativo.id)
 
-        operacoes = Operacao.objects.filter(ativo=ativo, usuario=usuario).order_by("data")
+        # Criar estrutura para o usuário e ativo, caso não existam
+        if usuario not in dados_financeiros:
+            dados_financeiros[usuario] = {}
+
+        if ativo not in dados_financeiros[usuario]:
+            dados_financeiros[usuario][ativo] = {"valor": {}, "rentabilidade": {}}
 
         # Dicionários para armazenar valores mensais
         atualizacoes_mensais = defaultdict(float)
         compras_vendas_mensais = defaultdict(float)
         rentabilidade_mensal = defaultdict(float)
 
-        primeiro_mes = ativo.data_aquisicao.replace(day=1)
+        primeiro_mes = self.ativo.data_aquisicao.replace(day=1)
 
         # O primeiro mês recebe o valor inicial como atualização
-        atualizacoes_mensais[primeiro_mes] = float(ativo.valor_inicial)
+        atualizacoes_mensais[primeiro_mes] = float(self.ativo.valor_inicial)
 
         # Coletar todas as atualizações, compras e vendas organizadas por mês
+        operacoes = Operacao.objects.filter(ativo=self.ativo, usuario=self.usuario).order_by("data")
+
         for operacao in operacoes:
             mes_operacao = operacao.data.replace(day=1)
 
@@ -113,24 +196,16 @@ class Operacao(models.Model):
             else:
                 rentabilidade_mensal[mes_operacao] = 0.0  # Último mês recebe rentabilidade 0
 
-            # Salvar valores e rentabilidades no JSON
-            dados_financeiros[str(usuario.id)][str(ativo.id)]["valor"][mes_operacao.strftime("%Y-%m")] = valores_por_mes[mes_operacao]
-            dados_financeiros[str(usuario.id)][str(ativo.id)]["rentabilidade"][mes_operacao.strftime("%Y-%m")] = rentabilidade_mensal[mes_operacao]
+            # Salvar valores e rentabilidades no JSON, garantindo que os dados sejam mantidos
+            dados_financeiros[usuario][ativo]["valor"][mes_operacao.strftime("%Y-%m")] = valores_por_mes[mes_operacao]
+            dados_financeiros[usuario][ativo]["rentabilidade"][mes_operacao.strftime("%Y-%m")] = rentabilidade_mensal[mes_operacao]
 
-        # Salvar JSON no banco de dados ou em arquivo
+        # Salvar JSON atualizado no arquivo
         try:
-            with open("dados_financeiros.json", "w", encoding="utf-8") as json_file:
+            with open(CAMINHO_JSON, "w", encoding="utf-8") as json_file:
                 json.dump(dados_financeiros, json_file, indent=4, ensure_ascii=False)
-            print("DEBUG: Dados financeiros salvos com sucesso")
         except Exception as e:
             print(f"DEBUG: Erro ao salvar JSON de dados financeiros: {e}")
-
-        print("DEBUG: JSON gerado:", json.dumps(dados_financeiros, indent=4, ensure_ascii=False))
-
-
-
-
-
 
     def save(self, *args, **kwargs):
         """Salva a operação e atualiza os valores do ativo e rentabilidades."""
