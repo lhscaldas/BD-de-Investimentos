@@ -64,16 +64,14 @@
    - Valor absoluto (R$).
    - Rentabilidade percentual.
 
-4. **(Sprint+4):**
-   - **[UI_11]** A interface deverá incluir um gráfico de rendimento:
-      - Exibindo rendimento com base nos filtros aplicados.
-      - Comparando o rendimento total com índices de referência (CDI ou IBOVESPA), selecionáveis pelo usuário.
+- ~~**[UI_11]** A interface deverá incluir um gráfico de rendimento:~~
+   - Exibindo rendimento com base nos filtros aplicados.
+   - Comparando o rendimento total com índices de referência (CDI ou IBOVESPA), selecionáveis pelo usuário.
 
-5. **(Sprint+5):**
-   - **[UI_12]** A interface deverá incluir um gráfico de alocação em formato de pizza:
-      - Exibindo inicialmente a distribuição por classes.
-      - Possibilitando detalhar por subclasses ao clicar em uma classe.
-      - Possibilitando detalhar por ativos ao clicar em uma subclasse.
+- ~~**[UI_12]** A interface deverá incluir um gráfico de alocação em formato de pizza:~~
+   - Exibindo inicialmente a distribuição por classes.
+   - Possibilitando detalhar por subclasses ao clicar em uma classe.
+   - Possibilitando detalhar por ativos ao clicar em uma subclasse.
 
 6. **(Sprint+6):**
    - **[UI_13]** O sistema deverá permitir que o usuário exporte os dados atuais para um arquivo CSV, incluindo:
