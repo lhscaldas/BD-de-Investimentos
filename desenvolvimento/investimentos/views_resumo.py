@@ -77,10 +77,10 @@ class ResumoAtivoView(DetailView):
 
         # Calculando rentabilidade acumulada
         data_perc = []
-        rentabilidade_acumulada = 0
+        rentabilidade_acumulada = 1
         for mes in meses_ordenados:
-            rentabilidade_acumulada += historico[mes]["rentabilidade_perc"]
-            data_perc.append(rentabilidade_acumulada)
+            rentabilidade_acumulada *= (1 + historico[mes]["rentabilidade_perc"] / 100)
+            data_perc.append((rentabilidade_acumulada - 1) * 100)
 
         context["rentabilidades"] = [
             {"data_referencia": mes, **dados} for mes, dados in sorted(historico.items())
@@ -282,8 +282,8 @@ class ResumoView(LoginRequiredMixin, ListView):
                         ativo.rentabilidade_1m_perc = 0
                     
                     if len(meses_ordenados) > 12:
-                        ativo.rentabilidade_1a_abs = sum(rentabilidades[mes] for mes in meses_ordenados[-12:])
-                        ativo.rentabilidade_1a_perc = (prod([(1 + (rentabilidades[mes] / valores[mes])) for mes in meses_ordenados[-12:]]) - 1) * 100
+                        ativo.rentabilidade_1a_abs = sum(rentabilidades[mes] for mes in meses_ordenados[-13:])
+                        ativo.rentabilidade_1a_perc = (prod([(1 + (rentabilidades[mes] / valores[mes])) for mes in meses_ordenados[-13:]]) - 1) * 100
 
                     else:
                         ativo.rentabilidade_1a_abs = 0
