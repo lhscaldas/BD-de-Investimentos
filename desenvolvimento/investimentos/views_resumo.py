@@ -311,6 +311,137 @@ class ResumoView(LoginRequiredMixin, ListView):
         return ativos
 
 
+    def get_context_data(self, **kwargs):
+        """Adiciona informações de rentabilidade global, comparativa e evolução patrimonial ao contexto."""
+        context = super().get_context_data(**kwargs)
+        usuario_ativos = Ativo.objects.filter(usuario=self.request.user)
+
+        context["classes_disponiveis"] = usuario_ativos.values_list("classe", flat=True).distinct()
+        context["subclasses_disponiveis"] = usuario_ativos.values_list("subclasse", flat=True).distinct()
+        context["bancos_disponiveis"] = usuario_ativos.values_list("banco", flat=True).distinct()
+
+        ativos = context["ativos"]
+
+        if not ativos.exists():
+            context.update({
+                "patrimonio_total": 0,
+                "rentabilidade_abs_1m": 0,
+                "rentabilidade_abs_1a": 0,
+                "rentabilidade_abs_total": 0,
+                "rentabilidade_perc_1m": 0,
+                "rentabilidade_perc_1a": 0,
+                "rentabilidade_perc_total": 0
+            })
+            return context
+
+        # Carrega os dados do JSON
+        dados_financeiros = self.carregar_dados_financeiros()
+        usuario_id = str(self.request.user.id)
+
+        rentabilidade_mensal = []
+        valores_mensais = {}
+        rentabilidades_mensais = {}
+
+        for ativo in ativos:
+            ativo_id = str(ativo.id)
+            if usuario_id in dados_financeiros and ativo_id in dados_financeiros[usuario_id]:
+                dados_ativo = dados_financeiros[usuario_id][ativo_id]
+                valores = {datetime.strptime(mes, "%Y-%m"): float(valor) for mes, valor in dados_ativo["valor"].items()}
+                rentabilidades = {datetime.strptime(mes, "%Y-%m"): float(rent) for mes, rent in dados_ativo["rentabilidade"].items()}
+                
+                for mes in valores:
+                    if mes not in valores_mensais:
+                        valores_mensais[mes] = 0
+                        rentabilidades_mensais[mes] = 0
+                    valores_mensais[mes] += valores[mes]
+                    rentabilidades_mensais[mes] += rentabilidades[mes]
+        
+        meses_ordenados = sorted(valores_mensais.keys())
+        valor_anterior = None
+
+        for mes in meses_ordenados:
+            valor_atual = valores_mensais[mes]
+            rentabilidade_abs = (valor_atual - valor_anterior) if valor_anterior else 0
+            rentabilidade_perc = (rentabilidades_mensais[mes] / valor_anterior * 100) if valor_anterior else 0
+            
+            rentabilidade_mensal.append({
+                "mes": mes.strftime("%Y-%m"),
+                "valor": valor_atual,
+                "rentabilidade_abs": rentabilidade_abs,
+                "rentabilidade_perc": rentabilidade_perc,
+            })
+            
+            valor_anterior = valor_atual
+
+        context["rentabilidade_mensal"] = rentabilidade_mensal
+
+        # # Adiciona rentabilidade comparativa (Carteira vs CDI vs IBOVESPA)
+        # labels, rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(ativos)
+        # context["grafico_labels"] = json.dumps(labels)
+        # context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
+        # context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
+        # context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
+
+        # # Adiciona evolução patrimonial
+        # labels_patrimonio, patrimonio = self.calcular_evolucao_patrimonial(ativos)
+        # context["grafico_data_abs"] = json.dumps([float(val) for val in patrimonio])
+
+        #  # Composição da carteira por subclasse
+        # labels_subclasse, data_subclasse = self.calcular_composicao_por_subclasse(ativos)
+        # context["grafico_labels_subclasses"] = json.dumps(labels_subclasse)
+        # context["grafico_data_subclasses"] = json.dumps([float(val) for val in data_subclasse])
+
+        # # Composição da carteira por classe de ativo
+        # composicao_classes = self.calcular_composição_por_classe(ativos)
+        # context["renda_fixa_perc"] = composicao_classes["Renda Fixa"]
+        # context["renda_variavel_perc"] = composicao_classes["Renda Variável"]
+
+        return context
+
+
+    def calcular_rentabilidade_mensal(self, ativos):
+        """Calcula a rentabilidade mês a mês da carteira inteira."""
+
+        if not ativos.exists():
+            return []  # Retorna lista vazia se não houver ativos
+
+        # Determina o período de cálculo
+        data_inicio = min(ativo.data_aquisicao for ativo in ativos if ativo.data_aquisicao)
+        data_fim = max(ativo.ultima_atualizacao for ativo in ativos if ativo.ultima_atualizacao)
+
+        # Garante que temos pelo menos um mês no intervalo
+        if data_fim < data_inicio:
+            return []
+
+        rentabilidade_mensal = []
+        valor_anterior = None
+
+        # Gera as datas de referência mês a mês
+        data_atual = data_inicio.replace(day=1)  # Sempre começa no primeiro dia do mês
+        while data_atual <= data_fim:
+            valor_atual = sum(self.get_valor_ajustado(ativo, data_atual) for ativo in ativos)
+
+            # Se não há atualização no mês, mantém o valor do mês anterior
+            if valor_atual is None and valor_anterior is not None:
+                valor_atual = valor_anterior
+
+            rentabilidade_abs = (valor_atual - valor_anterior) if valor_anterior else 0
+            rentabilidade_perc = (rentabilidade_abs / valor_anterior * 100) if valor_anterior else 0
+
+            rentabilidade_mensal.append({
+                "mes": data_atual.strftime("%Y-%m"),
+                "valor": valor_atual,
+                "rentabilidade_abs": rentabilidade_abs,
+                "rentabilidade_perc": rentabilidade_perc,
+            })
+
+            # Atualiza o valor do mês anterior para a próxima iteração
+            valor_anterior = valor_atual
+            data_atual += relativedelta(months=1)  # Avança para o próximo mês
+
+        return rentabilidade_mensal
+
+
 
     # def calcular_rentabilidade_global(self, context, ativos):
     #     """Calcula a rentabilidade global da carteira baseada no método original."""
@@ -371,47 +502,7 @@ class ResumoView(LoginRequiredMixin, ListView):
 
     #     return context
     
-    # def calcular_rentabilidade_mensal(self, ativos):
-    #     """Calcula a rentabilidade mês a mês da carteira inteira."""
 
-    #     if not ativos.exists():
-    #         return []  # Retorna lista vazia se não houver ativos
-
-    #     # Determina o período de cálculo
-    #     data_inicio = min(ativo.data_aquisicao for ativo in ativos if ativo.data_aquisicao)
-    #     data_fim = max(ativo.ultima_atualizacao for ativo in ativos if ativo.ultima_atualizacao)
-
-    #     # Garante que temos pelo menos um mês no intervalo
-    #     if data_fim < data_inicio:
-    #         return []
-
-    #     rentabilidade_mensal = []
-    #     valor_anterior = None
-
-    #     # Gera as datas de referência mês a mês
-    #     data_atual = data_inicio.replace(day=1)  # Sempre começa no primeiro dia do mês
-    #     while data_atual <= data_fim:
-    #         valor_atual = sum(self.get_valor_ajustado(ativo, data_atual) for ativo in ativos)
-
-    #         # Se não há atualização no mês, mantém o valor do mês anterior
-    #         if valor_atual is None and valor_anterior is not None:
-    #             valor_atual = valor_anterior
-
-    #         rentabilidade_abs = (valor_atual - valor_anterior) if valor_anterior else 0
-    #         rentabilidade_perc = (rentabilidade_abs / valor_anterior * 100) if valor_anterior else 0
-
-    #         rentabilidade_mensal.append({
-    #             "mes": data_atual.strftime("%Y-%m"),
-    #             "valor": valor_atual,
-    #             "rentabilidade_abs": rentabilidade_abs,
-    #             "rentabilidade_perc": rentabilidade_perc,
-    #         })
-
-    #         # Atualiza o valor do mês anterior para a próxima iteração
-    #         valor_anterior = valor_atual
-    #         data_atual += relativedelta(months=1)  # Avança para o próximo mês
-
-    #     return rentabilidade_mensal
     
     # def calcular_rentabilidade_comparativa(self, ativos):
     #     """Calcula a rentabilidade acumulada do patrimônio comparada ao CDI e IBOVESPA."""
@@ -541,43 +632,5 @@ class ResumoView(LoginRequiredMixin, ListView):
 
     #     return composicao
 
-    def get_context_data(self, **kwargs):
-        """Adiciona informações de rentabilidade global, comparativa e evolução patrimonial ao contexto."""
-        context = super().get_context_data(**kwargs)
-        usuario_ativos = Ativo.objects.filter(usuario=self.request.user)
-
-        context["classes_disponiveis"] = usuario_ativos.values_list("classe", flat=True).distinct()
-        context["subclasses_disponiveis"] = usuario_ativos.values_list("subclasse", flat=True).distinct()
-        context["bancos_disponiveis"] = usuario_ativos.values_list("banco", flat=True).distinct()
-
-        # ativos = context["ativos"]
-
-        # if not ativos.exists():
-        #     return self.definir_contexto_vazio(context)
-
-        # context = self.calcular_rentabilidade_global(context, ativos)
-        # context["rentabilidade_mensal"] = self.calcular_rentabilidade_mensal(ativos)
-
-        # # Adiciona rentabilidade comparativa (Carteira vs CDI vs IBOVESPA)
-        # labels, rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(ativos)
-        # context["grafico_labels"] = json.dumps(labels)
-        # context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
-        # context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
-        # context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
-
-        # # Adiciona evolução patrimonial
-        # labels_patrimonio, patrimonio = self.calcular_evolucao_patrimonial(ativos)
-        # context["grafico_data_abs"] = json.dumps([float(val) for val in patrimonio])
-
-        #  # Composição da carteira por subclasse
-        # labels_subclasse, data_subclasse = self.calcular_composicao_por_subclasse(ativos)
-        # context["grafico_labels_subclasses"] = json.dumps(labels_subclasse)
-        # context["grafico_data_subclasses"] = json.dumps([float(val) for val in data_subclasse])
-
-        # # Composição da carteira por classe de ativo
-        # composicao_classes = self.calcular_composição_por_classe(ativos)
-        # context["renda_fixa_perc"] = composicao_classes["Renda Fixa"]
-        # context["renda_variavel_perc"] = composicao_classes["Renda Variável"]
-
-        return context
+    
 
