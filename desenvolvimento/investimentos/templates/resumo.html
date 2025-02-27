@@ -87,19 +87,19 @@
         <!-- Informações gerais e gráfico de alocação da Carteira -->
 
         <div class="row mt-4">
-
             <!-- Coluna: Gráfico de Pizza -->
-            <!-- <div class="col-md-6">
+            <div class="col-md-6">
                 <div class="card p-3 shadow-sm">
                     <h2 class="mb-3 text-center">Composição da Carteira</h2>
                     <div class="d-flex justify-content-center">
-                        <canvas id="graficoComposicaoCarteira" style="max-width: 300px; max-height: 300px;"></canvas>
+                        <!-- <canvas id="graficoComposicaoCarteira" style="max-width: 300px; max-height: 300px;"></canvas> -->
                     </div>
                 </div>
-            </div> -->
+            </div>
 
             <!-- Coluna: Informações Gerais -->
-            <!-- <div class="col-md-6">
+            <div class="col-md-6">
+                
                 <div class="p-3 border rounded shadow-sm">
                     <h5 class="text-end"><strong>Patrimônio Total:</strong> R$ {{ patrimonio_total|floatformat:2 }}</h5>
         
@@ -110,37 +110,37 @@
                         R$ {{ rentabilidade_abs_1a|floatformat:2 }} ({{ rentabilidade_perc_1a|floatformat:2 }}%)</h5>
         
                     <h5 class="text-end"><strong>Rentabilidade - Todo o Período:</strong> 
-                        R$ {{ rentabilidade_abs_total|floatformat:2 }} ({{ rentabilidade_perc_total|floatformat:2 }}%)</h5> -->
+                        R$ {{ rentabilidade_abs_total|floatformat:2 }} ({{ rentabilidade_perc_total|floatformat:2 }}%)</h5>
                 
 
-                <!-- Composição da Carteira com Barra de Progresso -->
-                <!-- <h5 class="mt-3"><strong>Distribuição da Carteira:</strong></h5>
-                <div class="progress mb-2">
-                    <div class="progress-bar renda-fixa"
-                        role="progressbar"
-                        data-width="{{ renda_fixa_perc }}"
-                        aria-valuenow="{{ renda_fixa_perc|default:0 }}" aria-valuemin="0" aria-valuemax="100">
-                        {{ renda_fixa_perc|floatformat:2 }}%
+                    <!-- Composição da Carteira com Barra de Progresso -->
+                    <h5 class="mt-3"><strong>Distribuição da Carteira:</strong></h5>
+                    <div class="progress mb-2">
+                        <!-- <div class="progress-bar renda-fixa"
+                            role="progressbar"
+                            data-width="{{ renda_fixa_perc }}"
+                            aria-valuenow="{{ renda_fixa_perc|default:0 }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ renda_fixa_perc|floatformat:2 }}%
+                        </div>
+                        <div class="progress-bar renda-variavel"
+                            role="progressbar"
+                            data-width="{{ renda_variavel_perc }}"
+                            aria-valuenow="{{ renda_variavel_perc|default:0 }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ renda_variavel_perc|floatformat:2 }}%
+                        </div> -->
                     </div>
-                    <div class="progress-bar renda-variavel"
-                        role="progressbar"
-                        data-width="{{ renda_variavel_perc }}"
-                        aria-valuenow="{{ renda_variavel_perc|default:0 }}" aria-valuemin="0" aria-valuemax="100">
-                        {{ renda_variavel_perc|floatformat:2 }}%
-                    </div>
-                </div> -->
 
-                <!-- Legenda -->
-                <!-- <div class="d-flex justify-content-center">
-                    <span class="me-3">
-                        <span class="legenda renda-fixa"></span> Renda Fixa
-                    </span>
-                    <span>
-                        <span class="legenda renda-variavel"></span> Renda Variável
-                    </span>
-                </div>
-                </div>    
-            </div> -->
+                    <!-- Legenda -->
+                    <div class="d-flex justify-content-center">
+                        <span class="me-3">
+                            <span class="legenda renda-fixa"></span> Renda Fixa
+                        </span>
+                        <span>
+                            <span class="legenda renda-variavel"></span> Renda Variável
+                        </span>
+                    </div>
+                </div>  
+            </div>
         
         </div> 
         
@@ -152,11 +152,11 @@
 
         <!-- Gráficos de Rentabilidade e evolução da Carteira -->
         <div class="card p-4 shadow-sm mt-4">
-            <!-- <h2 class="mb-3">Gráfico de Rentabilidade Percentual Acumulada da Carteira</h2>
-            <label for="toggleIndice">Comparar com:</label> -->
+            <h2 class="mb-3">Gráfico de Rentabilidade Percentual Acumulada da Carteira</h2>
+            <label for="toggleIndice">Comparar com:</label>
         
             <!-- Toggle Switch para Alternar entre CDI e IBOVESPA -->
-            <!-- <div class="d-flex align-items-center mb-3">
+            <div class="d-flex align-items-center mb-3">
                 <span class="me-2">CDI</span>
                 <label class="switch">
                     <input type="checkbox" id="toggleIndice">
@@ -164,13 +164,13 @@
                 </label>
                 <span class="ms-2">IBOVESPA</span>
             </div>
-            <canvas id="graficoRentabilidadePercCarteira"></canvas> -->
+            <canvas id="graficoRentabilidadePercCarteira"></canvas>
         </div>
         
-        <!-- <div class="card p-4 shadow-sm mt-4">
+        <div class="card p-4 shadow-sm mt-4">
             <h2 class="mb-3">Gráfico de Evolução do Patrimônio da Carteira</h2>
-            <canvas id="graficoRentabilidadeAbsCarteira"></canvas>
-        </div> -->
+            <!-- <canvas id="graficoRentabilidadeAbsCarteira"></canvas> -->
+        </div>
         
         <!-- <script>
             var labels = JSON.parse('{{ grafico_labels|escapejs }}');
