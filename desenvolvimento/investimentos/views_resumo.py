@@ -215,11 +215,10 @@ class ResumoView(LoginRequiredMixin, ListView):
         context["renda_variavel_perc"] = composicao_classes["Renda Variável"]
 
         # Adiciona rentabilidade comparativa (Carteira vs CDI vs IBOVESPA)
-        # labels, rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(ativos)
-        # context["grafico_labels"] = json.dumps(labels)
-        # context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
-        # context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
-        # context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
+        rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(context)
+        context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
+        context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
+        context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
 
         return context
     
@@ -235,75 +234,6 @@ class ResumoView(LoginRequiredMixin, ListView):
                 "rentabilidade_mensal": []
             })
         return context
-
-    
-    def calcular_evolucao_patrimonial(self, ativos, dados_financeiros):
-        """Processa os dados financeiros para calcular patrimônio, rentabilidade mensal e evolução patrimonial."""
-        usuario_id = str(self.request.user.id)
-        patrimonio_total = 0
-        rentabilidade_mensal = []
-        valores_mensais = {}
-        rentabilidades_mensais_carteira = {}
-        labels = []
-
-        for ativo in ativos:
-            ativo_id = str(ativo.id)
-            if usuario_id in dados_financeiros and ativo_id in dados_financeiros[usuario_id]:
-                dados_ativo = dados_financeiros[usuario_id][ativo_id]
-                valores = {datetime.strptime(mes, "%Y-%m"): float(valor) for mes, valor in dados_ativo["valor"].items()}
-                rentabilidades = {datetime.strptime(mes, "%Y-%m"): float(rent) for mes, rent in dados_ativo["rentabilidade"].items()}
-                
-                meses_ordenados = sorted(valores.keys())
-                if meses_ordenados:
-                    patrimonio_total += valores[meses_ordenados[-1]]
-                
-                for mes in rentabilidades:
-                    if mes not in rentabilidades_mensais_carteira:
-                        rentabilidades_mensais_carteira[mes] = 0
-                    rentabilidades_mensais_carteira[mes] += rentabilidades[mes]
-                
-                for mes in valores:
-                    if mes not in valores_mensais:
-                        valores_mensais[mes] = 0
-                    valores_mensais[mes] += valores[mes]
-        
-        meses_ordenados = sorted(valores_mensais.keys())
-
-        for mes in meses_ordenados:
-            valor_atual = valores_mensais[mes]
-            rentabilidade_abs = rentabilidades_mensais_carteira.get(mes, 0)
-            rentabilidade_perc = (rentabilidade_abs / valor_atual * 100) if rentabilidade_abs else 0
-            
-            rentabilidade_mensal.append({
-                "mes": mes.strftime("%Y-%m"),
-                "valor": valor_atual,
-                "rentabilidade_abs": rentabilidade_abs,
-                "rentabilidade_perc": rentabilidade_perc,
-            })
-            labels.append(mes.strftime("%Y-%m"))
-            
-        
-        rentabilidade_abs_1m = rentabilidade_mensal[-2]["rentabilidade_abs"] if len(rentabilidade_mensal) > 1 else 0
-        rentabilidade_abs_1a = sum(item["rentabilidade_abs"] for item in rentabilidade_mensal[-13:]) if len(rentabilidade_mensal) > 12 else 0
-        rentabilidade_abs_total = sum(item["rentabilidade_abs"] for item in rentabilidade_mensal)
-
-        rentabilidade_perc_1m = (rentabilidade_abs_1m / valores_mensais.get(meses_ordenados[-2], 1) * 100) if len(meses_ordenados) > 1 else 0
-        rentabilidade_perc_1a = (rentabilidade_abs_1a / valores_mensais.get(meses_ordenados[-13], 1) * 100) if len(meses_ordenados) > 12 else 0
-        rentabilidade_perc_total = (rentabilidade_abs_total / valores_mensais.get(meses_ordenados[0], 1) * 100) if meses_ordenados else 0
-
-        return {
-            "patrimonio_total": patrimonio_total,
-            "rentabilidade_abs_1m": rentabilidade_abs_1m,
-            "rentabilidade_abs_1a": rentabilidade_abs_1a,
-            "rentabilidade_abs_total": rentabilidade_abs_total,
-            "rentabilidade_perc_1m": rentabilidade_perc_1m,
-            "rentabilidade_perc_1a": rentabilidade_perc_1a,
-            "rentabilidade_perc_total": rentabilidade_perc_total,
-            "rentabilidade_mensal": rentabilidade_mensal,
-            "grafico_labels": json.dumps(labels),
-            "grafico_data_abs": json.dumps([float(val) for val in valores_mensais.values()])
-        }
-    
 
     def calcular_composicao_por_subclasse(self, ativos):
         """Calcula a composição percentual da carteira por subclasse de ativo."""
@@ -347,68 +277,121 @@ class ResumoView(LoginRequiredMixin, ListView):
         composicao = {classe: (valor / patrimonio_total) * 100 for classe, valor in composicao.items()}
 
         return composicao
+    
+    def calcular_evolucao_patrimonial(self, ativos, dados_financeiros):
+        """Processa os dados financeiros para calcular patrimônio, rentabilidade mensal e evolução patrimonial."""
+        usuario_id = str(self.request.user.id)
+        patrimonio_total = 0
+        rentabilidade_mensal = []
+        valores_mensais = {}
+        rentabilidades_mensais_carteira = {}
+        labels = []
+
+        for ativo in ativos:
+            ativo_id = str(ativo.id)
+            if usuario_id in dados_financeiros and ativo_id in dados_financeiros[usuario_id]:
+                dados_ativo = dados_financeiros[usuario_id][ativo_id]
+                valores = {datetime.strptime(mes, "%Y-%m"): float(valor) for mes, valor in dados_ativo["valor"].items()}
+                rentabilidades = {datetime.strptime(mes, "%Y-%m"): float(rent) for mes, rent in dados_ativo["rentabilidade"].items()}
+                
+                meses_ordenados = sorted(valores.keys())
+                if meses_ordenados:
+                    patrimonio_total += valores[meses_ordenados[-1]]
+                
+                for mes in rentabilidades:
+                    if mes not in rentabilidades_mensais_carteira:
+                        rentabilidades_mensais_carteira[mes] = 0
+                    rentabilidades_mensais_carteira[mes] += rentabilidades[mes]
+                
+                for mes in valores:
+                    if mes not in valores_mensais:
+                        valores_mensais[mes] = 0
+                    valores_mensais[mes] += valores[mes]
+        
+        meses_ordenados = sorted(valores_mensais.keys())
+
+        for mes in meses_ordenados:
+            valor_atual = valores_mensais[mes]
+            rentabilidade_abs = rentabilidades_mensais_carteira.get(mes, 0)
+            rentabilidade_perc = (rentabilidade_abs / valor_atual * 100) if valor_atual else 0
+            
+            rentabilidade_mensal.append({
+                "mes": mes.strftime("%Y-%m"),
+                "valor": valor_atual,
+                "rentabilidade_abs": rentabilidade_abs,
+                "rentabilidade_perc": rentabilidade_perc,
+            })
+            labels.append(mes.strftime("%Y-%m"))
+            
+        
+        rentabilidade_abs_1m = rentabilidade_mensal[-2]["rentabilidade_abs"] if len(rentabilidade_mensal) > 1 else 0
+        rentabilidade_abs_1a = sum(item["rentabilidade_abs"] for item in rentabilidade_mensal[-13:]) if len(rentabilidade_mensal) > 12 else 0
+        rentabilidade_abs_total = sum(item["rentabilidade_abs"] for item in rentabilidade_mensal)
+
+        rentabilidade_perc_1m = (prod([(1 + item["rentabilidade_perc"] / 100) for item in rentabilidade_mensal[-2:]]) - 1) * 100 if len(meses_ordenados) > 1 else 0
+        rentabilidade_perc_1a = (prod([(1 + item["rentabilidade_perc"] / 100) for item in rentabilidade_mensal[-13:]]) - 1) * 100 if len(meses_ordenados) > 12 else 0
+        rentabilidade_perc_total = (prod([(1 + item["rentabilidade_perc"] / 100) for item in rentabilidade_mensal]) - 1) * 100 if meses_ordenados else 0
+        
+
+        return {
+            "patrimonio_total": patrimonio_total,
+            "rentabilidade_abs_1m": rentabilidade_abs_1m,
+            "rentabilidade_abs_1a": rentabilidade_abs_1a,
+            "rentabilidade_abs_total": rentabilidade_abs_total,
+            "rentabilidade_perc_1m": rentabilidade_perc_1m,
+            "rentabilidade_perc_1a": rentabilidade_perc_1a,
+            "rentabilidade_perc_total": rentabilidade_perc_total,
+            "rentabilidade_mensal": rentabilidade_mensal,
+            "grafico_labels": json.dumps(labels),
+            "grafico_data_abs": json.dumps([float(val) for val in valores_mensais.values()])
+        }
+    
 
     
-    # def calcular_rentabilidade_comparativa(self, ativos):
-    #     """Calcula a rentabilidade acumulada do patrimônio comparada ao CDI e IBOVESPA."""
-
-    #     if not ativos.exists():
-    #         return [], [], [], []
-
-    #     # Determina o período do cálculo
-    #     data_inicio = min(ativo.data_aquisicao for ativo in ativos if ativo.data_aquisicao)
-    #     data_fim = max(ativo.ultima_atualizacao for ativo in ativos if ativo.ultima_atualizacao)
-
-    #     if data_fim < data_inicio:
-    #         return [], [], [], []
-
-    #     # Obtém a rentabilidade inicial
-    #     valor_inicial = sum(self.get_valor_ajustado(ativo, data_inicio) for ativo in ativos)
-
-    #     # Obtém os dados históricos do CDI e IBOVESPA
-    #     meses_ordenados = pd.date_range(data_inicio, data_fim, freq='MS').to_pydatetime().tolist()
-    #     if not meses_ordenados:
-    #         return [], [], [], []
+    def calcular_rentabilidade_comparativa(self, context):
+        """Calcula a rentabilidade acumulada do patrimônio comparada ao CDI e IBOVESPA."""
+        rentabilidade_mensal = context.get("rentabilidade_mensal", [])
+        labels = json.loads(context.get("grafico_labels", "[]"))  # Garantir que labels seja uma lista
         
-    #     data_inicio_str = meses_ordenados[0].strftime("%d/%m/%Y")
-    #     data_fim_str = meses_ordenados[-1].strftime("%d/%m/%Y")
+        if not rentabilidade_mensal:
+            return [], [], []
+        
+        # Converter as strings de labels para formato de data
+        data_inicio_str = datetime.strptime(labels[0], "%Y-%m").strftime("%d/%m/%Y")
+        data_fim_str = datetime.strptime(labels[-2], "%Y-%m").strftime("%d/%m/%Y")
+        
+        # Obtém os dados históricos do CDI e IBOVESPA
+        indices_historicos = obter_indices_historicos(data_inicio_str, data_fim_str)
+        cdi_mensal_historico = indices_historicos.get("CDI", {})
+        ibov_mensal_historico = indices_historicos.get("IBOVESPA", {})
+        
+        rentabilidade_perc = []
+        cdi_acumulado = [1]  # CDI começa em 1 (100% do investimento inicial)
+        ibov_acumulado = [1]  # IBOVESPA começa em 1 (100% do investimento inicial)
+        
+        rentabilidade_acumulada = 1
+        
+        for item in rentabilidade_mensal[:-1]:  # Exclui o último mês
+            mes_str = item["mes"]
+            rentabilidade_mensal_perc = item["rentabilidade_perc"] / 100
+            
+            rentabilidade_acumulada *= (1 + rentabilidade_mensal_perc)
+            rentabilidade_perc.append((rentabilidade_acumulada - 1) * 100)
+            
+            # Obter CDI e IBOV mensal
+            cdi_mensal = cdi_mensal_historico.get(mes_str, 0) / 100
+            ibov_mensal = ibov_mensal_historico.get(mes_str, 0) / 100
+            
+            # Acumular CDI e IBOV
+            cdi_acumulado.append(cdi_acumulado[-1] * (1 + cdi_mensal))
+            ibov_acumulado.append(ibov_acumulado[-1] * (1 + ibov_mensal))
+        
+        # Converter CDI e IBOV para percentual
+        cdi_acumulado_perc = [(valor - 1) * 100 for valor in cdi_acumulado[1:]]
+        ibov_acumulado_perc = [(valor - 1) * 100 for valor in ibov_acumulado[1:]]
+        
+        return rentabilidade_perc, cdi_acumulado_perc, ibov_acumulado_perc
 
-    #     indices_historicos = obter_indices_historicos(data_inicio_str, data_fim_str)
-    #     cdi_mensal_historico = indices_historicos.get("CDI", {})
-    #     ibov_mensal_historico = indices_historicos.get("IBOVESPA", {})
-
-    #     # Listas para armazenar os dados
-    #     labels = []
-    #     rentabilidade_perc = []
-    #     cdi_acumulado = [1]  # CDI começa em 1 (100% do investimento inicial)
-    #     ibov_acumulado = [1]  # IBOVESPA começa em 1 (100% do investimento inicial)
-
-    #     valor_anterior = valor_inicial
-
-    #     for i, mes_atual in enumerate(meses_ordenados):
-    #         mes_str = mes_atual.strftime("%Y-%m")
-    #         valor_atual = sum(self.get_valor_ajustado(ativo, mes_atual) for ativo in ativos)
-
-    #         # Rentabilidade da carteira em relação ao início
-    #         rentabilidade = ((valor_atual / valor_inicial) - 1) * 100 if valor_inicial else 0
-    #         rentabilidade_perc.append(rentabilidade)
-
-    #         # Obter CDI e IBOV mensal
-    #         cdi_mensal = cdi_mensal_historico.get(mes_str, 0)
-    #         ibov_mensal = ibov_mensal_historico.get(mes_str, 0)
-
-    #         # Acumular CDI e IBOV
-    #         cdi_acumulado.append(cdi_acumulado[-1] * (1 + cdi_mensal / 100))
-    #         ibov_acumulado.append(ibov_acumulado[-1] * (1 + ibov_mensal / 100))
-
-    #         labels.append(mes_str)
-    #         valor_anterior = valor_atual
-
-    #     # Converter CDI e IBOV para percentual
-    #     cdi_acumulado_perc = [(valor - 1) * 100 for valor in cdi_acumulado[1:]]
-    #     ibov_acumulado_perc = [(valor - 1) * 100 for valor in ibov_acumulado[1:]]
-
-    #     return labels, rentabilidade_perc, cdi_acumulado_perc, ibov_acumulado_perc
 
 
 

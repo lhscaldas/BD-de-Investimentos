@@ -163,7 +163,7 @@
                 </label>
                 <span class="ms-2">IBOVESPA</span>
             </div>
-            <!-- <canvas id="graficoRentabilidadePercCarteira"></canvas> -->
+            <canvas id="graficoRentabilidadePercCarteira"></canvas>
         </div>
         
         <div class="card p-4 shadow-sm mt-4">
@@ -174,17 +174,11 @@
         <script>
             var labels = JSON.parse('{{ grafico_labels|escapejs }}');
             var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}');
-        </script>
-        
-        <!-- <script>
-            var labels = JSON.parse('{{ grafico_labels|escapejs }}');
-            var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}');
             var dataPerc = JSON.parse('{{ grafico_data_perc|escapejs }}');
             var dataCdi = JSON.parse('{{ grafico_data_cdi|escapejs }}');
             var dataIbov = JSON.parse('{{ grafico_data_ibov|escapejs }}');
-        </script> -->
+        </script>
 
-        
         <!-- Rentabilidade Mensal da Carteira -->
         <div class="card p-4 shadow-sm mt-4">
             <h2 class="mb-3">Rentabilidade Mensal da Carteira</h2>
