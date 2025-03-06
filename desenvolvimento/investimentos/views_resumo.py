@@ -200,16 +200,9 @@ class ResumoView(LoginRequiredMixin, ListView):
         # Carrega os dados do JSON
         dados_financeiros = self.carregar_dados_financeiros()
 
-        # # Adiciona evolução patrimonial
+        # Adiciona evolução patrimonial
         evolucao_patrimonial = self.calcular_evolucao_patrimonial(ativos, dados_financeiros)
         context.update(evolucao_patrimonial)
-        
-        # # Adiciona rentabilidade comparativa (Carteira vs CDI vs IBOVESPA)
-        # labels, rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(ativos)
-        # context["grafico_labels"] = json.dumps(labels)
-        # context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
-        # context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
-        # context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
 
         # Composição da carteira por subclasse
         labels_subclasse, data_subclasse = self.calcular_composicao_por_subclasse(ativos)
@@ -220,6 +213,13 @@ class ResumoView(LoginRequiredMixin, ListView):
         composicao_classes = self.calcular_composição_por_classe(ativos)
         context["renda_fixa_perc"] = composicao_classes["Renda Fixa"]
         context["renda_variavel_perc"] = composicao_classes["Renda Variável"]
+
+        # Adiciona rentabilidade comparativa (Carteira vs CDI vs IBOVESPA)
+        # labels, rentabilidade_perc, cdi_perc, ibov_perc = self.calcular_rentabilidade_comparativa(ativos)
+        # context["grafico_labels"] = json.dumps(labels)
+        # context["grafico_data_perc"] = json.dumps([float(val) for val in rentabilidade_perc])
+        # context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
+        # context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
 
         return context
     
@@ -407,12 +407,6 @@ class ResumoView(LoginRequiredMixin, ListView):
 
     #     return labels, rentabilidade_perc, cdi_acumulado_perc, ibov_acumulado_perc
 
-
-
-    
-    
-
-    
     # def calcular_evolucao_patrimonial(self, ativos):
     #     """Calcula a evolução do patrimônio mês a mês."""
 
