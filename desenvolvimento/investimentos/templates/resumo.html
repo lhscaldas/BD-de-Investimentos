@@ -168,15 +168,20 @@
         
         <div class="card p-4 shadow-sm mt-4">
             <h2 class="mb-3">Gráfico de Evolução do Patrimônio da Carteira</h2>
-            <!-- <canvas id="graficoRentabilidadeAbsCarteira"></canvas> -->
+            <canvas id="graficoRentabilidadeAbsCarteira"></canvas>
         </div>
+
+        <script>
+            var labels = JSON.parse('{{ grafico_labels|escapejs }}');
+            var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}');
+        </script>
         
         <!-- <script>
             var labels = JSON.parse('{{ grafico_labels|escapejs }}');
+            var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}');
             var dataPerc = JSON.parse('{{ grafico_data_perc|escapejs }}');
             var dataCdi = JSON.parse('{{ grafico_data_cdi|escapejs }}');
             var dataIbov = JSON.parse('{{ grafico_data_ibov|escapejs }}');
-            var dataAbs = JSON.parse('{{ grafico_data_abs|escapejs }}');
         </script> -->
 
         

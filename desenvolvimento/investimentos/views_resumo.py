@@ -244,6 +244,7 @@ class ResumoView(LoginRequiredMixin, ListView):
         rentabilidade_mensal = []
         valores_mensais = {}
         rentabilidades_mensais_carteira = {}
+        labels = []
 
         for ativo in ativos:
             ativo_id = str(ativo.id)
@@ -279,6 +280,7 @@ class ResumoView(LoginRequiredMixin, ListView):
                 "rentabilidade_abs": rentabilidade_abs,
                 "rentabilidade_perc": rentabilidade_perc,
             })
+            labels.append(mes.strftime("%Y-%m"))
             
         
         rentabilidade_abs_1m = rentabilidade_mensal[-2]["rentabilidade_abs"] if len(rentabilidade_mensal) > 1 else 0
@@ -289,7 +291,6 @@ class ResumoView(LoginRequiredMixin, ListView):
         rentabilidade_perc_1a = (rentabilidade_abs_1a / valores_mensais.get(meses_ordenados[-13], 1) * 100) if len(meses_ordenados) > 12 else 0
         rentabilidade_perc_total = (rentabilidade_abs_total / valores_mensais.get(meses_ordenados[0], 1) * 100) if meses_ordenados else 0
 
-
         return {
             "patrimonio_total": patrimonio_total,
             "rentabilidade_abs_1m": rentabilidade_abs_1m,
@@ -298,7 +299,9 @@ class ResumoView(LoginRequiredMixin, ListView):
             "rentabilidade_perc_1m": rentabilidade_perc_1m,
             "rentabilidade_perc_1a": rentabilidade_perc_1a,
             "rentabilidade_perc_total": rentabilidade_perc_total,
-            "rentabilidade_mensal": rentabilidade_mensal
+            "rentabilidade_mensal": rentabilidade_mensal,
+            "grafico_labels": json.dumps(labels),
+            "grafico_data_abs": json.dumps([float(val) for val in valores_mensais.values()])
         }
     
 
@@ -406,30 +409,6 @@ class ResumoView(LoginRequiredMixin, ListView):
     #     ibov_acumulado_perc = [(valor - 1) * 100 for valor in ibov_acumulado[1:]]
 
     #     return labels, rentabilidade_perc, cdi_acumulado_perc, ibov_acumulado_perc
-
-    # def calcular_evolucao_patrimonial(self, ativos):
-    #     """Calcula a evolução do patrimônio mês a mês."""
-
-    #     if not ativos.exists():
-    #         return [], []
-
-    #     data_inicio = min(ativo.data_aquisicao for ativo in ativos if ativo.data_aquisicao)
-    #     data_fim = max(ativo.ultima_atualizacao for ativo in ativos if ativo.ultima_atualizacao)
-
-    #     if data_fim < data_inicio:
-    #         return [], []
-
-    #     labels = []
-    #     patrimonio = []
-
-    #     meses_ordenados = pd.date_range(data_inicio, data_fim, freq='MS').to_pydatetime().tolist()
-
-    #     for mes_atual in meses_ordenados:
-    #         valor_atual = sum(self.get_valor_ajustado(ativo, mes_atual) for ativo in ativos)
-    #         labels.append(mes_atual.strftime("%Y-%m"))
-    #         patrimonio.append(valor_atual)
-
-    #     return labels, patrimonio
 
 
 
