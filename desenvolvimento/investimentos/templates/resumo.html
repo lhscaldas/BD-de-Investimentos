@@ -85,14 +85,13 @@
         </div>
 
         <!-- Informações gerais e gráfico de alocação da Carteira -->
-
         <div class="row mt-4">
             <!-- Coluna: Gráfico de Pizza -->
             <div class="col-md-6">
                 <div class="card p-3 shadow-sm">
                     <h2 class="mb-3 text-center">Composição da Carteira</h2>
                     <div class="d-flex justify-content-center">
-                        <!-- <canvas id="graficoComposicaoCarteira" style="max-width: 300px; max-height: 300px;"></canvas> -->
+                        <canvas id="graficoComposicaoCarteira" style="max-width: 300px; max-height: 300px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -116,7 +115,7 @@
                     <!-- Composição da Carteira com Barra de Progresso -->
                     <h5 class="mt-3"><strong>Distribuição da Carteira:</strong></h5>
                     <div class="progress mb-2">
-                        <!-- <div class="progress-bar renda-fixa"
+                        <div class="progress-bar renda-fixa"
                             role="progressbar"
                             data-width="{{ renda_fixa_perc }}"
                             aria-valuenow="{{ renda_fixa_perc|default:0 }}" aria-valuemin="0" aria-valuemax="100">
@@ -127,7 +126,7 @@
                             data-width="{{ renda_variavel_perc }}"
                             aria-valuenow="{{ renda_variavel_perc|default:0 }}" aria-valuemin="0" aria-valuemax="100">
                             {{ renda_variavel_perc|floatformat:2 }}%
-                        </div> -->
+                        </div>
                     </div>
 
                     <!-- Legenda -->
@@ -144,10 +143,10 @@
         
         </div> 
         
-        <!-- <script>
+        <script>
             var labelsSubclasse = JSON.parse('{{ grafico_labels_subclasses|escapejs }}');
             var dataSubclasse = JSON.parse('{{ grafico_data_subclasses|escapejs }}');
-        </script>         -->
+        </script>        
         
 
         <!-- Gráficos de Rentabilidade e evolução da Carteira -->

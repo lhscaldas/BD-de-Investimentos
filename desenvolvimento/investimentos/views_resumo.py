@@ -211,17 +211,31 @@ class ResumoView(LoginRequiredMixin, ListView):
         # context["grafico_data_cdi"] = json.dumps([float(val) for val in cdi_perc])
         # context["grafico_data_ibov"] = json.dumps([float(val) for val in ibov_perc])
 
-         # Composição da carteira por subclasse
-        # labels_subclasse, data_subclasse = self.calcular_composicao_por_subclasse(ativos)
-        # context["grafico_labels_subclasses"] = json.dumps(labels_subclasse)
-        # context["grafico_data_subclasses"] = json.dumps([float(val) for val in data_subclasse])
+        # Composição da carteira por subclasse
+        labels_subclasse, data_subclasse = self.calcular_composicao_por_subclasse(ativos)
+        context["grafico_labels_subclasses"] = json.dumps(labels_subclasse)
+        context["grafico_data_subclasses"] = json.dumps([float(val) for val in data_subclasse])
 
-        # # Composição da carteira por classe de ativo
-        # composicao_classes = self.calcular_composição_por_classe(ativos)
-        # context["renda_fixa_perc"] = composicao_classes["Renda Fixa"]
-        # context["renda_variavel_perc"] = composicao_classes["Renda Variável"]
+        # Composição da carteira por classe de ativo
+        composicao_classes = self.calcular_composição_por_classe(ativos)
+        context["renda_fixa_perc"] = composicao_classes["Renda Fixa"]
+        context["renda_variavel_perc"] = composicao_classes["Renda Variável"]
 
         return context
+    
+    def definir_contexto_vazio(self, context):
+        context.update({
+                "patrimonio_total": 0,
+                "rentabilidade_abs_1m": 0,
+                "rentabilidade_abs_1a": 0,
+                "rentabilidade_abs_total": 0,
+                "rentabilidade_perc_1m": 0,
+                "rentabilidade_perc_1a": 0,
+                "rentabilidade_perc_total": 0,
+                "rentabilidade_mensal": []
+            })
+        return context
+
     
     def calcular_evolucao_patrimonial(self, ativos, dados_financeiros):
         """Processa os dados financeiros para calcular patrimônio, rentabilidade mensal e evolução patrimonial."""
@@ -229,7 +243,7 @@ class ResumoView(LoginRequiredMixin, ListView):
         patrimonio_total = 0
         rentabilidade_mensal = []
         valores_mensais = {}
-        rentabilidades_mensais = {}
+        rentabilidades_mensais_carteira = {}
 
         for ativo in ativos:
             ativo_id = str(ativo.id)
@@ -242,20 +256,22 @@ class ResumoView(LoginRequiredMixin, ListView):
                 if meses_ordenados:
                     patrimonio_total += valores[meses_ordenados[-1]]
                 
+                for mes in rentabilidades:
+                    if mes not in rentabilidades_mensais_carteira:
+                        rentabilidades_mensais_carteira[mes] = 0
+                    rentabilidades_mensais_carteira[mes] += rentabilidades[mes]
+                
                 for mes in valores:
                     if mes not in valores_mensais:
                         valores_mensais[mes] = 0
-                        rentabilidades_mensais[mes] = 0
                     valores_mensais[mes] += valores[mes]
-                    rentabilidades_mensais[mes] += rentabilidades[mes]
         
         meses_ordenados = sorted(valores_mensais.keys())
-        valor_anterior = None
 
         for mes in meses_ordenados:
             valor_atual = valores_mensais[mes]
-            rentabilidade_abs = (valor_atual - valor_anterior) if valor_anterior else 0
-            rentabilidade_perc = (rentabilidades_mensais[mes] / valor_anterior * 100) if valor_anterior else 0
+            rentabilidade_abs = rentabilidades_mensais_carteira.get(mes, 0)
+            rentabilidade_perc = (rentabilidade_abs / valor_atual * 100) if rentabilidade_abs else 0
             
             rentabilidade_mensal.append({
                 "mes": mes.strftime("%Y-%m"),
@@ -264,21 +280,71 @@ class ResumoView(LoginRequiredMixin, ListView):
                 "rentabilidade_perc": rentabilidade_perc,
             })
             
-            valor_anterior = valor_atual
         
         rentabilidade_abs_1m = rentabilidade_mensal[-2]["rentabilidade_abs"] if len(rentabilidade_mensal) > 1 else 0
-        rentabilidade_perc_1m = rentabilidade_mensal[-2]["rentabilidade_perc"] if len(rentabilidade_mensal) > 1 else 0
+        rentabilidade_abs_1a = sum(item["rentabilidade_abs"] for item in rentabilidade_mensal[-13:]) if len(rentabilidade_mensal) > 12 else 0
+        rentabilidade_abs_total = sum(item["rentabilidade_abs"] for item in rentabilidade_mensal)
+
+        rentabilidade_perc_1m = (rentabilidade_abs_1m / valores_mensais.get(meses_ordenados[-2], 1) * 100) if len(meses_ordenados) > 1 else 0
+        rentabilidade_perc_1a = (rentabilidade_abs_1a / valores_mensais.get(meses_ordenados[-13], 1) * 100) if len(meses_ordenados) > 12 else 0
+        rentabilidade_perc_total = (rentabilidade_abs_total / valores_mensais.get(meses_ordenados[0], 1) * 100) if meses_ordenados else 0
+
 
         return {
             "patrimonio_total": patrimonio_total,
             "rentabilidade_abs_1m": rentabilidade_abs_1m,
-            "rentabilidade_abs_1a": 0,
-            "rentabilidade_abs_total": 0,
+            "rentabilidade_abs_1a": rentabilidade_abs_1a,
+            "rentabilidade_abs_total": rentabilidade_abs_total,
             "rentabilidade_perc_1m": rentabilidade_perc_1m,
-            "rentabilidade_perc_1a": 0,
-            "rentabilidade_perc_total": 0,
+            "rentabilidade_perc_1a": rentabilidade_perc_1a,
+            "rentabilidade_perc_total": rentabilidade_perc_total,
             "rentabilidade_mensal": rentabilidade_mensal
         }
+    
+
+    def calcular_composicao_por_subclasse(self, ativos):
+        """Calcula a composição percentual da carteira por subclasse de ativo."""
+
+        if not ativos.exists():
+            return [], []
+
+        # Obtém o valor atualizado total da carteira
+        patrimonio_total = sum(ativo.valor_atualizado for ativo in ativos)
+
+        # Agrupa os valores por subclasse
+        composicao_subclasse = {}
+        for ativo in ativos:
+            subclasse = ativo.subclasse
+            composicao_subclasse[subclasse] = composicao_subclasse.get(subclasse, 0) + ativo.valor_atualizado
+
+        # Calcula a participação percentual de cada subclasse
+        labels = list(composicao_subclasse.keys())
+        data = [(valor / patrimonio_total) * 100 for valor in composicao_subclasse.values()]
+
+        return labels, data
+    
+    def calcular_composição_por_classe(self, ativos):
+        """Calcula a composição percentual da carteira para Renda Fixa e Renda Variável."""
+
+        if not ativos.exists():
+            return {"Renda Fixa": 0, "Renda Variável": 0}
+
+        # Obtém o valor atualizado total da carteira
+        patrimonio_total = sum(ativo.valor_atualizado for ativo in ativos)
+
+        # Inicializa as classes com 0%
+        composicao = {"Renda Fixa": 0, "Renda Variável": 0}
+
+        # Soma os valores para cada classe
+        for ativo in ativos:
+            if ativo.classe in composicao:
+                composicao[ativo.classe] += ativo.valor_atualizado
+
+        # Converte para percentual
+        composicao = {classe: (valor / patrimonio_total) * 100 for classe, valor in composicao.items()}
+
+        return composicao
+
     
     # def calcular_rentabilidade_comparativa(self, ativos):
     #     """Calcula a rentabilidade acumulada do patrimônio comparada ao CDI e IBOVESPA."""
@@ -371,48 +437,7 @@ class ResumoView(LoginRequiredMixin, ListView):
 
     #     return labels, patrimonio
 
-    # def calcular_composicao_por_subclasse(self, ativos):
-    #     """Calcula a composição percentual da carteira por subclasse de ativo."""
 
-    #     if not ativos.exists():
-    #         return [], []
-
-    #     # Obtém o valor atualizado total da carteira
-    #     patrimonio_total = sum(ativo.valor_atualizado for ativo in ativos)
-
-    #     # Agrupa os valores por subclasse
-    #     composicao_subclasse = {}
-    #     for ativo in ativos:
-    #         subclasse = ativo.subclasse
-    #         composicao_subclasse[subclasse] = composicao_subclasse.get(subclasse, 0) + ativo.valor_atualizado
-
-    #     # Calcula a participação percentual de cada subclasse
-    #     labels = list(composicao_subclasse.keys())
-    #     data = [(valor / patrimonio_total) * 100 for valor in composicao_subclasse.values()]
-
-    #     return labels, data
-    
-    # def calcular_composição_por_classe(self, ativos):
-    #     """Calcula a composição percentual da carteira para Renda Fixa e Renda Variável."""
-
-    #     if not ativos.exists():
-    #         return {"Renda Fixa": 0, "Renda Variável": 0}
-
-    #     # Obtém o valor atualizado total da carteira
-    #     patrimonio_total = sum(ativo.valor_atualizado for ativo in ativos)
-
-    #     # Inicializa as classes com 0%
-    #     composicao = {"Renda Fixa": 0, "Renda Variável": 0}
-
-    #     # Soma os valores para cada classe
-    #     for ativo in ativos:
-    #         if ativo.classe in composicao:
-    #             composicao[ativo.classe] += ativo.valor_atualizado
-
-    #     # Converte para percentual
-    #     composicao = {classe: (valor / patrimonio_total) * 100 for classe, valor in composicao.items()}
-
-    #     return composicao
 
     
 
